@@ -1,0 +1,26 @@
+---
+import ExperienceItem from "./ExperienceItem.astro"
+import Pill from "./Pill.astro"
+---
+
+<ol class="relative border-s-2 border-black dark:border-white mt-8">
+  <li class="ms-4">
+    <ExperienceItem 
+		date="ago. 2022 - ene. 2023" 
+		title="Adestos - Practica II" 
+		description="Desarrollo de interfaz con NextJS y TailwindCSS, uso de API REST. Desarrollo y mantenimiento de sistemas con Laravel y JQuery. Diseño de modelo de base de datos para proyecto en etapa de ideación.">
+		<Pill>NextJS</Pill>
+		<Pill>Laravel</Pill>
+		<Pill>MongoDB</Pill>
+		<Pill>JQuery</Pill>
+    </ExperienceItem>
+  </li>
+  <li class="ms-4">
+    <ExperienceItem date="sept. 2021 - may. 2022" title="IdeaCode - Practica I" description="Desarrollo y mantenimiento de dashboard de administración de sistema IoT con Laravel. Funciones realizadas: • Autenticación de usuarios • Notificaciones Push con Firebase Cloud Messaging. • Servicios API REST consumidos por aplicación móvil. • Cron jobs para notificaciones.">
+		<Pill>Laravel</Pill>
+		<Pill>MySQL</Pill>
+		<Pill>JavaScript</Pill>
+		<Pill>Firebase</Pill>
+    </ExperienceItem>
+  </li>
+</ol>

@@ -1,51 +1,75 @@
 ---
 interface Props {
 	title: string;
+	description: string;
 }
 
-const { title } = Astro.props;
+import Navbar from '../components/Navbar.astro';
+
+import '@fontsource-variable/inter';
+import '@fontsource-variable/eb-garamond';
+
+const { title, description } = Astro.props;
+
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
+		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
-	<body>
+	<div class="fixed -z-10 h-full w-full">
+		<div class="absolute inset-0 -z-10 h- w-full items-center px-5 py-24 bg"></div>
+	</div>
+	<body class="relative">
+		<Navbar />
 		<slot />
 	</body>
 </html>
 <style is:global>
 	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
+		color-scheme: light dark;
 	}
+
 	html {
 		font-family: system-ui, sans-serif;
-		background: #13151a;
-		background-size: 224px;
+		scroll-behavior: smooth;
 	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
+
+	body {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+		overscroll-behavior: none;
+		font-family: 'Inter', sans-serif;
 	}
+
+	.title {
+		font-family: 'EB Garamond', serif;
+		letter-spacing: -3px;
+	}
+
+	@media (prefers-reduce-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+	}
+
+	@media (prefers-color-scheme: light) {
+		.bg {
+			background: radial-gradient(86.36% 112.8% at 50% 0%, #fff 68.5%, #C1FFCF 100%);
+		}
+	}
+	
+	@media (prefers-color-scheme: dark) {
+		.bg {
+			background: radial-gradient(86.36% 112.8% at 50% 0%, #000 68.5%, #0400B4 100%);
+		}
+	}
+
 </style>
