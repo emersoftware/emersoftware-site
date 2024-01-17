@@ -8,8 +8,8 @@ if (Astro.request.method === 'POST') {
     const email = formData.get('email');
     const message = formData.get('message');
     const msg = {
+        from: 'onboarding@resend.dev',
         to: ['e.benjaminsalazarrubilar@gmail.com'],
-        from: 'Acme <onboarding@resend.dev>',
         subject: 'Mensaje desde el sitio web',
         html: `<p>Nombre: ${firstname} ${lastname}</p><p>Email: ${email}</p><p>Mensaje: ${message}</p>`,
     };
@@ -21,39 +21,22 @@ if (Astro.request.method === 'POST') {
         Authorization: `Bearer ${RESEND_API_KEY}`,
         },
         body: JSON.stringify(msg),
-    });
-
-    if (res.ok) {
-        return {
-            statusCode: 200,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: 'Email sent' }),
-        };
-    } else {
-        return {
-            statusCode: 500,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: 'Error sending email' }),
-        };
-    }
+    })
 }
 ---
 
 <form
- class="
-    bg-white dark:bg-black
-    rounded-lg lg:rounded-xl
-    border-2 border-black dark:border-white
-    pt-4 pb-4 px-8 mt-4 lg:mt-8 lg:pt-10 lg:pb-8 lg:px-12
-    flex flex-col
-    lg:text-xl
-    w-full
-    mb-16
-">
+    method="POST"
+    class="
+        bg-white dark:bg-black
+        rounded-lg lg:rounded-xl
+        border-2 border-black dark:border-white
+        pt-4 pb-4 px-8 mt-4 lg:mt-8 lg:pt-10 lg:pb-8 lg:px-12
+        flex flex-col
+        lg:text-xl
+        w-full
+        mb-16"
+>
     <h3 class="text-left lg:text-2xl">Envíame un mensaje</h3>
     <label class="mt-2 lg:mt-8" 
         for="firstname"
