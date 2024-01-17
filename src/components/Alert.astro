@@ -1,0 +1,41 @@
+---
+const success = Astro.props.success
+---
+
+{
+    success === 'true'
+        ?
+    <span 
+        class={`
+            justify-center items-center
+            mt-4
+            py-4
+            px-8
+            rounded-xl
+            border-2
+            transition
+            flex text-white bg-tangerine dark:bg-mint dark:text-black dark:border-mint
+            hidden
+        `}
+        {...Astro.props}
+    >
+        <slot />
+    </span>
+        :
+    <span 
+        class={`
+            justify-center items-center
+            mt-4
+            py-4
+            px-8
+            rounded-xl
+            border-2
+            transition
+            flex text-white bg-red border-white dark:bg-red dark:border-white
+            hidden
+        `}
+        {...Astro.props}
+    >
+        <slot />
+    </span>
+}

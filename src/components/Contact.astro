@@ -1,7 +1,12 @@
 ---
-
+import Alert from '../components/Alert.astro'
 ---
-
+<Alert id="alertSuccessEmail" success="true">
+    Gracias por tu mensaje! Te responderé lo antes posible.
+</Alert>
+<Alert id="alertErrorEmail">
+    Hubo un error al enviar tu mensaje, por favor intenta de nuevo o contactame por otro medio
+</Alert>
 <form
     method="POST"
     class="
@@ -25,6 +30,7 @@
         name="firstname"
         id="firstname"
         placeholder="Ingresa tu nombre"
+        required
     />
     <label 
         class="mt-2 lg:mt-8"
@@ -36,6 +42,7 @@
         name="lastname"
         id="lastname"
         placeholder="Ingresa tu apellido"
+        required
     />
     <label
         class="mt-2 lg:mt-8"
@@ -47,6 +54,7 @@
         name="email"
         id="email"
         placeholder="Ingresa tu email"
+        required
     />
     <label
         class="mt-2 lg:mt-8"
@@ -57,7 +65,9 @@
         name="message"
         id="message"
         cols="30"
-        rows="10">
+        rows="10"
+        required
+    > 
     </textarea>
     <button 
         class="self-center mt-4 py-2 w-1/2 lg:w-1/3 lg:mt-6
@@ -73,18 +83,27 @@
 
 <script>
     const form = document.querySelector('form');
+    const alertSuccess = document.querySelector('#alertSuccessEmail');
+    const alertError = document.querySelector('#alertErrorEmail');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(form);
-        await fetch('/email', {
+        
+        const res = await fetch('/email', {
             method: 'POST',
             body: formData,
-        }).then(response => {
-            if (response.ok) {
-                alert('Gracias por tu mensaje, te responderé lo antes posible.');
-                form.reset();
-            } else {
-                alert('Hubo un error al enviar tu mensaje, por favor intenta de nuevo.');
-            }
-        })
+        });
+        
+        if (res.ok) {
+            alertSuccess.classList.remove('hidden');
+            form.reset();
+            setTimeout(() => {
+                alertSuccess.classList.add('hidden');
+            }, 10000);
+        } else {
+            alertError.classList.remove('hidden');
+            setTimeout(() => {
+                alertError.classList.add('hidden');
+            }, 10000);
+        }
     })
