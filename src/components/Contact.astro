@@ -1,28 +1,5 @@
 ---
-const RESEND_API_KEY = import.meta.env.RESEND_API_KEY;
 
-if (Astro.request.method === 'POST') {
-    const formData = await Astro.request.formData();
-    const firstname = formData.get('firstname');
-    const lastname = formData.get('lastname');
-    const email = formData.get('email');
-    const message = formData.get('message');
-    const msg = {
-        from: 'onboarding@resend.dev',
-        to: ['e.benjaminsalazarrubilar@gmail.com'],
-        subject: 'Mensaje desde el sitio web',
-        html: `<p>Nombre: ${firstname} ${lastname}</p><p>Email: ${email}</p><p>Mensaje: ${message}</p>`,
-    };
-
-    const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        },
-        body: JSON.stringify(msg),
-    })
-}
 ---
 
 <form
@@ -36,6 +13,7 @@ if (Astro.request.method === 'POST') {
         lg:text-xl
         w-full
         mb-16"
+    
 >
     <h3 class="text-left lg:text-2xl">Envíame un mensaje</h3>
     <label class="mt-2 lg:mt-8" 
@@ -92,3 +70,21 @@ if (Astro.request.method === 'POST') {
         Enviar
     </button>
 </form>
+
+<script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        await fetch('/email', {
+            method: 'POST',
+            body: formData,
+        }).then(response => {
+            if (response.ok) {
+                alert('Gracias por tu mensaje, te responderé lo antes posible.');
+                form.reset();
+            } else {
+                alert('Hubo un error al enviar tu mensaje, por favor intenta de nuevo.');
+            }
+        })
+    })
