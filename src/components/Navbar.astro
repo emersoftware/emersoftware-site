@@ -1,8 +1,25 @@
+---
+import DownloadFileIcon from "./icons/DownloadFileIcon.astro"
+---
+
 <nav class="flex justify-center items-center mx-auto mt-8 md:mt-12">
-    <ul class="flex flex-row space-x-8 text-md">
+    <ul class="flex flex-row items-center space-x-8 text-md lg:text-2xl">
         <a href="#inicio" class="hover:underline">Inicio</a>
         <a href="#experiencia" class="hover:underline">Experiencia</a>
         <a href="#proyectos" class="hover:underline">Proyectos</a>
         <a href="#contacto" class="hover:underline">Contacto</a>
+        <a 
+            href="/CV_EmersonSalazarRubilar_ES.pdf"
+            download="cv-EmersonSalazarRubilar.pdf" 
+            class="bg-tangerine dark:bg-mint
+            hover:bg-tangerine/90 dark:hover:bg-mint/90
+            text-white dark:text-black
+            rounded-full px-4
+            text-sm lg:text-xl
+            flex justify-center items-center gap-x-2"
+        >
+            Descargar CV en .pdf
+            <DownloadFileIcon class="inline-block size-4 lg:size-6" />
+        </a>
     </ul>
 </nav>
