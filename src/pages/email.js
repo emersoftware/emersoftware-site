@@ -1,7 +1,6 @@
 export const POST = async ({ request }) => {
 	if (request.method === 'POST') {
 		const data = await request.formData();
-		console.log(data);
 		const firstname = data.get('firstname');
 		const lastname = data.get('lastname');
 		const email = data.get('email');
