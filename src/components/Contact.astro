@@ -13,14 +13,17 @@ import Alert from '../components/Alert.astro'
         bg-white dark:bg-black
         rounded-lg lg:rounded-xl
         border-2 border-black dark:border-white
-        pt-4 pb-4 px-8 mt-4 lg:mt-8 lg:pt-10 lg:pb-8 lg:px-12
+        pt-6 lg:pt-10
+        pb-4 lg:pb-8
+        px-8 lg:px-12
+        mt-4 lg:mt-8   
         flex flex-col
         lg:text-xl
         w-full
         mb-16"
     
 >
-    <h3 class="text-left lg:text-2xl">Envíame un mensaje</h3>
+    <h3 class="text-left text-lg lg:text-2xl">Envíame un mensaje</h3>
     <label class="mt-2 lg:mt-8" 
         for="firstname"
     >Nombre</label>
@@ -70,10 +73,10 @@ import Alert from '../components/Alert.astro'
     > 
     </textarea>
     <button 
-        class="self-center mt-4 py-2 w-1/2 lg:w-1/3 lg:mt-6
+        class="self-center mt-4 py-1 w-1/2 lg:w-1/3 lg:mt-6
             bg-tangerine dark:bg-mint
             hover:dark:bg-mint/90 hover:bg-tangerine/90
-            text-white dark:text-black lg:text-2xl
+            text-white dark:text-black text-lg lg:text-2xl
             rounded-full" 
         type="submit"
     >

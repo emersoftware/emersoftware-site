@@ -2,8 +2,11 @@
 import DownloadFileIcon from "./icons/DownloadFileIcon.astro"
 ---
 
-<nav class="flex justify-center items-center mx-auto mt-8 md:mt-12">
-    <ul class="flex flex-row items-center space-x-8 text-md lg:text-2xl">
+<nav class="flex w-full justify-center items-center mx-auto mt-4 md:mt-8 lg:mt-12">
+    <ul class="
+        flex flex-row mx-8 items-center 
+        space-x-4 md:space-x-8 text-md lg:text-2xl"
+    >
         <a href="/#inicio" class="hover:underline">Inicio</a>
         <a href="/#experiencia" class="hover:underline">Experiencia</a>
         <a href="/#proyectos" class="hover:underline hidden">Proyectos</a>
@@ -11,15 +14,17 @@ import DownloadFileIcon from "./icons/DownloadFileIcon.astro"
         <a 
             href="/CV_EmersonSalazarRubilar_ES.pdf"
             download="cv-EmersonSalazarRubilar.pdf" 
-            class="bg-tangerine dark:bg-mint
+            class="
+            bg-tangerine dark:bg-mint
             hover:bg-tangerine/90 dark:hover:bg-mint/90
             text-white dark:text-black
-            rounded-full px-4
+            rounded-full px-2 md:px-4
             text-sm lg:text-xl
-            flex justify-center items-center gap-x-2"
+            flex justify-center items-center gap-0 md:gap-x-2 whitespace-nowrap
+            "
         >
-            Descargar CV en .pdf
-            <DownloadFileIcon class="inline-block size-4 lg:size-6" />
+            Descargar CV <span class="hidden md:inline-block">en PDF</span>
+            <DownloadFileIcon class="hidden md:inline-block size-8  lg:size-6" />
         </a>
     </ul>
 </nav>
