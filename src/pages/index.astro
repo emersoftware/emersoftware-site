@@ -12,87 +12,77 @@ import Experience from '../components/Experience.astro';
 import Contact from '../components/Contact.astro';
 ---
 
-<Layout 
-	title="Emersoftware - Emerson Salazar Rubilar" 
-	description='Emerson Salazar Rubilar (emersoftware) Desarrollador Web Fullstack IA Python de Concepción, Chile. Haz tu proyecto web con este programador con tecnologías como JavaScript, NextJS, ReactJS, Astro o Python. Desarrolla landing pages, ecommerce o aplicaciones basadas en inteligencia artificial.'>
-	<main class="mx-4 md:mx-auto md:w-3/5 lg:w-1/2">
-		<section
-			class="flex flex-col items-center justify-center"
-			id="inicio"
-			data-section="inicio"
-		>
-			<ComputerImg class="mx-auto w-1/2 lg:w-1/3 h-auto text-forest dark:text-white mt-12 md:mt-20" />
-			
-			<h1 class="text-6xl lg:text-8xl text-center title mt-8 md:mt-10">emersoftware</h1>
+<Layout
+  title="Emersoftware - Emerson Salazar Rubilar"
+  description="Emerson Salazar Rubilar (emersoftware) Desarrollador Web Fullstack IA Python de Concepción, Chile. Haz tu proyecto web con este programador con tecnologías como JavaScript, NextJS, ReactJS, Astro o Python. Desarrolla landing pages, ecommerce o aplicaciones basadas en inteligencia artificial."
+>
+  <main class="mx-4 md:mx-auto md:w-3/5 lg:w-1/2">
+    <section class="flex flex-col items-center justify-center" id="inicio" data-section="inicio">
+      <ComputerImg
+        class="mx-auto mt-12 h-auto w-1/2 text-forest md:mt-20 lg:w-1/3 dark:text-white"
+      />
 
-			<div class="w-full text-center flex flex-col md:flex-row justify-center mr-4 space-x-2 mt-4 sm:mt-10 md:mt-12 lg:mt-16 ">
-				<p class="text-2xl lg:text-[36px] whitespace-nowrap">Emerson Salazar Rubilar</p> 
-				<p class="text-2xl lg:text-[36px] hidden md:inline-block"> ✹ </p>
-				<p class="text-xl md:text-2xl lg:text-[36px] whitespace-nowrap">Ingeniero de Software</p>
-			</div>
-			
-			<p class="text-md lg:text-2xl text-balance text-center mt-4 md:mt-8">
-				Software Engineer. Interesado en agentización de LLMs y recuperación de información; RAG (Embeddings), Knowledge Graphs, etc.
-			</p>
+      <h1 class="title mt-8 text-center text-6xl md:mt-10 lg:text-8xl">emersoftware</h1>
 
-			<nav class="w-fit flex flex-wrap md:flex-nowrap gap-x-2 md:gap-x-3 lg:gap-x-6 gap-y-2 mt-4 md:mt-8 justify-center">
-				<PillAnchor href="https://github.com/emersoftware">
-					<GitHubIcon class="size-4 lg:size-6" />
-					GitHub
-				</PillAnchor>
-				<PillAnchor href="https://www.linkedin.com/in/emerson-salazar-rubilar-149468220/">
-					<LinkedInIcon class="size-4 lg:size-6" />
-					LinkedIn
-				</PillAnchor>
-				<PillButton id="emailButton" class="">
-					<Mail class="size-6 lg:size-8" />
-					e.benjaminsalazarrubilar@gmail.com
-					<Copy id="copyEmail" class="size-6 lg:size-8" />
-					<CopyCheck id="copyEmailCheck" class="hidden size-6 lg:size-8" />
-				</PillButton>
-			</nav>
-		</section>
+      <div
+        class="mr-4 mt-4 flex w-full flex-col justify-center space-x-2 text-center sm:mt-10 md:mt-12 md:flex-row lg:mt-16"
+      >
+        <p class="whitespace-nowrap text-2xl lg:text-[36px]">Emerson Salazar Rubilar</p>
+        <p class="hidden text-2xl md:inline-block lg:text-[36px]">✹</p>
+        <p class="whitespace-nowrap text-xl md:text-2xl lg:text-[36px]">Ingeniero de Software</p>
+      </div>
 
-		<section
-			class=""
-			id="experiencia"
-			data-section="experiencia"
-		>
-			<h2 class="text-4xl lg:text-6xl title mt-16 md:mt-20 lg:mt-24">Experiencia</h2>
-			<Experience />
-		</section>
+      <p class="text-md mt-4 text-balance text-center md:mt-8 lg:text-2xl">
+        Software Engineer. Interesado en agentización de LLMs y recuperación de información; RAG
+        (Embeddings), Knowledge Graphs, etc.
+      </p>
 
+      <nav
+        class="mt-4 flex w-fit flex-wrap justify-center gap-x-2 gap-y-2 md:mt-8 md:flex-nowrap md:gap-x-3 lg:gap-x-6"
+      >
+        <PillAnchor href="https://github.com/emersoftware">
+          <GitHubIcon class="size-4 lg:size-6" />
+          GitHub
+        </PillAnchor>
+        <PillAnchor href="https://www.linkedin.com/in/emerson-salazar-rubilar-149468220/">
+          <LinkedInIcon class="size-4 lg:size-6" />
+          LinkedIn
+        </PillAnchor>
+        <PillButton id="emailButton" class="">
+          <Mail class="size-6 lg:size-8" />
+          e.benjaminsalazarrubilar@gmail.com
+          <Copy id="copyEmail" class="size-6 lg:size-8" />
+          <CopyCheck id="copyEmailCheck" class="hidden size-6 lg:size-8" />
+        </PillButton>
+      </nav>
+    </section>
 
-		<section
-			class=""
-			id="contacto"
-			data-section="contacto"
-		>
-			<h2 class="text-4xl lg:text-6xl title mt-16 md:mt-20 lg:mt-24">Contacto</h2>
-			<Contact />
-		</section>
+    <section class="" id="experiencia" data-section="experiencia">
+      <h2 class="title mt-16 text-4xl md:mt-20 lg:mt-24 lg:text-6xl">Experiencia</h2>
+      <Experience />
+    </section>
 
-	</main>
+    <section class="" id="contacto" data-section="contacto">
+      <h2 class="title mt-16 text-4xl md:mt-20 lg:mt-24 lg:text-6xl">Contacto</h2>
+      <Contact />
+    </section>
+  </main>
 </Layout>
 
 <script>
-	const button = document.querySelector('#emailButton');
-	const email = 'e.benjaminsalazarrubilar@gmail.com';
-	const copyEmail = document.querySelector('#copyEmail');
-	const copyEmailCheck = document.querySelector('#copyEmailCheck');
+  const button = document.querySelector('#emailButton');
+  const email = 'e.benjaminsalazarrubilar@gmail.com';
+  const copyEmail = document.querySelector('#copyEmail');
+  const copyEmailCheck = document.querySelector('#copyEmailCheck');
 
-	button.addEventListener('click', () => {
-		navigator.clipboard.writeText(email).then(() => {
-			copyEmail.classList.add('hidden');
-			copyEmailCheck.classList.remove('hidden');
-			//button.classList.remove('text-white border-white');
-			//button.classList.add('text-tangerine border-tangerine dark:text-mint dark:border-mint');
-			setTimeout(() => {
-				copyEmail.classList.remove('hidden');
-				copyEmailCheck.classList.add('hidden');
-				//button.classList.add('text-white border-white');
-				//button.classList.remove('text-tangerine border-tangerine dark:text-mint dark:border-mint');
-			}, 2000);
-		});
-	});
+  button.addEventListener('click', () => {
+    navigator.clipboard.writeText(email).then(() => {
+      copyEmail.classList.add('hidden');
+      copyEmailCheck.classList.remove('hidden');
+      setTimeout(() => {
+        copyEmail.classList.remove('hidden');
+        copyEmailCheck.classList.add('hidden');
+      }, 2000);
+    });
+  });
 </script>

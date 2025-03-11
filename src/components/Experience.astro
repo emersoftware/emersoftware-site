@@ -1,30 +1,32 @@
 ---
-import ExperienceItem from "./ExperienceItem.astro"
-import Pill from "./Pill.astro"
+import ExperienceItem from './ExperienceItem.astro';
+import Pill from './Pill.astro';
 ---
 
-<ol class="relative border-s-2 border-black dark:border-white mt-8 space-y-12">
-	<li class="ms-4">
-		<ExperienceItem
-			date="oct. 2024 - actualidad"
-			title="Blar AI | Founding Engineer"
-			description="Desarrollo de agentes basados en LLMs para revisión de código. Por el momento trabajando con Agentic RAG y flujos de agentización con Langgraph. 🐸">
-			<Pill>Langgraph</Pill>
-			<!-- <Pill>Vertex AI</Pill> -->
-			<Pill>Python</Pill>
-			<Pill>RAG</Pill>
-			<Pill>LLMs</Pill>
-		</ExperienceItem>
-		</li>
+<ol class="relative mt-8 space-y-12 border-s-2 border-black dark:border-white">
   <li class="ms-4">
-	<ExperienceItem
-		date="may. 2024 - oct. 2024"
-		title="Pirrol LLC | Backend Engineer"
-		description="Diseño y desarrollo de agente conversacional (chatbot) para UpWorth. Implementación del agente utilizando Langgraph y Vertex AI (Gemini). Desarrollo de aplicación de preview con NextJS.">
-		<Pill>Langgraph</Pill>
-		<Pill>Vertex AI</Pill>
-		<Pill>Python</Pill>
-		<Pill>Langchain</Pill>
-	</ExperienceItem>
+    <ExperienceItem
+      date="oct. 2024 - actualidad"
+      title="Blar AI | Founding Engineer"
+      description="Desarrollo de agentes basados en LLMs para revisión de código. Por el momento trabajando con Agentic RAG y flujos de agentización con Langgraph. 🐸"
+    >
+      <Pill>Langgraph</Pill>
+      <!-- <Pill>Vertex AI</Pill> -->
+      <Pill>Python</Pill>
+      <Pill>RAG</Pill>
+      <Pill>LLMs</Pill>
+    </ExperienceItem>
+  </li>
+  <li class="ms-4">
+    <ExperienceItem
+      date="may. 2024 - oct. 2024"
+      title="Pirrol LLC | Backend Engineer"
+      description="Diseño y desarrollo de agente conversacional (chatbot) para UpWorth. Implementación del agente utilizando Langgraph y Vertex AI (Gemini). Desarrollo de aplicación de preview con NextJS."
+    >
+      <Pill>Langgraph</Pill>
+      <Pill>Vertex AI</Pill>
+      <Pill>Python</Pill>
+      <Pill>Langchain</Pill>
+    </ExperienceItem>
   </li>
 </ol>

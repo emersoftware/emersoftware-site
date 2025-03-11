@@ -1,7 +1,7 @@
 ---
 interface Props {
-	title: string;
-	description: string;
+  title: string;
+  description: string;
 }
 
 import Navbar from '../components/Navbar.astro';
@@ -10,66 +10,75 @@ import '@fontsource-variable/inter';
 import '@fontsource-variable/eb-garamond';
 
 const { title, description } = Astro.props;
-
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content={description} />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<div class="fixed -z-10 h-full w-full">
-		<div class="absolute inset-0 -z-10 h- w-full items-center px-5 py-24 bg"></div>
-	</div>
-	<body class="relative">
-		<Navbar />
-		<slot />
-	</body>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="author" content="Emerson Salazar Rubilar" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <title>{title}</title>
+    <meta name="astro-view-transitions" />
+  </head>
+  <div class="fixed -z-10 h-full w-full">
+    <div class="h- bg absolute inset-0 -z-10 w-full items-center px-5 py-24"></div>
+  </div>
+  <body class="relative">
+    <Navbar />
+    <slot />
+  </body>
+
+  <style is:global>
+    :root {
+      color-scheme: light dark;
+    }
+
+    html {
+      font-family: system-ui, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overscroll-behavior: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .title {
+      font-family: 'EB Garamond', serif;
+      letter-spacing: -3px;
+    }
+
+    @media (prefers-reduce-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+      .bg {
+        background: radial-gradient(86.36% 112.8% at 50% 0%, #fff 68.5%, #c1ffcf 100%);
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .bg {
+        background: radial-gradient(86.36% 112.8% at 50% 0%, #000 68.5%, #0400b4 100%);
+      }
+    }
+  </style>
+
+
 </html>
-<style is:global>
-	:root {
-		color-scheme: light dark;
-	}
-
-	html {
-		font-family: system-ui, sans-serif;
-		scroll-behavior: smooth;
-	}
-
-	body {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-		overscroll-behavior: none;
-		font-family: 'Inter', sans-serif;
-	}
-
-	.title {
-		font-family: 'EB Garamond', serif;
-		letter-spacing: -3px;
-	}
-
-	@media (prefers-reduce-motion: reduce) {
-		html {
-			scroll-behavior: auto;
-		}
-	}
-
-	@media (prefers-color-scheme: light) {
-		.bg {
-			background: radial-gradient(86.36% 112.8% at 50% 0%, #fff 68.5%, #C1FFCF 100%);
-		}
-	}
-	
-	@media (prefers-color-scheme: dark) {
-		.bg {
-			background: radial-gradient(86.36% 112.8% at 50% 0%, #000 68.5%, #0400B4 100%);
-		}
-	}
-
-</style>

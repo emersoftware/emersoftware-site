@@ -1,30 +1,20 @@
 ---
-import DownloadFileIcon from "./icons/DownloadFileIcon.astro"
+import DownloadFileIcon from './icons/DownloadFileIcon.astro';
 ---
 
-<nav class="flex w-full justify-center items-center mx-auto mt-4 md:mt-8">
-    <ul class="
-        flex flex-row mx-8 items-center 
-        space-x-4 md:space-x-8 text-md lg:text-2xl"
+<nav class="mx-auto mt-4 flex w-full items-center justify-center md:mt-8">
+  <ul class="text-md mx-8 flex flex-row items-center space-x-4 md:space-x-8 lg:text-2xl">
+    <a href="/#inicio" class="hover:underline">Inicio</a>
+    <a href="/#experiencia" class="hover:underline">Experiencia</a>
+    <a href="/#proyectos" class="hidden hover:underline">Proyectos</a>
+    <a href="/#contacto" class="hover:underline">Contacto</a>
+    <a
+      href="/CV_EmersonSalazarRubilar.pdf"
+      download="cv-EmersonSalazarRubilar.pdf"
+      class="flex items-center justify-center gap-0 whitespace-nowrap rounded-full bg-tangerine px-2 text-sm text-white hover:bg-tangerine/90 md:gap-x-2 md:px-4 lg:text-xl dark:bg-mint dark:text-black dark:hover:bg-mint/90"
     >
-        <a href="/#inicio" class="hover:underline">Inicio</a>
-        <a href="/#experiencia" class="hover:underline">Experiencia</a>
-        <a href="/#proyectos" class="hover:underline hidden">Proyectos</a>
-        <a href="/#contacto" class="hover:underline">Contacto</a>
-        <a 
-            href="/CV_EmersonSalazarRubilar.pdf"
-            download="cv-EmersonSalazarRubilar.pdf" 
-            class="
-            bg-tangerine dark:bg-mint
-            hover:bg-tangerine/90 dark:hover:bg-mint/90
-            text-white dark:text-black
-            rounded-full px-2 md:px-4
-            text-sm lg:text-xl
-            flex justify-center items-center gap-0 md:gap-x-2 whitespace-nowrap
-            "
-        >
-            Descargar CV <span class="hidden md:inline-block">en PDF</span>
-            <DownloadFileIcon class="hidden md:inline-block size-5 lg:size-6" />
-        </a>
-    </ul>
+      Descargar CV <span class="hidden md:inline-block">en PDF</span>
+      <DownloadFileIcon class="hidden size-5 md:inline-block lg:size-6" />
+    </a>
+  </ul>
 </nav>
