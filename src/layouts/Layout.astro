@@ -76,7 +76,7 @@ const { title, description } = Astro.props;
       pointer-events: none;
       z-index: -5;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.15s ease;
     }
 
     .star {
@@ -84,7 +84,7 @@ const { title, description } = Astro.props;
       background-color: #fff;
       border-radius: 50%;
       opacity: 0;
-      animation: twinkle var(--duration, 4s) ease-in-out infinite;
+      animation: twinkle var(--duration, 3s) ease-in-out infinite;
       animation-delay: var(--delay, 0s);
     }
 
@@ -233,7 +233,7 @@ const { title, description } = Astro.props;
       const starsContainer = document.getElementById('stars-container');
       const numStars = 200;
       const starSizes = [1, 1.5, 2];
-      const parallaxLayers = [0.2, 0.5, 0.8]; // Different parallax speeds for different star sizes
+      const parallaxLayers = [0.3, 0.6, 0.9]; // Different parallax speeds for different star sizes
 
       // Create stars
       for (let i = 0; i < numStars; i++) {
