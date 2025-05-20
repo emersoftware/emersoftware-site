@@ -31,8 +31,8 @@ const { title, description } = Astro.props;
     <title>{title}</title>
     <meta name="astro-view-transitions" />
   </head>
-  <div class="fixed -z-10 h-full w-full">
-    <div class="h- bg absolute inset-0 -z-10 w-full items-center px-5 py-24"></div>
+  <div class="fixed h-full w-full">
+    <div class="h- bg absolute inset-0 w-full items-center px-5 py-24"></div>
     <div id="stars-container" class="stars-container"></div>
   </div>
   <body class="relative">
@@ -188,13 +188,17 @@ const { title, description } = Astro.props;
 
     @media (prefers-color-scheme: light) {
       .bg {
-        background: radial-gradient(86.36% 112.8% at 50% 0%, #fff 68.5%, #c1ffcf 100%);
+        background: radial-gradient(
+          86.36% 112.8% at 50% 0%,
+          rgba(255, 255, 255, 0) 68.5%,
+          #c1ffcf 100%
+        );
       }
     }
 
     @media (prefers-color-scheme: dark) {
       .bg {
-        background: radial-gradient(86.36% 112.8% at 50% 0%, #000 68.5%, #0400b4 100%);
+        background: radial-gradient(86.36% 112.8% at 50% 0%, rgba(0, 0, 0, 0) 68.5%, #0400b4 100%);
       }
     }
   </style>
