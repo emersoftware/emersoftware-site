@@ -6,6 +6,8 @@ interface Props {
 
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import TerminalButton from '../components/TerminalButton.astro';
+import Terminal from '../components/Terminal.astro';
 
 import '@fontsource-variable/inter';
 import '@fontsource-variable/eb-garamond';
@@ -41,6 +43,8 @@ const { title, description } = Astro.props;
       <slot />
     </main>
     <Footer />
+    <TerminalButton />
+    <Terminal />
   </body>
 
   <style is:global>

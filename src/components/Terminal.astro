@@ -1,0 +1,126 @@
+---
+// Props and logic for the terminal will go here
+---
+
+<div id="terminal" class="fixed bottom-20 right-8 z-50 hidden">
+  <div
+    class="flex h-[350px] w-[450px] flex-col overflow-hidden rounded-lg border border-mint bg-black text-mint shadow-2xl"
+  >
+    <div
+      class="bg-gray-900 flex select-none items-center justify-between border-b border-mint/50 p-3"
+    >
+      <div class="flex items-center space-x-2">
+        <span class="bg-red-500 h-3 w-3 rounded-full"></span>
+        <span class="bg-yellow-500 h-3 w-3 rounded-full"></span>
+        <span class="bg-green-500 h-3 w-3 rounded-full"></span>
+      </div>
+      <span class="text-gray-400 text-sm">Terminal</span>
+      <button
+        id="close-terminal-button"
+        class="text-gray-400 transition-colors duration-150 hover:text-white"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="h-5 w-5"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="flex-grow overflow-y-auto p-4 font-mono text-sm" id="terminal-output">
+      <p>
+        <span class="text-green-400">user@portfolio:</span><span class="text-blue-400">~</span>$
+        Welcome to the terminal!
+      </p>
+      <!-- Terminal content will be added here -->
+    </div>
+    <div class="bg-gray-900 border-t border-mint/50 p-2">
+      <input
+        type="text"
+        id="terminal-input"
+        class="bg-transparent placeholder-gray-500 w-full text-mint focus:outline-none"
+        placeholder="Type a command..."
+      />
+    </div>
+  </div>
+</div>
+
+<script>
+  // Script to handle terminal opening/closing and basic commands
+  const terminal = document.getElementById('terminal');
+  const closeButton = document.getElementById('close-terminal-button');
+  const terminalButton = document.getElementById('terminal-button'); // The floating button
+
+  function openTerminal() {
+    if (terminal) {
+      terminal.classList.remove('hidden');
+      // Potentially focus the input field when opened
+      document.getElementById('terminal-input')?.focus();
+    }
+  }
+
+  function closeTerminal() {
+    if (terminal) {
+      terminal.classList.add('hidden');
+    }
+  }
+
+  // Event listener for the floating terminal button
+  terminalButton?.addEventListener('click', openTerminal);
+
+  // Event listener for the close button inside the terminal
+  closeButton?.addEventListener('click', closeTerminal);
+
+  // Optional: Close terminal with Escape key
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && terminal && !terminal.classList.contains('hidden')) {
+      closeTerminal();
+    }
+  });
+
+  // Basic command handling (example)
+  const terminalInput = document.getElementById('terminal-input') as HTMLInputElement;
+  const terminalOutput = document.getElementById('terminal-output');
+
+  terminalInput?.addEventListener('keypress', function (event) {
+    if (event.key === 'Enter') {
+      const command = terminalInput.value;
+      const outputLine = document.createElement('p');
+      outputLine.innerHTML = `<span class="text-green-400">user@portfolio:</span><span class="text-blue-400">~</span>$ ${command}`;
+      terminalOutput?.appendChild(outputLine);
+
+      // Process command (very basic example)
+      if (command.trim().toLowerCase() === 'help') {
+        const helpText = document.createElement('p');
+        helpText.textContent = 'Available commands: help, clear, date, echo [text]';
+        terminalOutput?.appendChild(helpText);
+      } else if (command.trim().toLowerCase() === 'clear') {
+        if (terminalOutput) terminalOutput.innerHTML = ''; // Clear previous output
+        const welcome = document.createElement('p');
+        welcome.innerHTML = `<span class="text-green-400">user@portfolio:</span><span class="text-blue-400">~</span>$ Welcome to the terminal!`;
+        terminalOutput?.appendChild(welcome);
+      } else if (command.trim().toLowerCase() === 'date') {
+        const dateText = document.createElement('p');
+        dateText.textContent = new Date().toLocaleString();
+        terminalOutput?.appendChild(dateText);
+      } else if (command.trim().toLowerCase().startsWith('echo ')) {
+        const echoText = document.createElement('p');
+        echoText.textContent = command.substring(5);
+        terminalOutput?.appendChild(echoText);
+      } else if (command.trim() !== '') {
+        const notFoundText = document.createElement('p');
+        notFoundText.textContent = `Command not found: ${command}`;
+        terminalOutput?.appendChild(notFoundText);
+      }
+
+      terminalInput.value = ''; // Clear input
+      if (terminalOutput) {
+        terminalOutput.scrollTop = terminalOutput.scrollHeight; // Scroll to bottom
+      }
+    }
+  });
+</script>
