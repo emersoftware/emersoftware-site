@@ -31,17 +31,15 @@ const { title, description } = Astro.props;
     <title>{title}</title>
     <meta name="astro-view-transitions" />
   </head>
+  <div id="stars-container" class="stars-container"></div>
   <div class="fixed h-full w-full">
     <div class="h- bg absolute inset-0 w-full items-center px-5 py-24"></div>
-    <div id="stars-container" class="stars-container"></div>
   </div>
-  <body class="relative">
-    <Navbar />
-    <main class="pt-20 md:pt-24">
-      <slot />
-    </main>
-    <Footer />
-  </body>
+  <Navbar />
+  <main class="pt-20 md:pt-24">
+    <slot />
+  </main>
+  <Footer />
 
   <style is:global>
     :root {
