@@ -29,8 +29,9 @@ const { title, description } = Astro.props;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <title>{title}</title>
-    <meta name="astro-view-transitions" />
-  </head>
+  <meta name="astro-view-transitions" />
+</head>
+<body>
   <div id="stars-container" class="stars-container"></div>
   <div class="fixed h-full w-full">
     <div class="h- bg absolute inset-0 w-full items-center px-5 py-24"></div>
@@ -161,7 +162,7 @@ const { title, description } = Astro.props;
       }
     }
 
-    @media (prefers-reduce-motion: reduce) {
+    @media (prefers-reduced-motion: reduce) {
       .fade-in,
       .fade-in-delay-100,
       .fade-in-delay-200,
@@ -202,6 +203,5 @@ const { title, description } = Astro.props;
   </style>
 
   <script src="/src/scripts/stars.js"></script>
-
-
+</body>
 </html>
