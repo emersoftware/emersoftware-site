@@ -1,48 +1,26 @@
 ---
 import ExperienceItem from './ExperienceItem.astro';
 import Pill from './Pill.astro';
+import { getDictionary } from '../i18n/dictionaries';
+import { isSupportedLocale, defaultLocale } from '../i18n/config';
+interface Props {
+  lang?: string;
+}
+const { lang: rawLang = 'es' } = Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
+const t = getDictionary(lang);
 ---
 
 <ol class="relative mt-8 space-y-12 border-s-2 border-black dark:border-white">
-  <li class="ms-4">
-    <ExperienceItem
-      date="aug. 2025 - actualidad"
-      title="Hoktus | Software Engineer"
-      description="[NUEVO] Desarrollo de agentes conversacionales y automatización de procesos de reclutamiento con AI Agents."
-    >
-      <Pill>Langgraph</Pill>
-      <Pill>AI Agents</Pill>
-      <Pill>NextJS</Pill>
-      <Pill>Typescript</Pill>
-      <Pill>Python</Pill>
-    </ExperienceItem>
-  </li>
-
-  <li class="ms-4">
-    <ExperienceItem
-      date="oct. 2024 - jul. 2025"
-      title="Blar AI | Software Engineer"
-      description="Desarrollo de agentes revisión de código. Principalmente revisión de patrones de diseño, bugs, cybersec y performance, en pull requests."
-    >
-      <Pill>Langgraph</Pill>
-      <Pill>Python</Pill>
-      <Pill>RAG</Pill>
-      <Pill>React</Pill>
-      <Pill>Typescript</Pill>
-    </ExperienceItem>
-  </li>
-  <li class="ms-4">
-    <ExperienceItem
-      date="may. 2024 - oct. 2024"
-      title="Pirrol LLC | Backend Engineer"
-      description="Desarrollo de MVP de agente conversacional (chatbot) para UpWorth AUS sobre finanzas personales."
-    >
-      <Pill>Langgraph</Pill>
-      <Pill>Vertex AI</Pill>
-      <Pill>Python</Pill>
-      <Pill>Langchain</Pill>
-      <Pill>NextJS</Pill>
-      <Pill>Typescript</Pill>
-    </ExperienceItem>
-  </li>
+  {
+    t.experienceItems.map((item) => (
+      <li class="ms-4">
+        <ExperienceItem date={item.date} title={item.title} description={item.description}>
+          {item.techs.map((tech) => (
+            <Pill>{tech}</Pill>
+          ))}
+        </ExperienceItem>
+      </li>
+    ))
+  }
 </ol>

@@ -1,5 +1,23 @@
 ---
 import DownloadFileIcon from './icons/DownloadFileIcon.astro';
+import { getDictionary } from '../i18n/dictionaries';
+import { isSupportedLocale, defaultLocale } from '../i18n/config';
+interface Props {
+  lang?: string;
+}
+const { lang: rawLang = 'es' } = Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
+const t = getDictionary(lang);
+const otherLang = lang === 'en' ? 'es' : 'en';
+const currentPath = Astro.url.pathname;
+let switchHref = '/en/';
+if (lang === 'en') {
+  // from /en/* -> remove /en
+  switchHref = currentPath.startsWith('/en') ? currentPath.replace('/en', '') || '/' : '/';
+} else {
+  // from root -> add /en
+  switchHref = currentPath.startsWith('/en') ? currentPath : `/en${currentPath}`;
+}
 ---
 
 <nav id="navbar" class="fixed top-0 z-50 w-full transition-all duration-300">
@@ -8,10 +26,24 @@ import DownloadFileIcon from './icons/DownloadFileIcon.astro';
     class="mx-auto my-4 flex w-fit items-center justify-center transition-all duration-200 md:my-6"
   >
     <ul class="text-md flex flex-row items-center space-x-4 md:space-x-8 lg:text-2xl">
-      <a href="/#inicio" class="hover:underline">Inicio</a>
-      <a href="/#experiencia" class="hover:underline">Experiencia</a>
-      <a href="/#proyectos" class="hidden hover:underline">Proyectos</a>
-      <a href="/#contacto" class="hover:underline">Contacto</a>
+      <a
+        href={lang === 'en' ? `/en/#${t.sectionIds.home}` : `/#${t.sectionIds.home}`}
+        class="hover:underline">{t.navbar.home}</a
+      >
+      <a
+        href={lang === 'en' ? `/en/#${t.sectionIds.experience}` : `/#${t.sectionIds.experience}`}
+        class="hover:underline">{t.navbar.experience}</a
+      >
+      <a href={lang === 'en' ? `/en/#proyectos` : `/#proyectos`} class="hidden hover:underline"
+        >{t.navbar.projects}</a
+      >
+      <a
+        href={lang === 'en' ? `/en/#${t.sectionIds.contact}` : `/#${t.sectionIds.contact}`}
+        class="hover:underline">{t.navbar.contact}</a
+      >
+      <a href={switchHref} class="ml-2 rounded-full border px-3 py-1 hover:underline"
+        >{lang === 'en' ? 'ES' : 'EN'}</a
+      >
     </ul>
   </div>
 </nav>

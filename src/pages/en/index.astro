@@ -1,19 +1,18 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import ComputerImg from '../components/icons/ComputerImg.astro';
-import PillAnchor from '../components/PillAnchor.astro';
-import PillButton from '../components/PillButton.astro';
-import GitHubIcon from '../components/icons/GitHubIcon.astro';
-import LinkedInIcon from '../components/icons/LinkedInIcon.astro';
-import Mail from '../components/icons/MailIcon.astro';
-import Copy from '../components/icons/CopyIcon.astro';
-import CopyCheck from '../components/icons/CopyCheckIcon.astro';
-import Experience from '../components/Experience.astro';
-import Contact from '../components/Contact.astro';
-import { getDictionary } from '../i18n/dictionaries';
-import { defaultLocale } from '../i18n/config';
+import Layout from '../../layouts/Layout.astro';
+import ComputerImg from '../../components/icons/ComputerImg.astro';
+import PillAnchor from '../../components/PillAnchor.astro';
+import PillButton from '../../components/PillButton.astro';
+import GitHubIcon from '../../components/icons/GitHubIcon.astro';
+import LinkedInIcon from '../../components/icons/LinkedInIcon.astro';
+import Mail from '../../components/icons/MailIcon.astro';
+import Copy from '../../components/icons/CopyIcon.astro';
+import CopyCheck from '../../components/icons/CopyCheckIcon.astro';
+import Experience from '../../components/Experience.astro';
+import Contact from '../../components/Contact.astro';
+import { getDictionary } from '../../i18n/dictionaries';
 
-const lang = defaultLocale; // pathless default locale at root
+const lang = 'en';
 const t = getDictionary(lang);
 ---
 

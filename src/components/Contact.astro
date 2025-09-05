@@ -1,14 +1,22 @@
 ---
 import Alert from './Alert.astro';
 import ContactForm from './ContactForm.astro';
+import { getDictionary } from '../i18n/dictionaries';
+import { isSupportedLocale, defaultLocale } from '../i18n/config';
+interface Props {
+  lang?: string;
+}
+const { lang: rawLang = 'es' } = Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
+const t = getDictionary(lang);
 ---
 
 <Alert id="alertSuccessEmail" success="true">
-  Gracias por tu mensaje! <br /> Te responderé lo antes posible.
+  <Fragment set:html={t.contact.success} />
 </Alert>
 <Alert id="alertErrorEmail">
-  Hubo un error al enviar tu mensaje, por favor intenta de nuevo o contactame por otro medio
+  {t.contact.error}
 </Alert>
 <div class="slide-up-delay-300">
-  <ContactForm />
+  <ContactForm lang={lang} />
 </div>

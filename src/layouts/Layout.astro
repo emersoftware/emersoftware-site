@@ -2,22 +2,28 @@
 interface Props {
   title: string;
   description: string;
+  lang?: string;
 }
 
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { supportedLocales, defaultLocale } from '../i18n/config';
 
 import '@fontsource-variable/inter';
 import '@fontsource-variable/eb-garamond';
 
-const { title, description } = Astro.props;
+const { title, description, lang = 'es' } = Astro.props;
 const siteUrl = Astro.url.origin;
+const currentPath = Astro.url.pathname;
+const currentUrl = new URL(Astro.url);
+
+const normalizedLang = supportedLocales.includes(lang as any) ? lang : defaultLocale;
 
 const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Emerson Salazar Rubilar',
-  jobTitle: 'Ingeniero de Software',
+  jobTitle: normalizedLang === 'en' ? 'Software Engineer' : 'Ingeniero de Software',
   url: siteUrl,
   email: 'mailto:hola@emersoftware.cl',
   sameAs: [
@@ -39,7 +45,7 @@ const websiteLd = {
   '@type': 'WebSite',
   url: siteUrl,
   name: 'Emersoftware',
-  inLanguage: 'es-CL',
+  inLanguage: normalizedLang === 'en' ? 'en' : 'es-CL',
   publisher: {
     '@type': 'Person',
     name: 'Emerson Salazar Rubilar',
@@ -49,7 +55,7 @@ const websiteLd = {
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={normalizedLang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
@@ -58,7 +64,7 @@ const websiteLd = {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <meta name="author" content="Emerson Salazar Rubilar" />
-    <meta http-equiv="content-language" content="es-CL" />
+    <meta http-equiv="content-language" content={normalizedLang === 'en' ? 'en' : 'es-CL'} />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0400b4" media="(prefers-color-scheme: dark)" />
     <meta property="og:title" content={title} />
@@ -66,8 +72,27 @@ const websiteLd = {
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url.href} />
     <meta property="og:site_name" content="Emersoftware" />
-    <meta property="og:locale" content="es_CL" />
+    <meta property="og:locale" content={normalizedLang === 'en' ? 'en_US' : 'es_CL'} />
     <meta property="og:image" content="/social.jpg" />
+    {
+      supportedLocales.map((loc) => {
+        // Default locale (es) served at root, en at /en
+        const href =
+          loc === 'es'
+            ? currentPath.startsWith('/en')
+              ? currentPath.replace('/en', '') || '/'
+              : currentPath
+            : currentPath.startsWith('/en')
+              ? currentPath
+              : `/en${currentPath}`;
+        return <link rel="alternate" hreflang={loc} href={href} />;
+      })
+    }
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={currentPath.startsWith('/en') ? currentPath.replace('/en', '') || '/' : currentPath}
+    />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -81,7 +106,7 @@ const websiteLd = {
     <div class="fixed h-full w-full">
       <div class="h- bg absolute inset-0 w-full items-center px-5 py-24"></div>
     </div>
-    <Navbar />
+    <Navbar lang={normalizedLang} />
     <main class="pt-20 md:pt-24">
       <slot />
     </main>
