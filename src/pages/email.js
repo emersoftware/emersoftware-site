@@ -1,5 +1,9 @@
 export const POST = async ({ request }) => {
   try {
+    const commonHeaders = {
+      'Content-Type': 'application/json',
+      'X-Robots-Tag': 'noindex, nofollow',
+    };
     if (request.method !== 'POST') {
       console.error('❌ Method not allowed:', request.method);
       return new Response(
@@ -8,9 +12,7 @@ export const POST = async ({ request }) => {
         }),
         {
           status: 405,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: commonHeaders,
         }
       );
     }
@@ -46,9 +48,7 @@ export const POST = async ({ request }) => {
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: commonHeaders,
         }
       );
     }
@@ -62,9 +62,7 @@ export const POST = async ({ request }) => {
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: commonHeaders,
         }
       );
     }
@@ -83,9 +81,7 @@ export const POST = async ({ request }) => {
           }),
           {
             status: 500,
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: commonHeaders,
           }
         );
       }
@@ -115,9 +111,7 @@ export const POST = async ({ request }) => {
           }),
           {
             status: 400,
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: commonHeaders,
           }
         );
       }
@@ -130,9 +124,7 @@ export const POST = async ({ request }) => {
         }),
         {
           status: 500,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: commonHeaders,
         }
       );
     }
@@ -147,9 +139,7 @@ export const POST = async ({ request }) => {
         }),
         {
           status: 500,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: commonHeaders,
         }
       );
     }
@@ -180,9 +170,7 @@ export const POST = async ({ request }) => {
         }),
         {
           status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: commonHeaders,
         }
       );
     } else {
@@ -207,9 +195,7 @@ export const POST = async ({ request }) => {
         }),
         {
           status: 500,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: commonHeaders,
         }
       );
     }
@@ -258,9 +244,7 @@ export const POST = async ({ request }) => {
       }),
       {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: commonHeaders,
       }
     );
   }
