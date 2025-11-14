@@ -67,7 +67,7 @@ const es: Dictionary = {
     name: 'Emerson Salazar Rubilar',
     role: 'Ingeniero de Software',
     about:
-      'Me gustan todas las áreas del desarrollo de productos de software. Actualmente enfocado en diseñar y crear agentes y flujos de IA. Principalmente he trabajado en startups.',
+      'Me gustan todas las áreas del desarrollo de productos de software. Actualmente enfocado en diseñar y crear agentes y flujos de IA. Principalmente he trabajado en startups. Ofrezco consultorías sobre desarrollo de software e inteligencia artificial.',
     email: 'hola@emersoftware.cl',
   },
   sections: {
@@ -97,10 +97,17 @@ const es: Dictionary = {
   },
   experienceItems: [
     {
-      date: 'ago. 2025 - actualidad',
+      date: 'nov. 2024 - actualidad',
+      title: 'Xerply | Software Engineer',
+      description:
+        'Desarrollo de funcionalidades ERP basado en IA.',
+      techs: ['Langgraph', 'Langchain', 'React', 'Flask', 'Python', 'Typescript', 'AI'],
+    },
+    {
+      date: 'ago. 2024 - nov. 2024',
       title: 'Hoktus | Software Engineer',
       description:
-        '[NUEVO] Desarrollo de agentes conversacionales y automatización de procesos de reclutamiento con AI Agents.',
+        'Desarrollo de agentes conversacionales y automatización de procesos de reclutamiento con AI Agents.',
       techs: ['Langgraph', 'AI Agents', 'NextJS', 'Typescript', 'Python'],
     },
     {
@@ -136,7 +143,7 @@ const en: Dictionary = {
     name: 'Emerson Salazar Rubilar',
     role: 'Software Engineer',
     about:
-      'I enjoy all areas of software product development. Currently focused on designing and building AI agents and workflows. I have mostly worked in startups.',
+      'I enjoy all areas of software product development. Currently focused on designing and building AI agents and workflows. I have mostly worked in startups. I offer consulting services on software development and artificial intelligence.',
     email: 'hola@emersoftware.cl',
   },
   sections: {
@@ -166,9 +173,15 @@ const en: Dictionary = {
   },
   experienceItems: [
     {
-      date: 'Aug. 2025 - present',
+      date: 'Nov. 2024 - present',
+      title: 'Xerply | Software Engineer',
+      description: 'ERP functionalities development based on AI.',
+      techs: ['Langgraph', 'Langchain', 'React', 'Flask', 'Python', 'Typescript', 'AI'],
+    },
+    {
+      date: 'Aug. 2024 - Nov. 2024',
       title: 'Hoktus | Software Engineer',
-      description: '[NEW] Conversational agents and recruitment process automation with AI Agents.',
+      description: 'Conversational agents and recruitment process automation with AI Agents.',
       techs: ['Langgraph', 'AI Agents', 'NextJS', 'Typescript', 'Python'],
     },
     {
