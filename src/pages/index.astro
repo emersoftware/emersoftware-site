@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import GitHubIcon from '../components/icons/GitHubIcon.astro';
 import LinkedInIcon from '../components/icons/LinkedInIcon.astro';
@@ -11,6 +12,10 @@ import Projects from '../components/Projects.astro';
 import Contact from '../components/Contact.astro';
 import { getDictionary } from '../i18n/dictionaries';
 import { defaultLocale } from '../i18n/config';
+
+import heroDesktop from '../assets/hero-bg.jpeg';
+import heroMobile from '../assets/hero-bg-mobile.jpeg';
+import bannerImg from '../assets/banner.jpeg';
 
 const lang = defaultLocale;
 const t = getDictionary(lang);
@@ -25,8 +30,8 @@ const t = getDictionary(lang);
   >
     <!-- Background Image - Mobile -->
     <div class="absolute inset-0 z-0 md:hidden">
-      <img
-        src="/hero-bg-mobile.jpeg"
+      <Image
+        src={heroMobile}
         alt=""
         class="h-full w-full object-cover object-bottom"
         loading="eager"
@@ -34,8 +39,8 @@ const t = getDictionary(lang);
     </div>
     <!-- Background Image - Desktop -->
     <div class="absolute inset-0 z-0 hidden md:block">
-      <img
-        src="/hero-bg.jpeg"
+      <Image
+        src={heroDesktop}
         alt=""
         class="h-full w-full object-cover"
         loading="eager"
@@ -137,11 +142,12 @@ const t = getDictionary(lang);
 
     <!-- Banner entre secciones -->
     <div class="my-16">
-      <img
-        src="/banner.jpeg"
+      <Image
+        src={bannerImg}
         alt=""
         class="w-full h-auto object-cover"
         loading="lazy"
+        format="jpeg"
       />
     </div>
 

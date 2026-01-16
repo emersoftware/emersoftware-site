@@ -1,11 +1,13 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import Pill from './Pill.astro';
 import GitHubIcon from './icons/GitHubIcon.astro';
 
 interface Props {
   title: string;
   description: string;
-  image?: string;
+  image?: ImageMetadata;
   imageSize?: 'sm' | 'md';
   link?: string;
   repo?: string;
@@ -21,10 +23,12 @@ const sizeClass = imageSize === 'md' ? 'h-32 w-32' : 'h-16 w-16';
   <!-- Imagen del proyecto -->
   {image ? (
     <div class="flex h-44 items-center justify-center">
-      <img
+      <Image
         src={image}
         alt={title}
         class={`${sizeClass} object-contain transition-transform duration-300 group-hover:scale-110`}
+        loading="lazy"
+        format="jpeg"
       />
     </div>
   ) : (

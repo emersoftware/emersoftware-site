@@ -1,7 +1,12 @@
 ---
+import type { ImageMetadata } from 'astro';
 import ProjectCard from './ProjectCard.astro';
 import { getDictionary } from '../i18n/dictionaries';
 import { isSupportedLocale, defaultLocale } from '../i18n/config';
+
+import thestackImg from '../assets/thestack-mini.jpeg';
+import themisImg from '../assets/themis-mini.jpeg';
+import kapinImg from '../assets/kapin-mini.jpeg';
 
 interface Props {
   lang?: string;
@@ -10,6 +15,12 @@ interface Props {
 const { lang: rawLang = 'es' } = Astro.props as Props;
 const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
 const t = getDictionary(lang);
+
+const imageMap: Record<string, ImageMetadata> = {
+  '/thestack-mini.jpeg': thestackImg,
+  '/themis-mini.jpeg': themisImg,
+  '/kapin-mini.jpeg': kapinImg,
+};
 ---
 
 <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -17,7 +28,7 @@ const t = getDictionary(lang);
     <ProjectCard
       title={project.title}
       description={project.description}
-      image={project.image}
+      image={project.image ? imageMap[project.image] : undefined}
       imageSize={project.imageSize}
       link={project.link}
       repo={project.repo}

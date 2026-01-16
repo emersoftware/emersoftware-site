@@ -1,7 +1,10 @@
 ---
 // ContactForm component to handle the contact form functionality
+import { Image } from 'astro:assets';
 import { getDictionary } from '../i18n/dictionaries';
 import { isSupportedLocale, defaultLocale } from '../i18n/config';
+import catsImg from '../assets/cats.jpeg';
+
 interface Props {
   lang?: string;
 }
@@ -18,11 +21,12 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY || 'YOUR_SITE_KEY'
   <h3 class="text-left text-lg text-black lg:text-2xl">{t.contact.form.sendMeAMessage}</h3>
   <div class="flex">
     <div class="hidden w-1/2 items-center justify-start md:flex">
-      <img
-        src="/cats.jpeg"
+      <Image
+        src={catsImg}
         alt=""
         class="w-80 lg:w-96"
         loading="lazy"
+        format="jpeg"
       />
     </div>
     <div class="w-full md:w-1/2">
@@ -79,11 +83,12 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY || 'YOUR_SITE_KEY'
 
   <!-- Gatos - Mobile only -->
   <div class="mt-8 flex justify-center md:hidden">
-    <img
-      src="/cats.jpeg"
+    <Image
+      src={catsImg}
       alt=""
       class="w-64"
       loading="lazy"
+      format="jpeg"
     />
   </div>
 </form>
