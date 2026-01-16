@@ -16,15 +16,15 @@ const isSuccess = success === 'true';
         py-4
         px-8
         rounded-xl
-        border-2
+        border
         transition
-        flex 
+        flex
         hidden
         fade-in
         ${
           isSuccess
-            ? 'text-white bg-tangerine dark:bg-mint dark:text-black dark:border-mint'
-            : 'text-white bg-red border-white dark:bg-red dark:border-white justify-center'
+            ? 'text-white bg-green-500 border-green-500'
+            : 'text-white bg-red border-red justify-center'
         }
     `}
   {...Astro.props}

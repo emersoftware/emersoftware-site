@@ -1,74 +1,331 @@
 ---
-import DownloadFileIcon from './icons/DownloadFileIcon.astro';
 import { getDictionary } from '../i18n/dictionaries';
 import { isSupportedLocale, defaultLocale } from '../i18n/config';
+
 interface Props {
   lang?: string;
 }
+
 const { lang: rawLang = 'es' } = Astro.props as Props;
 const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
 const t = getDictionary(lang);
-const otherLang = lang === 'en' ? 'es' : 'en';
+
 const currentPath = Astro.url.pathname;
-let switchHref = '/en/';
-if (lang === 'en') {
-  // from /en/* -> remove /en
-  switchHref = currentPath.startsWith('/en') ? currentPath.replace('/en', '') || '/' : '/';
-} else {
-  // from root -> add /en
-  switchHref = currentPath.startsWith('/en') ? currentPath : `/en${currentPath}`;
-}
+const esHref = lang === 'en' ? (currentPath.startsWith('/en') ? currentPath.replace('/en', '') || '/' : '/') : currentPath;
+const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
 ---
 
-<nav id="navbar" class="fixed top-0 z-50 w-full transition-all duration-300">
+<nav id="navbar" class="navbar-hero fixed top-0 z-50 w-full transition-all duration-300">
   <div
     id="navbar-container"
-    class="mx-auto my-4 flex w-fit items-center justify-center transition-all duration-200 md:my-6"
+    class="navbar-expanded mx-auto flex items-center justify-between px-6 py-4 transition-all duration-300 md:px-12 lg:px-16"
   >
-    <ul class="text-md flex flex-row items-center space-x-4 md:space-x-8 lg:text-2xl">
-      <a
-        href={lang === 'en' ? `/en/#${t.sectionIds.home}` : `/#${t.sectionIds.home}`}
-        class="hover:underline">{t.navbar.home}</a
-      >
-      <a
-        href={lang === 'en' ? `/en/#${t.sectionIds.experience}` : `/#${t.sectionIds.experience}`}
-        class="hover:underline">{t.navbar.experience}</a
-      >
-      <a href={lang === 'en' ? `/en/#proyectos` : `/#proyectos`} class="hidden hover:underline"
-        >{t.navbar.projects}</a
-      >
+    <!-- LOGO - Izquierda -->
+    <a
+      href={lang === 'en' ? `/en/#${t.sectionIds.home}` : `/#${t.sectionIds.home}`}
+      id="navbar-logo"
+      class="font-serif text-xl transition-all duration-300 md:text-2xl"
+    >
+      emersoftware
+    </a>
+
+    <!-- NAVEGACION CENTRAL - Desktop -->
+    <ul id="navbar-links" class="hidden flex-row items-center space-x-6 text-sm md:flex md:space-x-8 md:text-base">
+      <li>
+        <a
+          href={lang === 'en' ? `/en/#${t.sectionIds.experience}` : `/#${t.sectionIds.experience}`}
+          class="nav-link"
+        >
+          {t.navbar.experience}
+        </a>
+      </li>
+      <li>
+        <a
+          href={lang === 'en' ? `/en/#${t.sectionIds.projects}` : `/#${t.sectionIds.projects}`}
+          class="nav-link"
+        >
+          {t.navbar.projects}
+        </a>
+      </li>
+    </ul>
+
+    <!-- ACCIONES - Derecha -->
+    <div id="navbar-actions" class="flex items-center space-x-4">
+      <!-- Dropdown de idioma -->
+      <div class="relative" id="lang-dropdown-container">
+        <button
+          id="lang-dropdown-btn"
+          class="flex items-center space-x-1 text-sm transition-colors hover:text-green-400"
+          aria-expanded="false"
+          aria-haspopup="true"
+        >
+          <span>{lang.toUpperCase()}</span>
+          <svg class="h-4 w-4 transition-transform duration-200" id="lang-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <!-- Dropdown menu -->
+        <div
+          id="lang-dropdown-menu"
+          class="absolute right-0 top-full mt-2 hidden min-w-[80px] overflow-hidden rounded-lg bg-white py-1 shadow-lg ring-1 ring-black/5"
+        >
+          <a
+            href={esHref}
+            class={`flex items-center justify-between px-4 py-2 text-sm transition-colors hover:bg-graphite-100 ${lang === 'es' ? 'text-green-500' : 'text-graphite-700'}`}
+          >
+            <span>ES</span>
+            {lang === 'es' && (
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            )}
+          </a>
+          <a
+            href={enHref}
+            class={`flex items-center justify-between px-4 py-2 text-sm transition-colors hover:bg-graphite-100 ${lang === 'en' ? 'text-green-500' : 'text-graphite-700'}`}
+          >
+            <span>EN</span>
+            {lang === 'en' && (
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            )}
+          </a>
+        </div>
+      </div>
+
+      <!-- Boton Contacto -->
       <a
         href={lang === 'en' ? `/en/#${t.sectionIds.contact}` : `/#${t.sectionIds.contact}`}
-        class="hover:underline">{t.navbar.contact}</a
+        id="contact-button"
+        class="contact-btn flex items-center gap-2 rounded-full bg-green-400 px-4 py-1.5 text-sm font-medium text-black transition-all hover:bg-green-300 md:px-5 md:py-2 md:text-base"
       >
-      <a href={switchHref} class="ml-2 rounded-full border px-3 py-1 hover:underline"
-        >{lang === 'en' ? 'ES' : 'EN'}</a
+        {t.navbar.contact}
+      </a>
+
+      <!-- Boton hamburguesa para mobile -->
+      <button
+        id="mobile-menu-button"
+        class="flex items-center justify-center p-2 md:hidden"
+        aria-label="Toggle menu"
       >
-    </ul>
+        <svg id="menu-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Menu Mobile -->
+  <div
+    id="mobile-menu"
+    class="hidden flex-col items-center space-y-4 bg-black/90 px-6 py-4 backdrop-blur-md md:hidden"
+  >
+    <a
+      href={lang === 'en' ? `/en/#${t.sectionIds.home}` : `/#${t.sectionIds.home}`}
+      class="nav-link-mobile w-full text-center text-white"
+    >
+      {t.navbar.home}
+    </a>
+    <a
+      href={lang === 'en' ? `/en/#${t.sectionIds.experience}` : `/#${t.sectionIds.experience}`}
+      class="nav-link-mobile w-full text-center text-white"
+    >
+      {t.navbar.experience}
+    </a>
+    <a
+      href={lang === 'en' ? `/en/#${t.sectionIds.projects}` : `/#${t.sectionIds.projects}`}
+      class="nav-link-mobile w-full text-center text-white"
+    >
+      {t.navbar.projects}
+    </a>
   </div>
 </nav>
 
 <style>
-  /* Clases para las animaciones del navbar */
-  .navbar-scrolled {
-    border: 1px solid rgba(209, 213, 219, 0.8);
-    border-radius: 9999px;
-    padding: 0.5rem 1.5rem;
-    backdrop-filter: blur(8px);
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* Estado hero (sobre imagen de fondo) */
+  .navbar-hero #navbar-logo,
+  .navbar-hero .nav-link,
+  .navbar-hero #lang-dropdown-btn,
+  .navbar-hero #menu-icon,
+  .navbar-hero #close-icon {
+    color: #ffffff;
   }
 
-  :global(.dark) .navbar-scrolled {
-    border-color: rgba(55, 65, 81, 0.8);
+  /* Boton contacto - estado hero (blanco) */
+  .navbar-hero .contact-btn {
+    background-color: #ffffff;
+    color: #000000;
   }
 
-  .navbar-top {
-    border: 0;
+  .navbar-hero .contact-btn:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Boton contacto - estado compacto (green, integrado con la píldora) */
+  .navbar-compact .contact-btn {
+    background-color: #48BB78 !important;
+    color: #FFFFFF !important;
+    border-radius: 9999px !important;
+    padding: 0.5rem 1.25rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  .navbar-compact .contact-btn:hover {
+    background-color: #68D391 !important;
+  }
+
+  /* Ocultar selector de idioma en modo compacto */
+  .navbar-compact #lang-dropdown-container {
+    display: none;
+  }
+
+  /* Estado compacto siempre tiene texto oscuro (tiene fondo blanco) */
+  .navbar-compact #navbar-logo,
+  .navbar-compact .nav-link {
+    color: #000000 !important;
+  }
+
+  /* Estado normal (después del hero) */
+  .navbar-scrolled #navbar-logo,
+  .navbar-scrolled .nav-link,
+  .navbar-scrolled #lang-dropdown-btn,
+  .navbar-scrolled #menu-icon,
+  .navbar-scrolled #close-icon {
+    color: #000000;
+  }
+
+  .navbar-scrolled .contact-btn {
+    color: #000000;
+    border-color: transparent;
+    background-color: #ffffff;
+    backdrop-filter: none;
+  }
+
+  .navbar-scrolled .contact-btn:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Estado expandido (top de la pagina) */
+  .navbar-expanded {
+    width: 100%;
+    max-width: 100%;
     background-color: transparent;
+    border: none;
+    border-radius: 0;
     backdrop-filter: none;
     box-shadow: none;
+  }
+
+  /* Estado compacto (con scroll) */
+  .navbar-compact {
+    width: fit-content;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1rem;
+    padding: 0.5rem 0.5rem 0.5rem 1.5rem !important;
+    gap: 1.5rem;
+    border: 1px solid rgba(209, 213, 219, 0.6);
+    border-radius: 9999px;
+    backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Efecto underline en hover para enlaces */
+  .nav-link {
+    position: relative;
+    padding-bottom: 2px;
+    transition: color 0.2s ease;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: #48BB78;
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  .navbar-hero .nav-link:hover {
+    color: #48BB78;
+  }
+
+  .navbar-scrolled .nav-link:hover {
+    color: #38A169;
+  }
+
+  /* Enlaces mobile */
+  .nav-link-mobile {
+    padding: 0.75rem 0;
+    font-size: 1.125rem;
+    transition: color 0.2s ease;
+  }
+
+  .nav-link-mobile:hover {
+    color: #48BB78;
+  }
+
+  /* Dropdown de idioma */
+  #lang-dropdown-menu {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+  }
+
+  #lang-dropdown-menu.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  #lang-chevron.rotate {
+    transform: rotate(180deg);
+  }
+
+  /* Transiciones para elementos */
+  #navbar-logo,
+  #navbar-links,
+  #navbar-actions,
+  #contact-button,
+  .contact-btn {
+    transition: all 0.3s ease;
+  }
+
+  /* Logo compacto */
+  .logo-compact {
+    font-size: 1.125rem !important;
+  }
+
+  /* Responsive mobile */
+  @media (max-width: 767px) {
+    .navbar-compact {
+      width: calc(100% - 2rem);
+      max-width: calc(100% - 2rem);
+      margin-top: 0.5rem;
+      padding: 0.5rem 0.375rem 0.5rem 1rem !important;
+      gap: 1rem;
+    }
+  }
+
+  /* Desktop */
+  @media (min-width: 1024px) {
+    .navbar-compact {
+      max-width: 700px;
+    }
   }
 </style>
 
@@ -76,81 +333,161 @@ if (lang === 'en') {
   document.addEventListener('DOMContentLoaded', () => {
     const navbar = document.getElementById('navbar');
     const navbarContainer = document.getElementById('navbar-container');
+    const navbarLogo = document.getElementById('navbar-logo');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const closeIcon = document.getElementById('close-icon');
+    const heroSection = document.querySelector('.hero-section');
+
+    // Dropdown de idioma
+    const langDropdownBtn = document.getElementById('lang-dropdown-btn');
+    const langDropdownMenu = document.getElementById('lang-dropdown-menu');
+    const langChevron = document.getElementById('lang-chevron');
+
     let lastScrollY = window.scrollY;
     let ticking = false;
+    let isMenuOpen = false;
+    let isLangDropdownOpen = false;
 
-    // Función para actualizar la apariencia del navbar
+    const SCROLL_DELTA = 5;
+
+    // Calcular el threshold basado en el hero section
+    const getHeroThreshold = () => {
+      if (heroSection) {
+        return heroSection.getBoundingClientRect().height - 100;
+      }
+      return 80;
+    };
+
     const updateNavbar = () => {
-      // Detectar si estamos en la parte superior
-      const isTop = window.scrollY < 50;
-      // Detectar dirección del scroll
-      const scrollingDown = window.scrollY > lastScrollY;
+      const currentScrollY = window.scrollY;
+      const heroThreshold = getHeroThreshold();
+      const isInHero = currentScrollY < heroThreshold;
+      const scrollingDown = currentScrollY > lastScrollY + SCROLL_DELTA;
+      const scrollingUp = currentScrollY < lastScrollY - SCROLL_DELTA;
 
-      // Actualizar posición y apariencia del navbar
-      if (isTop) {
-        // En la parte superior: sin borde, visible con animación fade-out
-        navbar.classList.remove('-translate-y-full');
-
-        // Aplicar una transición más suave y rápida al llegar al top
-        if (navbarContainer.classList.contains('navbar-scrolled')) {
-          // Primero quitamos las clases para fade out rápido
-          navbarContainer.classList.remove('navbar-scrolled');
-          navbarContainer.classList.add('navbar-top');
-
-          // Asegurar que las clases individuales también se eliminan
-          navbarContainer.classList.remove(
-            'border',
-            'border-gray-200',
-            'dark:border-gray-800',
-            'rounded-full',
-            'px-6',
-            'py-2',
-            'bg-white/80',
-            'dark:bg-black/80',
-            'backdrop-blur-md'
-          );
-        }
+      // Manejar el estado hero vs scrolled
+      if (isInHero) {
+        navbar?.classList.add('navbar-hero');
+        navbar?.classList.remove('navbar-scrolled');
       } else {
-        // No en la parte superior: aplicar estilos
-        if (scrollingDown) {
-          // Scroll hacia abajo: ocultar navbar
-          navbar.classList.add('-translate-y-full');
-        } else {
-          // Scroll hacia arriba: mostrar navbar con bordes
-          navbar.classList.remove('-translate-y-full');
-
-          // Aplicar la clase de estilo condensada
-          navbarContainer.classList.add('navbar-scrolled');
-          navbarContainer.classList.remove('navbar-top');
-
-          // Mantener las clases individuales para compatibilidad
-          navbarContainer.classList.add(
-            'border',
-            'border-gray-200',
-            'dark:border-gray-800',
-            'rounded-full',
-            'px-6',
-            'py-2',
-            'bg-white/80',
-            'dark:bg-black/80',
-            'backdrop-blur-md'
-          );
-        }
+        navbar?.classList.remove('navbar-hero');
+        navbar?.classList.add('navbar-scrolled');
       }
 
-      lastScrollY = window.scrollY;
+      // Manejar visibilidad y estado compacto
+      if (currentScrollY < 80) {
+        navbar?.classList.remove('-translate-y-full');
+        navbarContainer?.classList.remove('navbar-compact');
+        navbarContainer?.classList.add('navbar-expanded');
+        navbarLogo?.classList.remove('logo-compact');
+      } else if (scrollingDown) {
+        navbar?.classList.add('-translate-y-full');
+        if (isMenuOpen) closeMobileMenu();
+        if (isLangDropdownOpen) closeLangDropdown();
+      } else if (scrollingUp) {
+        navbar?.classList.remove('-translate-y-full');
+        navbarContainer?.classList.remove('navbar-expanded');
+        navbarContainer?.classList.add('navbar-compact');
+        navbarLogo?.classList.add('logo-compact');
+      }
+
+      if (Math.abs(currentScrollY - lastScrollY) > SCROLL_DELTA) {
+        lastScrollY = currentScrollY;
+      }
       ticking = false;
     };
 
-    // Listener para el evento de scroll con throttling
+    // Mobile menu functions
+    const openMobileMenu = () => {
+      mobileMenu?.classList.remove('hidden');
+      mobileMenu?.classList.add('flex');
+      menuIcon?.classList.add('hidden');
+      closeIcon?.classList.remove('hidden');
+      isMenuOpen = true;
+    };
+
+    const closeMobileMenu = () => {
+      mobileMenu?.classList.add('hidden');
+      mobileMenu?.classList.remove('flex');
+      menuIcon?.classList.remove('hidden');
+      closeIcon?.classList.add('hidden');
+      isMenuOpen = false;
+    };
+
+    const toggleMobileMenu = () => {
+      isMenuOpen ? closeMobileMenu() : openMobileMenu();
+    };
+
+    // Language dropdown functions
+    const openLangDropdown = () => {
+      langDropdownMenu?.classList.remove('hidden');
+      setTimeout(() => {
+        langDropdownMenu?.classList.add('show');
+        langChevron?.classList.add('rotate');
+      }, 10);
+      langDropdownBtn?.setAttribute('aria-expanded', 'true');
+      isLangDropdownOpen = true;
+    };
+
+    const closeLangDropdown = () => {
+      langDropdownMenu?.classList.remove('show');
+      langChevron?.classList.remove('rotate');
+      langDropdownBtn?.setAttribute('aria-expanded', 'false');
+      setTimeout(() => {
+        langDropdownMenu?.classList.add('hidden');
+      }, 200);
+      isLangDropdownOpen = false;
+    };
+
+    const toggleLangDropdown = () => {
+      isLangDropdownOpen ? closeLangDropdown() : openLangDropdown();
+    };
+
+    // Event listeners
     window.addEventListener('scroll', () => {
       if (!ticking) {
         window.requestAnimationFrame(updateNavbar);
         ticking = true;
       }
+    }, { passive: true });
+
+    mobileMenuButton?.addEventListener('click', toggleMobileMenu);
+
+    const mobileLinks = mobileMenu?.querySelectorAll('a');
+    mobileLinks?.forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
     });
 
-    // Inicializar estado del navbar
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768 && isMenuOpen) {
+        closeMobileMenu();
+      }
+    });
+
+    // Language dropdown events
+    langDropdownBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleLangDropdown();
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const target = e.target as Node;
+      const container = document.getElementById('lang-dropdown-container');
+      if (container && !container.contains(target) && isLangDropdownOpen) {
+        closeLangDropdown();
+      }
+    });
+
+    // Close dropdown on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isLangDropdownOpen) {
+        closeLangDropdown();
+      }
+    });
+
     updateNavbar();
   });
 </script>

@@ -1,0 +1,92 @@
+---
+import Pill from './Pill.astro';
+import GitHubIcon from './icons/GitHubIcon.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  imageSize?: 'sm' | 'md';
+  link?: string;
+  repo?: string;
+  demo?: string;
+  techs: string[];
+}
+
+const { title, description, image, imageSize = 'sm', link, repo, demo, techs } = Astro.props;
+const sizeClass = imageSize === 'md' ? 'h-32 w-32' : 'h-16 w-16';
+---
+
+<article class="group flex flex-col overflow-hidden rounded-xl bg-white">
+  <!-- Imagen del proyecto -->
+  {image ? (
+    <div class="flex h-44 items-center justify-center">
+      <img
+        src={image}
+        alt={title}
+        class={`${sizeClass} object-contain transition-transform duration-300 group-hover:scale-110`}
+      />
+    </div>
+  ) : (
+    <div class="flex h-44 items-center justify-center">
+      <span class="text-sm text-graphite-400">Sin imagen</span>
+    </div>
+  )}
+
+  <!-- Contenido -->
+  <div class="flex flex-1 flex-col p-5">
+    <h3 class="text-lg font-medium text-black">{title}</h3>
+    <p class="mt-2 flex-1 text-sm text-graphite-600">{description}</p>
+
+    <!-- Tecnologias -->
+    {techs.length > 0 && (
+      <ul class="mt-4 flex flex-wrap gap-2">
+        {techs.map((tech) => (
+          <Pill>{tech}</Pill>
+        ))}
+      </ul>
+    )}
+
+    <!-- Links -->
+    <div class="mt-4 flex flex-wrap gap-4">
+      {link && (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center text-sm text-green-600 transition-colors hover:text-green-700"
+        >
+          Ver proyecto
+          <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      )}
+      {repo && (
+        <a
+          href={repo}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center text-sm text-graphite-600 transition-colors hover:text-graphite-800"
+        >
+          <GitHubIcon class="mr-1 h-4 w-4" />
+          Ver repo
+        </a>
+      )}
+      {demo && (
+        <a
+          href={demo}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center text-sm text-green-600 transition-colors hover:text-green-700"
+        >
+          Ver demo
+          <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </a>
+      )}
+    </div>
+  </div>
+</article>

@@ -9,13 +9,22 @@ interface Props {
 const { lang: rawLang = 'es' } = Astro.props as Props;
 const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
 const t = getDictionary(lang);
+
+const initialCount = 3;
+const hasMore = t.experienceItems.length > initialCount;
 ---
 
-<ol class="relative mt-8 space-y-12 border-s-2 border-black dark:border-white">
+<ol id="experience-list" class="relative mt-12 space-y-12 border-s-2 border-black">
   {
-    t.experienceItems.map((item) => (
-      <li class="ms-4">
-        <ExperienceItem date={item.date} title={item.title} description={item.description}>
+    t.experienceItems.map((item, index) => (
+      <li class={`relative ms-4 experience-item ${index >= initialCount ? 'hidden' : ''}`} data-index={index}>
+        <ExperienceItem
+          company={item.company}
+          role={item.role}
+          date={item.date}
+          product={item.product}
+          description={item.description}
+        >
           {item.techs.map((tech) => (
             <Pill>{tech}</Pill>
           ))}
@@ -24,3 +33,47 @@ const t = getDictionary(lang);
     ))
   }
 </ol>
+
+{hasMore && (
+  <div class="mt-8 flex justify-end">
+    <button
+      id="toggle-experience"
+      class="rounded-full border border-graphite-300 bg-white px-6 py-2 text-sm text-graphite-700 transition-colors hover:border-green-500 hover:text-green-500"
+      data-show-text={lang === 'en' ? 'Show more' : 'Ver más'}
+      data-hide-text={lang === 'en' ? 'Show less' : 'Ver menos'}
+    >
+      {lang === 'en' ? 'Show more' : 'Ver más'}
+    </button>
+  </div>
+)}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggle-experience');
+    const items = document.querySelectorAll('.experience-item');
+
+    if (!toggleBtn) return;
+
+    let isExpanded = false;
+    const showText = toggleBtn.dataset.showText;
+    const hideText = toggleBtn.dataset.hideText;
+
+    toggleBtn.addEventListener('click', () => {
+      isExpanded = !isExpanded;
+
+      items.forEach((item, index) => {
+        if (index >= 3) {
+          if (isExpanded) {
+            item.classList.remove('hidden');
+            item.classList.add('fade-in');
+          } else {
+            item.classList.add('hidden');
+            item.classList.remove('fade-in');
+          }
+        }
+      });
+
+      toggleBtn.textContent = isExpanded ? hideText : showText;
+    });
+  });
+</script>

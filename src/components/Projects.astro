@@ -1,0 +1,28 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import { getDictionary } from '../i18n/dictionaries';
+import { isSupportedLocale, defaultLocale } from '../i18n/config';
+
+interface Props {
+  lang?: string;
+}
+
+const { lang: rawLang = 'es' } = Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
+const t = getDictionary(lang);
+---
+
+<div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+  {t.projectItems.map((project) => (
+    <ProjectCard
+      title={project.title}
+      description={project.description}
+      image={project.image}
+      imageSize={project.imageSize}
+      link={project.link}
+      repo={project.repo}
+      demo={project.demo}
+      techs={project.techs}
+    />
+  ))}
+</div>
