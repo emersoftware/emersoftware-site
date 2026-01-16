@@ -85,7 +85,7 @@ export type Dictionary = {
 const es: Dictionary = {
   metaTitle: 'Emersoftware - Emerson Salazar Rubilar',
   metaDescription:
-    'Emerson Salazar Rubilar (emersoftware) Desarrollador Web Fullstack IA Python de Concepción, Chile. Haz tu proyecto web con este programador con tecnologías como JavaScript, NextJS, ReactJS, Astro o Python. Desarrolla landing pages, ecommerce o aplicaciones basadas en inteligencia artificial.',
+    'Emerson Salazar Rubilar (emersoftware) Ingeniero de Software con foco en inteligencia artificial de Concepción, Chile. Trabajemos juntos en tu próximo proyecto.',
   navbar: {
     home: 'Inicio',
     experience: 'Experiencia',
@@ -193,7 +193,8 @@ const es: Dictionary = {
   projectItems: [
     {
       title: 'The Stack',
-      description: 'Hacker News orientado a Latinoamérica. Un índice de contenido tech para centralizar contenido humano, original y de calidad: side projects, blogs, noticias del ecosistema, reflexiones técnicas y meetups. Save the internet.',
+      description:
+        'Hacker News orientado a Latinoamérica. Un índice de contenido tech para centralizar contenido humano, original y de calidad: side projects, blogs, noticias del ecosistema, reflexiones técnicas y meetups. Save the internet.',
       image: '/thestack-mini.jpeg',
       link: 'https://thestack.cl',
       repo: 'https://github.com/emersoftware/thestack',
@@ -201,7 +202,8 @@ const es: Dictionary = {
     },
     {
       title: 'Themis',
-      description: 'Auditoría automatizada de licitaciones públicas con IA. Analiza licitaciones de Mercado Público para detectar incumplimientos normativos, patrones sospechosos y irregularidades. Primer lugar en el track Legacy de Platanus Hack 25.',
+      description:
+        'Auditoría automatizada de licitaciones públicas con IA. Analiza licitaciones de Mercado Público para detectar incumplimientos normativos, patrones sospechosos y irregularidades. Primer lugar en el track Legacy de Platanus Hack 25.',
       image: '/themis-mini.jpeg',
       imageSize: 'md',
       link: 'https://themis.lat',
@@ -210,7 +212,8 @@ const es: Dictionary = {
     },
     {
       title: 'Kapin',
-      description: 'Agente de auditoría de métricas de producto para repositorios de software. Analiza repositorios y entrega métricas relevantes, consultas para medirlas y la base técnica para persistir los datos. Reduce la fricción entre desarrollo y medición.',
+      description:
+        'Agente de auditoría de métricas de producto para repositorios de software. Analiza repositorios y entrega métricas relevantes, consultas para medirlas y la base técnica para persistir los datos. Reduce la fricción entre desarrollo y medición.',
       image: '/kapin-mini.jpeg',
       imageSize: 'md',
       repo: 'https://github.com/emersoftware/kapin',
@@ -223,7 +226,7 @@ const es: Dictionary = {
 const en: Dictionary = {
   metaTitle: 'Emersoftware - Emerson Salazar Rubilar',
   metaDescription:
-    'Emerson Salazar Rubilar (emersoftware) Fullstack Web Developer & AI Python from Concepción, Chile. Build your web project with technologies like JavaScript, NextJS, ReactJS, Astro or Python. Landing pages, ecommerce, and AI-based applications.',
+    "Emerson Salazar Rubilar (emersoftware) Software Engineer with a focus on artificial intelligence from Concepción, Chile. Let's work together on your next project.",
   navbar: {
     home: 'Home',
     experience: 'Experience',
@@ -331,7 +334,8 @@ const en: Dictionary = {
   projectItems: [
     {
       title: 'The Stack',
-      description: 'Hacker News for Latin America. A tech content index to centralize human, original, and quality content: side projects, blogs, ecosystem news, technical reflections, and meetups. Save the internet.',
+      description:
+        'Hacker News for Latin America. A tech content index to centralize human, original, and quality content: side projects, blogs, ecosystem news, technical reflections, and meetups. Save the internet.',
       image: '/thestack-mini.jpeg',
       link: 'https://thestack.cl',
       repo: 'https://github.com/emersoftware/thestack',
@@ -339,7 +343,8 @@ const en: Dictionary = {
     },
     {
       title: 'Themis',
-      description: 'AI-powered automated audit of public tenders. Analyzes tenders from Mercado Público to detect regulatory violations, suspicious patterns, and irregularities. First place in the Legacy track at Platanus Hack 25.',
+      description:
+        'AI-powered automated audit of public tenders. Analyzes tenders from Mercado Público to detect regulatory violations, suspicious patterns, and irregularities. First place in the Legacy track at Platanus Hack 25.',
       image: '/themis-mini.jpeg',
       imageSize: 'md',
       link: 'https://themis.lat',
@@ -348,7 +353,8 @@ const en: Dictionary = {
     },
     {
       title: 'Kapin',
-      description: 'Product metrics audit agent for software repositories. Analyzes repositories and delivers relevant metrics, queries to measure them, and the technical foundation to persist data. Reduces friction between development and measurement.',
+      description:
+        'Product metrics audit agent for software repositories. Analyzes repositories and delivers relevant metrics, queries to measure them, and the technical foundation to persist data. Reduces friction between development and measurement.',
       image: '/kapin-mini.jpeg',
       imageSize: 'md',
       repo: 'https://github.com/emersoftware/kapin',
