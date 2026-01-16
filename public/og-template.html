@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OG Image Template</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .og-container {
+      position: relative;
+      width: 1200px;
+      height: 630px;
+    }
+
+    .bg-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Gradient overlay for better text readability */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.65) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        rgba(0, 0, 0, 0.1) 100%
+      );
+    }
+
+    .content {
+      position: relative;
+      z-index: 10;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 80px;
+      max-width: 750px;
+    }
+
+    .brand {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+    }
+
+    .name {
+      font-family: 'EB Garamond', serif;
+      font-size: 72px;
+      font-weight: 500;
+      color: white;
+      letter-spacing: -3px;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+
+    .role {
+      font-family: 'Inter', sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 28px;
+    }
+
+    .about {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.5;
+      max-width: 580px;
+    }
+
+    /* Subtle decorative element */
+    .accent-line {
+      width: 60px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.5);
+      margin-bottom: 32px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="og-container">
+    <img src="hero-bg.jpeg" alt="" class="bg-image">
+    <div class="overlay"></div>
+    <div class="content">
+      <div class="brand">emersoftware</div>
+      <h1 class="name">Emerson Salazar Rubilar</h1>
+      <p class="role">Ingeniero de Software</p>
+      <div class="accent-line"></div>
+      <p class="about">Construyo productos de software con foco en inteligencia artificial. Disponible para consultoría en desarrollo y agentes de IA.</p>
+    </div>
+  </div>
+</body>
+</html>
