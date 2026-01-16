@@ -1,70 +1,153 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ComputerImg from '../components/icons/ComputerImg.astro';
-import PillAnchor from '../components/PillAnchor.astro';
-import PillButton from '../components/PillButton.astro';
 import GitHubIcon from '../components/icons/GitHubIcon.astro';
 import LinkedInIcon from '../components/icons/LinkedInIcon.astro';
 import Mail from '../components/icons/MailIcon.astro';
 import Copy from '../components/icons/CopyIcon.astro';
 import CopyCheck from '../components/icons/CopyCheckIcon.astro';
+import GitHubLatestCommit from '../components/GitHubLatestCommit.astro';
 import Experience from '../components/Experience.astro';
+import Projects from '../components/Projects.astro';
 import Contact from '../components/Contact.astro';
 import { getDictionary } from '../i18n/dictionaries';
 import { defaultLocale } from '../i18n/config';
 
-const lang = defaultLocale; // pathless default locale at root
+const lang = defaultLocale;
 const t = getDictionary(lang);
 ---
 
 <Layout title={t.metaTitle} description={t.metaDescription} lang={lang}>
-  <main class="mx-4 md:mx-auto md:w-3/5 lg:w-1/2">
-    <section
-      class="flex flex-col items-center justify-center"
-      id={t.sectionIds.home}
-      data-section={t.sectionIds.home}
-    >
-      <ComputerImg class="fade-in mx-auto h-auto w-1/2 text-forest lg:w-1/3 dark:text-white" />
+  <!-- Hero Section - Full Screen -->
+  <section
+    class="hero-section relative -mt-20 flex h-screen flex-col justify-start pt-32 md:-mt-24 md:justify-end md:pt-0"
+    id={t.sectionIds.home}
+    data-section={t.sectionIds.home}
+  >
+    <!-- Background Image - Mobile -->
+    <div class="absolute inset-0 z-0 md:hidden">
+      <img
+        src="/hero-bg-mobile.jpeg"
+        alt=""
+        class="h-full w-full object-cover object-bottom"
+        loading="eager"
+      />
+    </div>
+    <!-- Background Image - Desktop -->
+    <div class="absolute inset-0 z-0 hidden md:block">
+      <img
+        src="/hero-bg.jpeg"
+        alt=""
+        class="h-full w-full object-cover"
+        loading="eager"
+      />
+    </div>
 
-      <h2 class="title fade-in-delay-100 mt-8 text-center text-6xl md:mt-10 lg:text-8xl">
-        {t.hero.brand}
-      </h2>
+    <!-- Content - Text -->
+    <div class="relative z-10 px-6 md:mb-24 md:px-12 lg:mb-32 lg:px-16">
+      <div class="max-w-2xl">
+        <!-- GitHub Commit - Desktop: arriba del nombre -->
+        <GitHubLatestCommit lang={lang} class="mb-4 hidden md:flex" />
 
-      <h1
-        class="fade-in-delay-200 mr-4 mt-4 flex w-full flex-col justify-center space-x-2 text-center sm:mt-10 md:mt-12 md:flex-row lg:mt-16"
+        <h1 class="title fade-in text-4xl text-white md:text-5xl lg:text-7xl">
+          {t.hero.name}
+        </h1>
+
+        <p class="fade-in-delay-100 mt-3 text-lg text-white/80 md:text-xl lg:text-2xl">
+          {t.hero.role}
+        </p>
+
+        <p class="fade-in-delay-200 mt-6 max-w-lg text-base text-white/70 md:text-lg">
+          {t.hero.about}
+        </p>
+
+        <!-- GitHub Commit - Mobile: debajo del about -->
+        <GitHubLatestCommit lang={lang} class="mt-4 flex md:hidden" />
+
+        <!-- Botones desktop -->
+        <nav class="fade-in-delay-300 mt-8 hidden flex-wrap gap-3 md:flex">
+          <a
+            href="https://github.com/emersoftware"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hero-pill flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-base text-white backdrop-blur-md transition-all hover:bg-white/20"
+          >
+            <GitHubIcon class="size-5" />
+            GitHub
+          </a>
+          <a
+            href="https://www.linkedin.com/in/emerson-salazar-rubilar"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hero-pill flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-base text-white backdrop-blur-md transition-all hover:bg-white/20"
+          >
+            <LinkedInIcon class="size-5" />
+            LinkedIn
+          </a>
+          <button
+            id="emailButtonDesktop"
+            class="hero-pill flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-base text-white backdrop-blur-md transition-all hover:bg-white/20"
+          >
+            <Mail class="size-5" />
+            {t.hero.email}
+            <Copy id="copyEmailDesktop" class="size-5" />
+            <CopyCheck id="copyEmailCheckDesktop" class="hidden size-5" />
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Botones mobile - Fixed bottom -->
+    <nav class="fade-in-delay-300 absolute bottom-8 left-0 right-0 z-10 flex justify-center gap-2 px-4 md:hidden">
+      <a
+        href="https://github.com/emersoftware"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hero-pill flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-2.5 text-sm text-white backdrop-blur-md transition-all hover:bg-black/50"
       >
-        <p class="whitespace-nowrap text-2xl lg:text-[36px]">{t.hero.name}</p>
-        <p class="hidden text-2xl md:inline-block lg:text-[36px]">✹</p>
-        <p class="whitespace-nowrap text-xl md:text-2xl lg:text-[36px]">{t.hero.role}</p>
-      </h1>
-
-      <p class="text-md fade-in-delay-300 mt-4 text-balance text-center md:mt-8 lg:text-2xl">
-        {t.hero.about}
-      </p>
-
-      <nav
-        class="fade-in-delay-400 mt-4 flex w-fit flex-wrap justify-center gap-x-2 gap-y-2 md:mt-8 md:flex-nowrap md:gap-x-3 lg:gap-x-6"
+        <GitHubIcon class="size-4" />
+        github
+      </a>
+      <a
+        href="https://www.linkedin.com/in/emerson-salazar-rubilar"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hero-pill flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-2.5 text-sm text-white backdrop-blur-md transition-all hover:bg-black/50"
       >
-        <PillAnchor href="https://github.com/emersoftware">
-          <GitHubIcon class="size-4 lg:size-6" />
-          GitHub
-        </PillAnchor>
-        <PillAnchor href="https://www.linkedin.com/in/emerson-salazar-rubilar">
-          <LinkedInIcon class="size-4 lg:size-6" />
-          LinkedIn
-        </PillAnchor>
-        <PillButton id="emailButton" class="">
-          <Mail class="size-6 lg:size-8" />
-          {t.hero.email}
-          <Copy id="copyEmail" class="size-6 lg:size-8" />
-          <CopyCheck id="copyEmailCheck" class="hidden size-6 lg:size-8" />
-        </PillButton>
-      </nav>
-    </section>
+        <LinkedInIcon class="size-4" />
+        linkedin
+      </a>
+      <button
+        id="emailButtonMobile"
+        class="hero-pill flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-2.5 text-sm text-white backdrop-blur-md transition-all hover:bg-black/50"
+      >
+        <Mail class="size-4" />
+        copiar email
+        <CopyCheck id="copyEmailCheckMobile" class="hidden size-4" />
+      </button>
+    </nav>
+
+  </section>
+
+  <main class="mx-4 md:mx-auto md:w-4/5 lg:w-3/4 xl:w-2/3">
 
     <section class="slide-up" id={t.sectionIds.experience} data-section={t.sectionIds.experience}>
-      <h2 class="title mt-16 text-4xl md:mt-20 lg:mt-24 lg:text-6xl">{t.sections.experience}</h2>
+      <h2 class="title mt-16 text-4xl text-black md:mt-20 lg:mt-24 lg:text-6xl">{t.sections.experience}</h2>
       <Experience lang={lang} />
+    </section>
+
+    <!-- Banner entre secciones -->
+    <div class="my-16">
+      <img
+        src="/banner.jpeg"
+        alt=""
+        class="w-full h-auto object-cover"
+        loading="lazy"
+      />
+    </div>
+
+    <section class="slide-up-delay-100" id={t.sectionIds.projects} data-section={t.sectionIds.projects}>
+      <h2 class="title text-4xl text-black lg:text-6xl">{t.sections.projects}</h2>
+      <Projects lang={lang} />
     </section>
 
     <section
@@ -72,25 +155,32 @@ const t = getDictionary(lang);
       id={t.sectionIds.contact}
       data-section={t.sectionIds.contact}
     >
-      <h2 class="title mt-16 text-4xl md:mt-20 lg:mt-24 lg:text-6xl">{t.sections.contact}</h2>
+      <h2 class="title mt-16 text-4xl text-black md:mt-20 lg:mt-24 lg:text-6xl">{t.sections.contact}</h2>
       <Contact lang={lang} />
     </section>
   </main>
 </Layout>
 
 <script define:vars={{ email: t.hero.email }}>
-  const button = document.querySelector('#emailButton');
-  const copyEmail = document.querySelector('#copyEmail');
-  const copyEmailCheck = document.querySelector('#copyEmailCheck');
+  function setupEmailButton(buttonId, copyId, checkId) {
+    const button = document.querySelector(buttonId);
+    const copyIcon = document.querySelector(copyId);
+    const checkIcon = document.querySelector(checkId);
 
-  button.addEventListener('click', () => {
-    navigator.clipboard.writeText(email).then(() => {
-      copyEmail.classList.add('hidden');
-      copyEmailCheck.classList.remove('hidden');
-      setTimeout(() => {
-        copyEmail.classList.remove('hidden');
-        copyEmailCheck.classList.add('hidden');
-      }, 2000);
-    });
-  });
+    if (button && copyIcon && checkIcon) {
+      button.addEventListener('click', () => {
+        navigator.clipboard.writeText(email).then(() => {
+          copyIcon.classList.add('hidden');
+          checkIcon.classList.remove('hidden');
+          setTimeout(() => {
+            copyIcon.classList.remove('hidden');
+            checkIcon.classList.add('hidden');
+          }, 2000);
+        });
+      });
+    }
+  }
+
+  setupEmailButton('#emailButtonDesktop', '#copyEmailDesktop', '#copyEmailCheckDesktop');
+  setupEmailButton('#emailButtonMobile', '#copyEmailMobile', '#copyEmailCheckMobile');
 </script>

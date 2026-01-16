@@ -1,22 +1,48 @@
 ---
 interface Props {
-  title: string;
-  description: string;
-  link?: string;
+  company: string;
+  role: string;
   date: string;
+  product: string;
+  description: string;
 }
 
-const { title, description, link, date } = Astro.props;
+const { company, role, date, product, description } = Astro.props;
 ---
 
-<div class="absolute -start-4 mt-2.5 h-0 w-8 border border-black dark:border-white"></div>
-<h3 class="ml-4 text-xl lg:text-3xl">
-  {title}
-</h3>
-<time class="ml-4 mt-4 text-sm leading-none lg:text-xl">{date}</time>
-<p class="ml-4 mt-4 text-pretty lg:text-2xl">
-  {description}
-</p>
-<ul class="ml-3 mt-3 flex flex-row flex-wrap gap-2 md:ml-4 lg:mt-4 lg:gap-4">
-  <slot />
-</ul>
+<!-- Línea horizontal del timeline -->
+<div
+  class="absolute -start-[1.70rem] top-[0.9rem] h-[2px] w-5 bg-black lg:top-[1.35rem]"
+>
+</div>
+
+<div class="ml-7">
+  <!-- Header: Empresa + Fecha -->
+  <div class="flex items-baseline justify-between gap-4">
+    <h3 class="font-serif text-2xl font-medium text-black lg:text-3xl">
+      {company}
+    </h3>
+    <span class="shrink-0 text-sm text-graphite-500">{date}</span>
+  </div>
+
+  <!-- Grid de 3 columnas en desktop, stack en mobile -->
+  <div class="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1fr_1.5fr] lg:gap-8">
+    <!-- Columna 1: Producto -->
+    <div>
+      <p class="text-sm text-graphite-600">{product}</p>
+    </div>
+
+    <!-- Columna 2: Cargo + Tecnologías -->
+    <div class="space-y-3">
+      <span class="text-sm font-medium text-black">{role}</span>
+      <ul class="flex flex-row flex-wrap gap-1.5">
+        <slot />
+      </ul>
+    </div>
+
+    <!-- Columna 3: Descripción -->
+    <p class="text-sm leading-relaxed text-graphite-600">
+      {description}
+    </p>
+  </div>
+</div>

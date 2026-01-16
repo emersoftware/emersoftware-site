@@ -13,42 +13,54 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY || 'YOUR_SITE_KEY'
 
 <form
   method="POST"
-  class="mb-16 mt-4 flex w-full flex-col rounded-lg border-2 border-black bg-white px-8 pb-4 pt-6 lg:mt-8 lg:rounded-xl lg:px-12 lg:pb-8 lg:pt-10 lg:text-xl dark:border-white dark:bg-black"
+  class="mt-8 flex w-full flex-col lg:text-xl"
 >
-  <h3 class="text-left text-lg lg:text-2xl">{t.contact.form.sendMeAMessage}</h3>
-  <label class="fade-in-delay-100 mt-2 lg:mt-8" for="firstname"
-    >{t.contact.form.firstnameLabel}</label
-  >
-  <input
-    class="fade-in-delay-100 w-1/2 border-b bg-white dark:bg-black"
-    type="text"
-    name="firstname"
-    id="firstname"
-    placeholder={t.contact.form.firstnamePlaceholder}
-    required
-  />
-  <label class="fade-in-delay-200 mt-2 lg:mt-8" for="lastname">{t.contact.form.lastnameLabel}</label
-  >
-  <input
-    class="fade-in-delay-200 w-1/2 border-b bg-white dark:bg-black"
-    type="text"
-    name="lastname"
-    id="lastname"
-    placeholder={t.contact.form.lastnamePlaceholder}
-    required
-  />
-  <label class="fade-in-delay-300 mt-2 lg:mt-8" for="email">{t.contact.form.emailLabel}</label>
-  <input
-    class="fade-in-delay-300 w-1/2 border-b bg-white dark:bg-black"
-    type="email"
-    name="email"
-    id="email"
-    placeholder={t.contact.form.emailPlaceholder}
-    required
-  />
-  <label class="fade-in-delay-400 mt-2 lg:mt-8" for="message">{t.contact.form.messageLabel}</label>
+  <h3 class="text-left text-lg text-black lg:text-2xl">{t.contact.form.sendMeAMessage}</h3>
+  <div class="flex">
+    <div class="w-full md:w-1/2">
+      <label class="fade-in-delay-100 mt-4 block text-graphite-700 lg:mt-8" for="firstname"
+        >{t.contact.form.firstnameLabel}</label
+      >
+      <input
+        class="fade-in-delay-100 w-full border-b border-graphite-300 bg-white py-2 text-black placeholder-graphite-400 focus:border-green-500 focus:outline-none"
+        type="text"
+        name="firstname"
+        id="firstname"
+        placeholder={t.contact.form.firstnamePlaceholder}
+        required
+      />
+      <label class="fade-in-delay-200 mt-4 block text-graphite-700 lg:mt-8" for="lastname">{t.contact.form.lastnameLabel}</label
+      >
+      <input
+        class="fade-in-delay-200 w-full border-b border-graphite-300 bg-white py-2 text-black placeholder-graphite-400 focus:border-green-500 focus:outline-none"
+        type="text"
+        name="lastname"
+        id="lastname"
+        placeholder={t.contact.form.lastnamePlaceholder}
+        required
+      />
+      <label class="fade-in-delay-300 mt-4 block text-graphite-700 lg:mt-8" for="email">{t.contact.form.emailLabel}</label>
+      <input
+        class="fade-in-delay-300 w-full border-b border-graphite-300 bg-white py-2 text-black placeholder-graphite-400 focus:border-green-500 focus:outline-none"
+        type="email"
+        name="email"
+        id="email"
+        placeholder={t.contact.form.emailPlaceholder}
+        required
+      />
+    </div>
+    <div class="hidden w-1/2 items-center justify-center md:flex">
+      <img
+        src="/cats.jpeg"
+        alt=""
+        class="w-80 lg:w-96"
+        loading="lazy"
+      />
+    </div>
+  </div>
+  <label class="fade-in-delay-400 mt-4 text-graphite-700 lg:mt-8" for="message">{t.contact.form.messageLabel}</label>
   <textarea
-    class="fade-in-delay-400 mt-2 h-16 rounded-lg border-2 bg-white p-2 dark:bg-black"
+    class="fade-in-delay-400 mt-2 h-24 rounded-lg border border-graphite-300 bg-white p-3 text-black placeholder-graphite-400 focus:border-green-500 focus:outline-none"
     name="message"
     id="message"
     cols="30"
@@ -57,12 +69,12 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY || 'YOUR_SITE_KEY'
   >
   </textarea>
 
-  <div class="fade-in-delay-500 mt-4 flex justify-center">
+  <div class="fade-in-delay-500 mt-6 flex justify-center">
     <div id="cf-turnstile"></div>
   </div>
 
   <button
-    class="fade-in-delay-500 mt-4 w-1/2 self-center rounded-full bg-tangerine py-1 text-lg text-white hover:bg-tangerine/90 lg:mt-6 lg:w-1/3 lg:text-2xl dark:bg-mint dark:text-black hover:dark:bg-mint/90"
+    class="fade-in-delay-500 mt-6 w-full self-center rounded-full bg-green-500 py-2.5 text-base font-medium text-white transition-colors hover:bg-green-600 md:w-1/2 lg:w-1/3 lg:text-lg"
     type="submit"
   >
     {t.contact.form.submit}
