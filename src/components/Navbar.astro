@@ -55,7 +55,7 @@ const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
       <div class="relative" id="lang-dropdown-container">
         <button
           id="lang-dropdown-btn"
-          class="flex items-center space-x-1 text-sm transition-colors hover:text-green-400"
+          class="flex items-center space-x-1 text-sm transition-colors hover:text-orange-400"
           aria-expanded="false"
           aria-haspopup="true"
         >
@@ -72,7 +72,7 @@ const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
         >
           <a
             href={esHref}
-            class={`flex items-center justify-between px-4 py-2 text-sm transition-colors hover:bg-graphite-100 ${lang === 'es' ? 'text-green-500' : 'text-graphite-700'}`}
+            class={`flex items-center justify-between px-4 py-2 text-sm transition-colors hover:bg-graphite-100 ${lang === 'es' ? 'text-orange-500' : 'text-graphite-700'}`}
           >
             <span>ES</span>
             {lang === 'es' && (
@@ -83,7 +83,7 @@ const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
           </a>
           <a
             href={enHref}
-            class={`flex items-center justify-between px-4 py-2 text-sm transition-colors hover:bg-graphite-100 ${lang === 'en' ? 'text-green-500' : 'text-graphite-700'}`}
+            class={`flex items-center justify-between px-4 py-2 text-sm transition-colors hover:bg-graphite-100 ${lang === 'en' ? 'text-orange-500' : 'text-graphite-700'}`}
           >
             <span>EN</span>
             {lang === 'en' && (
@@ -99,7 +99,7 @@ const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
       <a
         href={lang === 'en' ? `/en/#${t.sectionIds.contact}` : `/#${t.sectionIds.contact}`}
         id="contact-button"
-        class="contact-btn flex items-center gap-2 rounded-full bg-green-400 px-4 py-1.5 text-sm font-medium text-black transition-all hover:bg-green-300 md:px-5 md:py-2 md:text-base"
+        class="contact-btn flex items-center gap-2 rounded-full bg-orange-400 px-4 py-1.5 text-sm font-medium text-black transition-all hover:bg-orange-300 md:px-5 md:py-2 md:text-base"
       >
         {t.navbar.contact}
       </a>
@@ -166,9 +166,9 @@ const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
     background-color: rgba(255, 255, 255, 0.8);
   }
 
-  /* Boton contacto - estado compacto (green, integrado con la píldora) */
+  /* Boton contacto - estado compacto (orange, integrado con la píldora) */
   .navbar-compact .contact-btn {
-    background-color: #48BB78 !important;
+    background-color: #ED8936 !important;
     color: #FFFFFF !important;
     border-radius: 9999px !important;
     padding: 0.5rem 1.25rem !important;
@@ -176,7 +176,7 @@ const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
   }
 
   .navbar-compact .contact-btn:hover {
-    background-color: #68D391 !important;
+    background-color: #FDBA74 !important;
   }
 
   /* Ocultar selector de idioma en modo compacto */
@@ -251,7 +251,7 @@ const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
     bottom: 0;
     width: 0;
     height: 2px;
-    background-color: #48BB78;
+    background-color: #ED8936;
     transition: width 0.3s ease;
   }
 
@@ -260,11 +260,11 @@ const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
   }
 
   .navbar-hero .nav-link:hover {
-    color: #48BB78;
+    color: #ED8936;
   }
 
   .navbar-scrolled .nav-link:hover {
-    color: #38A169;
+    color: #DD6B20;
   }
 
   /* Enlaces mobile */
@@ -275,7 +275,7 @@ const enHref = lang === 'es' ? `/en${currentPath}` : currentPath;
   }
 
   .nav-link-mobile:hover {
-    color: #48BB78;
+    color: #ED8936;
   }
 
   /* Dropdown de idioma */
