@@ -221,6 +221,13 @@ const websiteLd = {
         }
       }
 
+      /* Fallback for browsers that don't support dvh */
+      @supports not (height: 100dvh) {
+        .hero-section {
+          height: 100vh;
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .fade-in,
         .fade-in-delay-100,
