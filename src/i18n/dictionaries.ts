@@ -132,7 +132,7 @@ const es: Dictionary = {
     error:
       'Hubo un error al enviar tu mensaje, por favor intenta de nuevo o contactame por otro medio',
     form: {
-      sendMeAMessage: 'Envíame un mensaje',
+      sendMeAMessage: '¿Seamos amigos? ¿Trabajemos juntos?',
       firstnameLabel: 'Nombre',
       firstnamePlaceholder: 'Ingresa tu nombre',
       lastnameLabel: 'Apellido',
@@ -273,7 +273,7 @@ const en: Dictionary = {
     error:
       'There was an error sending your message, please try again or contact me through another channel',
     form: {
-      sendMeAMessage: 'Send me a message',
+      sendMeAMessage: "Let's be friends? Work together?",
       firstnameLabel: 'First name',
       firstnamePlaceholder: 'Enter your first name',
       lastnameLabel: 'Last name',
