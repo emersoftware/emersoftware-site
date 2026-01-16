@@ -79,6 +79,16 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY || 'YOUR_SITE_KEY'
   >
     {t.contact.form.submit}
   </button>
+
+  <!-- Gatos - Mobile only -->
+  <div class="mt-8 flex justify-center md:hidden">
+    <img
+      src="/cats.jpeg"
+      alt=""
+      class="w-64"
+      loading="lazy"
+    />
+  </div>
 </form>
 
 <script define:vars={{ siteKey: TURNSTILE_SITE_KEY }}>
