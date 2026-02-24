@@ -83,7 +83,7 @@ const relativeTime = commit ? getRelativeTime(commit.date, lang) : '';
     </svg>
     <span class="font-medium">{commit.repo}</span>
     <code class="hidden rounded bg-white/20 px-1.5 py-0.5 font-mono text-xs md:inline">{commit.sha}</code>
-    <span class="max-w-[140px] truncate text-white/70 md:max-w-none md:overflow-visible md:whitespace-normal">{commit.message}</span>
-    <span class="text-white/50">{relativeTime}</span>
+    <span class="max-w-[140px] truncate text-white/70 sm:max-w-[250px] md:max-w-[400px] lg:max-w-[550px]">{commit.message}</span>
+    <span class="whitespace-nowrap text-white/50">{relativeTime}</span>
   </a>
 ) : null}
