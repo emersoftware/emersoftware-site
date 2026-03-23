@@ -1,0 +1,22 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  link?: string;
+  date: string;
+}
+
+const { title, description, link, date } = Astro.props;
+---
+
+<div class="absolute -start-4 mt-2.5 h-0 w-8 border border-black dark:border-white"></div>
+<h3 class="ml-4 text-xl lg:text-3xl">
+  {title}
+</h3>
+<time class="ml-4 mt-4 text-sm leading-none lg:text-xl">{date}</time>
+<p class="ml-4 mt-4 text-pretty lg:text-2xl">
+  {description}
+</p>
+<ul class="ml-3 mt-3 flex flex-row flex-wrap gap-2 md:ml-4 lg:mt-4 lg:gap-4">
+  <slot />
+</ul>

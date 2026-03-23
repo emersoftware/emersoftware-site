@@ -1,0 +1,26 @@
+---
+import ExperienceItem from './ExperienceItem.astro';
+import Pill from './Pill.astro';
+import { getDictionary } from '../i18n/dictionaries';
+import { isSupportedLocale, defaultLocale } from '../i18n/config';
+interface Props {
+  lang?: string;
+}
+const { lang: rawLang = 'es' } = Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
+const t = getDictionary(lang);
+---
+
+<ol class="relative mt-8 space-y-12 border-s-2 border-black dark:border-white">
+  {
+    t.experienceItems.map((item) => (
+      <li class="ms-4">
+        <ExperienceItem date={item.date} title={item.title} description={item.description}>
+          {item.techs.map((tech) => (
+            <Pill>{tech}</Pill>
+          ))}
+        </ExperienceItem>
+      </li>
+    ))
+  }
+</ol>

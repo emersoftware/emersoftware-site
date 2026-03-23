@@ -1,0 +1,106 @@
+
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=1.8cm, bottom=1.8cm, left=1.8cm, right=1.8cm]{geometry}
+\usepackage{enumitem}
+\setlist[itemize]{left=0pt, label=\,–, itemsep=2pt, topsep=4pt}
+\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+\usepackage{titlesec}
+\titleformat*{\section}{\Large\bfseries}
+\titleformat*{\subsection}{\bfseries}
+
+\begin{document}
+
+%==================== Encabezado ====================
+\begin{center}
+  {\LARGE\bfseries Emerson Salazar Rubilar}\\[4pt]
+  \href{https://www.emersoftware.cl}{emersoftware.cl} \quad | \quad Concepción, Chile\\
+  \href{mailto:hola@emersoftware.cl}{hola@emersoftware.cl} \quad | \quad +56 9 7889 0690\\
+  \href{https://github.com/emersoftware}{github.com/emersoftware}
+\end{center}
+\vspace{6pt}\hrule\vspace{8pt}
+
+%==================== Perfil ====================
+\section*{Perfil}
+Ingeniero de Software especializado en inteligencia artificial. Experiencia en desarrollo full stack web y orquestación de LLMs para agentes inteligentes. Disponible para consultoría en desarrollo y agentes de IA.
+
+%==================== Experiencia ====================
+\section*{Experiencia}
+
+\subsection*{Xerply | Software Engineer \hfill Nov 2024 – Dic 2025}
+\textbf{Producto:} ERP con inteligencia artificial
+\begin{itemize}
+\item Participó en la evolución de la arquitectura del sistema, con foco en escalabilidad, confiabilidad y orquestación de agentes inteligentes.
+\item Diseñó mecanismos de seguridad y aislamiento para entornos multi-tenant en la API de agentes de IA.
+\item Integró el sistema con el SAT (México) mediante terceros para facturación y firma de nóminas.
+\end{itemize}
+\textit{Stack:} LangGraph • LangChain • React • Flask • Python • TypeScript
+
+\subsection*{Hoktus | Software Engineer \hfill Ago 2024 – Nov 2024}
+\textbf{Producto:} Agente de reclutamiento
+\begin{itemize}
+\item Diseñó y desarrolló un sistema para configurar \textbf{agentes de IA personalizados} vía WhatsApp, orientados a procesos de reclutamiento y onboarding.
+\item Automatizó la interacción con candidatos para cargos de alta rotación, reduciendo carga operativa y tiempos de selección.
+\end{itemize}
+\textit{Stack:} LangGraph • AI Agents • React • TypeScript • Python
+
+\subsection*{Blar AI | Software Engineer \hfill Oct 2024 – Jul 2025}
+\textbf{Producto:} Agente de code review
+\begin{itemize}
+\item Desarrolló agentes de revisión automática de código integrados al flujo de \textit{pull requests}.
+\item Implementó análisis de patrones de diseño, detección de bugs, vulnerabilidades de seguridad y problemas de performance mediante técnicas de exploración contextual del código.
+\end{itemize}
+\textit{Stack:} LangGraph • Python • RAG • React • TypeScript
+
+\subsection*{Pirrol LLC | Backend Engineer \hfill May 2024 – Oct 2024}
+\textbf{Producto:} Chatbot financiero (UpWorth, Australia)
+\begin{itemize}
+\item Desarrolló el MVP de un chatbot conversacional de finanzas personales.
+\item Diseñó la arquitectura del agente e integró APIs financieras para análisis de gastos, ahorro y comportamiento financiero del usuario.
+\end{itemize}
+\textit{Stack:} LangGraph • Vertex AI • Python • LangChain • Next.js
+
+%==================== Educación ====================
+\section*{Educación}
+\textbf{Universidad del Bío‑Bío, Concepción} \hfill Mar 2019 – Mar 2024\\
+Ingeniería Civil Informática — \textit{Proyecto de título calificado con nota máxima}
+
+%==================== Habilidades ====================
+\section*{Habilidades}
+\begin{itemize}
+  \item \textbf{Lenguajes:} Typescript (React, Next.js), Python (DRF, Flask, FastAPI), SQL
+  \item \textbf{IA / LLM:} LangChain, LangGraph, Gemini, OpenAI, RAG, Qdrant, BM25
+  \item \textbf{DevOps:} Docker, Google Cloud Run, Cloud SQL
+  \item \textbf{Soft skills:} Comunicación efectiva, aprendizaje autónomo, transferencia de conocimiento
+\end{itemize}
+
+%==================== Proyectos ====================
+\section*{Proyectos}
+
+\textbf{The Stack} | \href{https://thestack.cl}{thestack.cl}
+\begin{itemize}
+\item Creó un Hacker News orientado a Latinoamérica para centralizar contenido tech humano, original y de calidad: side projects, blogs, noticias del ecosistema, reflexiones técnicas y meetups.
+\end{itemize}
+
+\textbf{Themis} | \href{https://themis.lat}{themis.lat}
+\begin{itemize}
+\item Desarrolló una plataforma de auditoría automatizada de licitaciones públicas con IA que analiza licitaciones de Mercado Público para detectar incumplimientos normativos, patrones sospechosos e irregularidades.
+\item Obtuvo el \textbf{primer lugar} en el track Legacy de Platanus Hack 25.
+\end{itemize}
+
+\textbf{Kapin} | \href{https://github.com/emersoftware/kapin}{github.com/emersoftware/kapin}
+\begin{itemize}
+\item Construyó un agente de auditoría de métricas de producto para repositorios de software que analiza repositorios y entrega métricas relevantes, consultas para medirlas y la base técnica para persistir los datos.
+\end{itemize}
+
+\textbf{Agente RAG sobre Legislación Chilena} | Proyecto de Título (2023-2024)
+\begin{itemize}
+\item Desarrolló un sistema de recuperación de información legal basado en RAG con una Knowledge Base en Qdrant, embeddings en español y modelos de lenguaje entrenados para búsqueda semántica sobre artículos de la legislación chilena.
+\end{itemize}
+
+\end{document}
+

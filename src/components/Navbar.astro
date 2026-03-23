@@ -1,0 +1,156 @@
+---
+import DownloadFileIcon from './icons/DownloadFileIcon.astro';
+import { getDictionary } from '../i18n/dictionaries';
+import { isSupportedLocale, defaultLocale } from '../i18n/config';
+interface Props {
+  lang?: string;
+}
+const { lang: rawLang = 'es' } = Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
+const t = getDictionary(lang);
+const otherLang = lang === 'en' ? 'es' : 'en';
+const currentPath = Astro.url.pathname;
+let switchHref = '/en/';
+if (lang === 'en') {
+  // from /en/* -> remove /en
+  switchHref = currentPath.startsWith('/en') ? currentPath.replace('/en', '') || '/' : '/';
+} else {
+  // from root -> add /en
+  switchHref = currentPath.startsWith('/en') ? currentPath : `/en${currentPath}`;
+}
+---
+
+<nav id="navbar" class="fixed top-0 z-50 w-full transition-all duration-300">
+  <div
+    id="navbar-container"
+    class="mx-auto my-4 flex w-fit items-center justify-center transition-all duration-200 md:my-6"
+  >
+    <ul class="text-md flex flex-row items-center space-x-4 md:space-x-8 lg:text-2xl">
+      <a
+        href={lang === 'en' ? `/en/#${t.sectionIds.home}` : `/#${t.sectionIds.home}`}
+        class="hover:underline">{t.navbar.home}</a
+      >
+      <a
+        href={lang === 'en' ? `/en/#${t.sectionIds.experience}` : `/#${t.sectionIds.experience}`}
+        class="hover:underline">{t.navbar.experience}</a
+      >
+      <a href={lang === 'en' ? `/en/#proyectos` : `/#proyectos`} class="hidden hover:underline"
+        >{t.navbar.projects}</a
+      >
+      <a
+        href={lang === 'en' ? `/en/#${t.sectionIds.contact}` : `/#${t.sectionIds.contact}`}
+        class="hover:underline">{t.navbar.contact}</a
+      >
+      <a href={switchHref} class="ml-2 rounded-full border px-3 py-1 hover:underline"
+        >{lang === 'en' ? 'ES' : 'EN'}</a
+      >
+    </ul>
+  </div>
+</nav>
+
+<style>
+  /* Clases para las animaciones del navbar */
+  .navbar-scrolled {
+    border: 1px solid rgba(209, 213, 219, 0.8);
+    border-radius: 9999px;
+    padding: 0.5rem 1.5rem;
+    backdrop-filter: blur(8px);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  :global(.dark) .navbar-scrolled {
+    border-color: rgba(55, 65, 81, 0.8);
+  }
+
+  .navbar-top {
+    border: 0;
+    background-color: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const navbar = document.getElementById('navbar');
+    const navbarContainer = document.getElementById('navbar-container');
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    // Función para actualizar la apariencia del navbar
+    const updateNavbar = () => {
+      // Detectar si estamos en la parte superior
+      const isTop = window.scrollY < 50;
+      // Detectar dirección del scroll
+      const scrollingDown = window.scrollY > lastScrollY;
+
+      // Actualizar posición y apariencia del navbar
+      if (isTop) {
+        // En la parte superior: sin borde, visible con animación fade-out
+        navbar.classList.remove('-translate-y-full');
+
+        // Aplicar una transición más suave y rápida al llegar al top
+        if (navbarContainer.classList.contains('navbar-scrolled')) {
+          // Primero quitamos las clases para fade out rápido
+          navbarContainer.classList.remove('navbar-scrolled');
+          navbarContainer.classList.add('navbar-top');
+
+          // Asegurar que las clases individuales también se eliminan
+          navbarContainer.classList.remove(
+            'border',
+            'border-gray-200',
+            'dark:border-gray-800',
+            'rounded-full',
+            'px-6',
+            'py-2',
+            'bg-white/80',
+            'dark:bg-black/80',
+            'backdrop-blur-md'
+          );
+        }
+      } else {
+        // No en la parte superior: aplicar estilos
+        if (scrollingDown) {
+          // Scroll hacia abajo: ocultar navbar
+          navbar.classList.add('-translate-y-full');
+        } else {
+          // Scroll hacia arriba: mostrar navbar con bordes
+          navbar.classList.remove('-translate-y-full');
+
+          // Aplicar la clase de estilo condensada
+          navbarContainer.classList.add('navbar-scrolled');
+          navbarContainer.classList.remove('navbar-top');
+
+          // Mantener las clases individuales para compatibilidad
+          navbarContainer.classList.add(
+            'border',
+            'border-gray-200',
+            'dark:border-gray-800',
+            'rounded-full',
+            'px-6',
+            'py-2',
+            'bg-white/80',
+            'dark:bg-black/80',
+            'backdrop-blur-md'
+          );
+        }
+      }
+
+      lastScrollY = window.scrollY;
+      ticking = false;
+    };
+
+    // Listener para el evento de scroll con throttling
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateNavbar);
+        ticking = true;
+      }
+    });
+
+    // Inicializar estado del navbar
+    updateNavbar();
+  });
+</script>

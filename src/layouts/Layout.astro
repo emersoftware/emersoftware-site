@@ -1,0 +1,281 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  lang?: string;
+}
+
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { supportedLocales, defaultLocale } from '../i18n/config';
+
+import '@fontsource-variable/inter';
+import '@fontsource-variable/eb-garamond';
+
+const { title, description, lang = 'es' } = Astro.props;
+const siteUrl = Astro.url.origin;
+const currentPath = Astro.url.pathname;
+const currentUrl = new URL(Astro.url);
+
+const normalizedLang = supportedLocales.includes(lang as any) ? lang : defaultLocale;
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Emerson Salazar Rubilar',
+  jobTitle: normalizedLang === 'en' ? 'Software Engineer' : 'Ingeniero de Software',
+  url: siteUrl,
+  email: 'mailto:hola@emersoftware.cl',
+  sameAs: [
+    'https://github.com/emersoftware',
+    'https://www.linkedin.com/in/emerson-salazar-rubilar',
+  ],
+  homeLocation: {
+    '@type': 'Place',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Concepción',
+      addressCountry: 'CL',
+    },
+  },
+};
+
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  url: siteUrl,
+  name: 'Emersoftware',
+  inLanguage: normalizedLang === 'en' ? 'en' : 'es-CL',
+  publisher: {
+    '@type': 'Person',
+    name: 'Emerson Salazar Rubilar',
+    url: siteUrl,
+  },
+};
+---
+
+<!doctype html>
+<html lang={normalizedLang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="canonical" href={Astro.url.href} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="author" content="Emerson Salazar Rubilar" />
+    <meta http-equiv="content-language" content={normalizedLang === 'en' ? 'en' : 'es-CL'} />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0400b4" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:site_name" content="Emersoftware" />
+    <meta property="og:locale" content={normalizedLang === 'en' ? 'en_US' : 'es_CL'} />
+    <meta property="og:image" content="/social.jpg" />
+    {
+      supportedLocales.map((loc) => {
+        // Default locale (es) served at root, en at /en
+        const href =
+          loc === 'es'
+            ? currentPath.startsWith('/en')
+              ? currentPath.replace('/en', '') || '/'
+              : currentPath
+            : currentPath.startsWith('/en')
+              ? currentPath
+              : `/en${currentPath}`;
+        return <link rel="alternate" hreflang={loc} href={href} />;
+      })
+    }
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={currentPath.startsWith('/en') ? currentPath.replace('/en', '') || '/' : currentPath}
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="/social.jpg" />
+    <title>{title}</title>
+    <meta name="astro-view-transitions" />
+    <script type="application/ld+json" set:html={JSON.stringify([websiteLd, personLd])} />
+  </head>
+  <body>
+    <div id="stars-container" class="stars-container"></div>
+    <div class="fixed h-full w-full">
+      <div class="h- bg absolute inset-0 w-full items-center px-5 py-24"></div>
+    </div>
+    <Navbar lang={normalizedLang} />
+    <main class="pt-20 md:pt-24">
+      <slot />
+    </main>
+    <Footer />
+
+    <style is:global>
+      :root {
+        color-scheme: light dark;
+      }
+
+      html {
+        font-family: system-ui, sans-serif;
+        scroll-behavior: smooth;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        overscroll-behavior: none;
+        font-family: 'Inter', sans-serif;
+      }
+
+      .title {
+        font-family: 'EB Garamond', serif;
+        letter-spacing: -3px;
+      }
+
+      /* Stars Background */
+      .stars-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -5; /* Ensure it's behind other content */
+      }
+
+      /* Animation classes */
+      .fade-in {
+        animation: fadeIn 0.8s ease-in-out forwards;
+        opacity: 0;
+      }
+
+      .fade-in-delay-100 {
+        animation: fadeIn 0.8s ease-in-out 0.1s forwards;
+        opacity: 0;
+      }
+
+      .fade-in-delay-200 {
+        animation: fadeIn 0.8s ease-in-out 0.2s forwards;
+        opacity: 0;
+      }
+
+      .fade-in-delay-300 {
+        animation: fadeIn 0.8s ease-in-out 0.3s forwards;
+        opacity: 0;
+      }
+
+      .fade-in-delay-400 {
+        animation: fadeIn 0.8s ease-in-out 0.4s forwards;
+        opacity: 0;
+      }
+
+      .fade-in-delay-500 {
+        animation: fadeIn 0.8s ease-in-out 0.5s forwards;
+        opacity: 0;
+      }
+
+      .slide-up {
+        animation: slideUp 0.8s ease-in-out forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      .slide-up-delay-100 {
+        animation: slideUp 0.8s ease-in-out 0.1s forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      .slide-up-delay-200 {
+        animation: slideUp 0.8s ease-in-out 0.2s forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      .slide-up-delay-300 {
+        animation: slideUp 0.8s ease-in-out 0.3s forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      .slide-up-delay-400 {
+        animation: slideUp 0.8s ease-in-out 0.4s forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      .slide-up-delay-500 {
+        animation: slideUp 0.8s ease-in-out 0.5s forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .fade-in,
+        .fade-in-delay-100,
+        .fade-in-delay-200,
+        .fade-in-delay-300,
+        .fade-in-delay-400,
+        .fade-in-delay-500,
+        .slide-up,
+        .slide-up-delay-100,
+        .slide-up-delay-200,
+        .slide-up-delay-300,
+        .slide-up-delay-400,
+        .slide-up-delay-500 {
+          animation: none;
+          opacity: 1;
+          transform: none;
+        }
+
+        html {
+          scroll-behavior: auto;
+        }
+      }
+
+      @media (prefers-color-scheme: light) {
+        .bg {
+          background: radial-gradient(
+            86.36% 112.8% at 50% 0%,
+            rgba(255, 255, 255, 0) 68.5%,
+            #c1ffcf 100%
+          );
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .bg {
+          background: radial-gradient(
+            86.36% 112.8% at 50% 0%,
+            rgba(0, 0, 0, 0) 68.5%,
+            #0400b4 100%
+          );
+        }
+      }
+    </style>
+
+    <script src="/src/scripts/stars.js"></script>
+  </body>
+</html>
