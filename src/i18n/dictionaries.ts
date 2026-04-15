@@ -286,7 +286,7 @@ const en: Dictionary = {
   },
   experienceItems: [
     {
-      company: 'Chilean Chamber of Construction (CChC)',
+      company: 'Cámara Chilena de la Construcción (CChC)',
       role: 'Software Engineer',
       date: 'Jan. 2026 - present',
       product: 'Revi – AI-Powered Permit Review',
