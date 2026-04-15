@@ -165,7 +165,7 @@ const es: Dictionary = {
     {
       company: 'Hoktus',
       role: 'Software Engineer',
-      date: 'ago. 2024 - nov. 2024',
+      date: 'ago. 2025 - nov. 2025',
       product: 'Agente de reclutamiento',
       description:
         'Diseño y desarrollo de un sistema para configurar agentes de IA personalizados vía WhatsApp, orientados a procesos de reclutamiento y onboarding. Automatización de interacción con candidatos para cargos de alta rotación, reduciendo carga operativa y tiempos de selección.',
@@ -306,7 +306,7 @@ const en: Dictionary = {
     {
       company: 'Hoktus',
       role: 'Software Engineer',
-      date: 'Aug. 2024 - Nov. 2024',
+      date: 'Aug. 2025 - Nov. 2025',
       product: 'Recruitment agent',
       description:
         'Design and development of a system to configure custom AI agents via WhatsApp, focused on recruitment and onboarding processes. Automation of candidate interaction for high-turnover positions, reducing operational load and selection times.',
