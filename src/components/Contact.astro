@@ -11,7 +11,7 @@ const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
 const t = getDictionary(lang);
 ---
 
-<Alert id="alertSuccessEmail" success="true">
+<Alert id="alertSuccessEmail" success>
   <Fragment set:html={t.contact.success} />
 </Alert>
 <Alert id="alertErrorEmail">

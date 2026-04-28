@@ -23,6 +23,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY || 'YOUR_SITE_KEY'
         alt=""
         class="w-80 lg:w-96"
         loading="lazy"
+        decoding="async"
       />
     </div>
     <div class="w-full md:w-1/2">
@@ -84,6 +85,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY || 'YOUR_SITE_KEY'
       alt=""
       class="w-64"
       loading="lazy"
+      decoding="async"
     />
   </div>
 </form>
@@ -113,30 +115,46 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY || 'YOUR_SITE_KEY'
   script.defer = true;
   document.head.appendChild(script);
 
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const submitLabel = submitBtn ? submitBtn.textContent : '';
+
+  const showAlert = (el) => {
+    el.classList.remove('hidden');
+    clearTimeout(el._hideTimer);
+    el._hideTimer = setTimeout(() => el.classList.add('hidden'), 10000);
+  };
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const formData = new FormData(form);
+    if (submitBtn?.disabled) return;
 
-    const res = await fetch('/email', {
-      method: 'POST',
-      body: formData,
-    });
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
+      submitBtn.textContent = '...';
+    }
 
-    if (res.ok) {
-      alertSuccess.classList.remove('hidden');
-      form.reset();
-      // Reset Turnstile after successful submission
-      if (window.turnstile) {
-        window.turnstile.reset();
+    try {
+      const res = await fetch('/email', {
+        method: 'POST',
+        body: new FormData(form),
+      });
+
+      if (res.ok) {
+        showAlert(alertSuccess);
+        form.reset();
+        window.turnstile?.reset();
+      } else {
+        showAlert(alertError);
       }
-      setTimeout(() => {
-        alertSuccess.classList.add('hidden');
-      }, 10000);
-    } else {
-      alertError.classList.remove('hidden');
-      setTimeout(() => {
-        alertError.classList.add('hidden');
-      }, 10000);
+    } catch (_) {
+      showAlert(alertError);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+        submitBtn.textContent = submitLabel;
+      }
     }
   });
 </script>

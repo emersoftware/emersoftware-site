@@ -23,23 +23,17 @@ const t = getDictionary(lang);
     id={t.sectionIds.home}
     data-section={t.sectionIds.home}
   >
-    <!-- Background Image - Mobile -->
-    <div class="absolute inset-0 z-0 md:hidden">
-      <img
-        src="/hero-bg-mobile.jpeg"
-        alt=""
-        class="h-full w-full object-cover object-bottom"
-        loading="eager"
-      />
-    </div>
-    <!-- Background Image - Desktop -->
-    <div class="absolute inset-0 z-0 hidden md:block">
-      <img
-        src="/hero-bg.jpeg"
-        alt=""
-        class="h-full w-full object-cover"
-        loading="eager"
-      />
+    <div class="absolute inset-0 z-0">
+      <picture>
+        <source media="(min-width: 768px)" srcset="/hero-bg.jpeg" />
+        <img
+          src="/hero-bg-mobile.jpeg"
+          alt=""
+          class="h-full w-full object-cover object-bottom md:object-center"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </picture>
     </div>
 
     <!-- Content - Text -->
@@ -122,6 +116,7 @@ const t = getDictionary(lang);
       >
         <Mail class="size-4" />
         copiar email
+        <Copy id="copyEmailMobile" class="size-4" />
         <CopyCheck id="copyEmailCheckMobile" class="hidden size-4" />
       </button>
     </nav>
@@ -135,7 +130,6 @@ const t = getDictionary(lang);
       <Experience lang={lang} />
     </section>
 
-    <!-- Banner entre secciones -->
     <div class="my-16">
       <img
         src="/banner.jpeg"

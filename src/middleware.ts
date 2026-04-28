@@ -1,5 +1,5 @@
 import type { MiddlewareHandler } from 'astro';
-import { supportedLocales, defaultLocale } from './i18n/config';
+import { defaultLocale, type SupportedLocale } from './i18n/config';
 
 const ES_COUNTRIES = new Set([
   'AR', // Argentina
@@ -21,26 +21,34 @@ const ES_COUNTRIES = new Set([
   'PY', // Paraguay
   'PE', // Peru
   'PR', // Puerto Rico
-  'ES', // Spain
   'UY', // Uruguay
   'VE', // Venezuela
 ]);
 
-function detectFromAcceptLanguage(headerValue: string | null | undefined): 'es' | 'en' | null {
+function detectFromAcceptLanguage(headerValue: string | null | undefined): SupportedLocale | null {
   if (!headerValue) return null;
-  // Simple parse: take first language token
-  const first = headerValue.split(',')[0]?.trim().toLowerCase();
-  if (!first) return null;
-  if (first.startsWith('es')) return 'es';
-  if (first.startsWith('en')) return 'en';
+  const ranked = headerValue
+    .split(',')
+    .map((part) => {
+      const [tag, ...params] = part.trim().split(';');
+      const qParam = params.find((p) => p.trim().startsWith('q='));
+      const q = qParam ? parseFloat(qParam.split('=')[1]) : 1;
+      return { tag: tag.toLowerCase(), q: Number.isFinite(q) ? q : 0 };
+    })
+    .filter((entry) => entry.tag && entry.q > 0)
+    .sort((a, b) => b.q - a.q);
+
+  for (const { tag } of ranked) {
+    if (tag.startsWith('es')) return 'es';
+    if (tag.startsWith('en')) return 'en';
+  }
   return null;
 }
 
-function detectFromCountry(countryCode: string | null | undefined): 'es' | 'en' | null {
+function detectFromCountry(countryCode: string | null | undefined): SupportedLocale | null {
   if (!countryCode) return null;
-  const cc = countryCode.toUpperCase();
-  if (ES_COUNTRIES.has(cc)) return 'es';
-  return null; // default to null to allow other signals to decide
+  if (ES_COUNTRIES.has(countryCode.toUpperCase())) return 'es';
+  return null;
 }
 
 function isStaticAssetPath(pathname: string): boolean {
@@ -85,14 +93,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     const langFromAL = detectFromAcceptLanguage(acceptLanguage);
     const langFromCC = detectFromCountry(vercelCountry);
 
-    const lang = (langFromAL || langFromCC || defaultLocale) as 'es' | 'en';
+    const lang: SupportedLocale = langFromAL || langFromCC || defaultLocale;
 
     if (lang === 'en') {
-      // Redirect to /en, preserve hash
-      const hash = url.hash || '';
-      return context.redirect(`/en/${hash}`);
+      return context.redirect('/en/');
     }
-    return next(); // es stays at root
+    return next();
   }
 
   return next();

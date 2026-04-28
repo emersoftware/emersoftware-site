@@ -7,7 +7,7 @@ interface Props {
 
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
-import { supportedLocales, defaultLocale } from '../i18n/config';
+import { supportedLocales, defaultLocale, isSupportedLocale } from '../i18n/config';
 
 import '@fontsource-variable/inter';
 import '@fontsource-variable/eb-garamond';
@@ -15,9 +15,11 @@ import '@fontsource-variable/eb-garamond';
 const { title, description, lang = 'es' } = Astro.props;
 const siteUrl = Astro.url.origin;
 const currentPath = Astro.url.pathname;
-const currentUrl = new URL(Astro.url);
 
-const normalizedLang = supportedLocales.includes(lang as any) ? lang : defaultLocale;
+const normalizedLang = isSupportedLocale(lang) ? lang : defaultLocale;
+const stripEnPrefix = (path: string) => path.replace(/^\/en(?=\/|$)/, '') || '/';
+const ensureEnPrefix = (path: string) =>
+  /^\/en(?=\/|$)/.test(path) ? path : `/en${path}`;
 
 const personLd = {
   '@context': 'https://schema.org',
@@ -25,7 +27,7 @@ const personLd = {
   name: 'Emerson Salazar Rubilar',
   jobTitle: normalizedLang === 'en' ? 'Software Engineer' : 'Ingeniero de Software',
   url: siteUrl,
-  email: 'mailto:hola@emersoftware.cl',
+  email: 'hola@emersoftware.cl',
   sameAs: [
     'https://github.com/emersoftware',
     'https://www.linkedin.com/in/emerson-salazar-rubilar',
@@ -75,22 +77,14 @@ const websiteLd = {
     <meta property="og:image" content="/social.jpg" />
     {
       supportedLocales.map((loc) => {
-        // Default locale (es) served at root, en at /en
-        const href =
-          loc === 'es'
-            ? currentPath.startsWith('/en')
-              ? currentPath.replace('/en', '') || '/'
-              : currentPath
-            : currentPath.startsWith('/en')
-              ? currentPath
-              : `/en${currentPath}`;
-        return <link rel="alternate" hreflang={loc} href={href} />;
+        const href = loc === 'es' ? stripEnPrefix(currentPath) : ensureEnPrefix(currentPath);
+        return <link rel="alternate" hreflang={loc} href={new URL(href, siteUrl).href} />;
       })
     }
     <link
       rel="alternate"
       hreflang="x-default"
-      href={currentPath.startsWith('/en') ? currentPath.replace('/en', '') || '/' : currentPath}
+      href={new URL(stripEnPrefix(currentPath), siteUrl).href}
     />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
