@@ -5,9 +5,10 @@ interface Props {
   date: string;
   product: string;
   description: string;
+  link?: string;
 }
 
-const { company, role, date, product, description } = Astro.props;
+const { company, role, date, product, description, link } = Astro.props;
 ---
 
 <!-- Línea horizontal del timeline -->
@@ -20,7 +21,26 @@ const { company, role, date, product, description } = Astro.props;
   <!-- Header: Empresa + Fecha -->
   <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
     <h3 class="font-serif text-2xl font-medium text-black lg:text-3xl">
-      {company}
+      {link ? (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group/link inline-flex items-baseline gap-1.5 transition-colors hover:text-orange-600"
+        >
+          {company}
+          <svg
+            class="h-4 w-4 shrink-0 self-center text-graphite-400 transition-colors group-hover/link:text-orange-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      ) : (
+        company
+      )}
     </h3>
     <span class="shrink-0 text-sm text-graphite-500">{date}</span>
   </div>

@@ -24,6 +24,7 @@ const hasMore = t.experienceItems.length > initialCount;
           date={item.date}
           product={item.product}
           description={item.description}
+          link={item.link}
         >
           {item.techs.map((tech) => (
             <Pill>{tech}</Pill>

@@ -6,6 +6,7 @@ export type ExperienceItem = {
   date: string;
   product: string;
   description: string;
+  link?: string;
   techs: string[];
 };
 
@@ -148,6 +149,7 @@ const es: Dictionary = {
       company: 'Cámara Chilena de la Construcción (CChC)',
       role: 'Software Engineer',
       date: 'ene. 2026 - actualidad',
+      link: 'https://ia-revi.cl',
       product: 'Revi – Revisión de Permisos con IA',
       description:
         'Desarrollo en una plataforma basada en IA para la revisión automatizada de permisos de edificación. Implementación de flujos de análisis inteligente para validación normativa.',
@@ -157,6 +159,7 @@ const es: Dictionary = {
       company: 'Xerply',
       role: 'Software Engineer',
       date: 'nov. 2024 - dic. 2025',
+      link: 'https://www.linkedin.com/company/xerply',
       product: 'ERP con inteligencia artificial',
       description:
         'Integración con el SAT (México) mediante terceros para facturación y firma de nóminas, actualización de la API de agentes de IA y diseño de mecanismos de seguridad y aislamiento para entornos multi-tenant. Participación en la evolución de la arquitectura del sistema, con foco en escalabilidad, confiabilidad y orquestación de agentes inteligentes.',
@@ -166,6 +169,7 @@ const es: Dictionary = {
       company: 'Hoktus',
       role: 'Software Engineer',
       date: 'ago. 2025 - nov. 2025',
+      link: 'https://hoktus.com',
       product: 'Agente de reclutamiento',
       description:
         'Diseño y desarrollo de un sistema para configurar agentes de IA personalizados vía WhatsApp, orientados a procesos de reclutamiento y onboarding. Automatización de interacción con candidatos para cargos de alta rotación, reduciendo carga operativa y tiempos de selección.',
@@ -175,16 +179,18 @@ const es: Dictionary = {
       company: 'Blar AI',
       role: 'Software Engineer',
       date: 'oct. 2024 - jul. 2025',
+      link: 'https://blar.io',
       product: 'Agente de code review',
       description:
         'Desarrollo de agentes de revisión automática de código integrados al flujo de pull requests. Implementación de análisis de patrones de diseño, detección de bugs, vulnerabilidades de seguridad y problemas de performance mediante técnicas de exploración contextual del código. Contribución a la mejora de la calidad del software y la velocidad de revisión en equipos de desarrollo.',
       techs: ['LangGraph', 'Python', 'RAG', 'React', 'TypeScript'],
     },
     {
-      company: 'Pirrol LLC',
+      company: 'UpWorth',
       role: 'Backend Engineer',
       date: 'may. 2024 - oct. 2024',
-      product: 'Chatbot financiero (UpWorth – Australia)',
+      link: 'https://upworth.com.au',
+      product: 'Chatbot de finanzas personales (Australia)',
       description:
         'Desarrollo del MVP de un chatbot conversacional de finanzas personales. Diseño de la arquitectura del agente y la integración con APIs financieras para análisis de gastos, ahorro y comportamiento financiero del usuario, así como la categorización de las transacciones. Participación en decisiones clave de diseño para asegurar escalabilidad y claridad en la interpretación de datos financieros.',
       techs: ['LangGraph', 'Vertex AI', 'Python', 'LangChain', 'Next.js'],
@@ -289,6 +295,7 @@ const en: Dictionary = {
       company: 'Cámara Chilena de la Construcción (CChC)',
       role: 'Software Engineer',
       date: 'Jan. 2026 - present',
+      link: 'https://ia-revi.cl',
       product: 'Revi – AI-Powered Permit Review',
       description:
         'Development on an AI-based platform for automated building permit review. Implementation of intelligent analysis workflows for regulatory validation.',
@@ -298,6 +305,7 @@ const en: Dictionary = {
       company: 'Xerply',
       role: 'Software Engineer',
       date: 'Nov. 2024 - Dec. 2025',
+      link: 'https://www.linkedin.com/company/xerply',
       product: 'AI-powered ERP',
       description:
         'Integration with SAT (Mexico) through third parties for invoicing and payroll signing, updating the AI agents API and designing security and isolation mechanisms for multi-tenant environments. Participation in the evolution of system architecture, focusing on scalability, reliability, and intelligent agent orchestration.',
@@ -307,6 +315,7 @@ const en: Dictionary = {
       company: 'Hoktus',
       role: 'Software Engineer',
       date: 'Aug. 2025 - Nov. 2025',
+      link: 'https://hoktus.com',
       product: 'Recruitment agent',
       description:
         'Design and development of a system to configure custom AI agents via WhatsApp, focused on recruitment and onboarding processes. Automation of candidate interaction for high-turnover positions, reducing operational load and selection times.',
@@ -316,16 +325,18 @@ const en: Dictionary = {
       company: 'Blar AI',
       role: 'Software Engineer',
       date: 'Oct. 2024 - Jul. 2025',
+      link: 'https://blar.io',
       product: 'Code review agent',
       description:
         'Development of automated code review agents integrated into the pull request workflow. Implementation of design pattern analysis, bug detection, security vulnerabilities, and performance issues through contextual code exploration techniques. Contribution to improving software quality and review speed in development teams.',
       techs: ['LangGraph', 'Python', 'RAG', 'React', 'TypeScript'],
     },
     {
-      company: 'Pirrol LLC',
+      company: 'UpWorth',
       role: 'Backend Engineer',
       date: 'May 2024 - Oct. 2024',
-      product: 'Financial chatbot (UpWorth – Australia)',
+      link: 'https://upworth.com.au',
+      product: 'Personal finance chatbot (Australia)',
       description:
         'Development of an MVP personal finance conversational chatbot. Design of agent architecture and integration with financial APIs for expense analysis, savings, and user financial behavior, as well as transaction categorization. Participation in key design decisions to ensure scalability and clarity in financial data interpretation.',
       techs: ['LangGraph', 'Vertex AI', 'Python', 'LangChain', 'Next.js'],
