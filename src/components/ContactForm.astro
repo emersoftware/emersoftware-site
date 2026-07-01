@@ -2,13 +2,23 @@
 // ContactForm component to handle the contact form functionality
 import { getDictionary } from '../i18n/dictionaries';
 import { isSupportedLocale, defaultLocale } from '../i18n/config';
-import { TURNSTILE_SITE_KEY } from 'astro:env/client';
 interface Props {
   lang?: string;
 }
 const { lang: rawLang = 'es' } = Astro.props as Props;
 const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
 const t = getDictionary(lang);
+
+const TURNSTILE_IS_LOCALHOST =
+  Astro.url.hostname === 'localhost' ||
+  Astro.url.hostname === '127.0.0.1' ||
+  Astro.url.hostname === '0.0.0.0' ||
+  Astro.url.hostname.startsWith('192.168.') ||
+  Astro.url.hostname.startsWith('10.');
+
+const TURNSTILE_SITE_KEY =
+  import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ||
+  (TURNSTILE_IS_LOCALHOST ? '1x00000000000000000000AA' : undefined);
 ---
 
 <form id="contact-form" method="POST" class="mt-8 flex w-full flex-col lg:text-lg">
