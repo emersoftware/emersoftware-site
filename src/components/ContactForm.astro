@@ -2,7 +2,7 @@
 // ContactForm component to handle the contact form functionality
 import { getDictionary } from '../i18n/dictionaries';
 import { isSupportedLocale, defaultLocale } from '../i18n/config';
-import { TURNSTILE_SITE_KEY } from 'astro:env/server';
+import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
 interface Props {
   lang?: string;
 }
@@ -62,12 +62,14 @@ const t = getDictionary(lang);
         rows="10"
         required></textarea>
       <div class="fade-in-delay-500 mt-6 flex justify-center md:justify-start">
-        {TURNSTILE_SITE_KEY && <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} />}
+        {PUBLIC_TURNSTILE_SITE_KEY && (
+          <div class="cf-turnstile" data-sitekey={PUBLIC_TURNSTILE_SITE_KEY} />
+        )}
       </div>
       <button
         class="fade-in-delay-500 mt-6 w-full rounded-full bg-orange-400 py-2.5 text-base font-medium text-white transition-colors hover:bg-orange-500 lg:text-lg"
         type="submit"
-        disabled={!TURNSTILE_SITE_KEY}
+        disabled={!PUBLIC_TURNSTILE_SITE_KEY}
       >
         {t.contact.form.submit}
       </button>
@@ -81,7 +83,7 @@ const t = getDictionary(lang);
 </form>
 
 {
-  TURNSTILE_SITE_KEY && (
+  PUBLIC_TURNSTILE_SITE_KEY && (
     <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
   )
 }
