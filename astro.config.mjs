@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -11,4 +11,12 @@ export default defineConfig({
   vite: { plugins: [tailwindcss()] },
   output: 'server',
   adapter: cloudflare(),
+  env: {
+    schema: {
+      TURNSTILE_SITE_KEY: envField.string({ context: 'server', access: 'secret' }),
+      TURNSTILE_SECRET_KEY: envField.string({ context: 'server', access: 'secret' }),
+      RESEND_API_KEY: envField.string({ context: 'server', access: 'secret' }),
+      GITHUB_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
+    },
+  },
 });

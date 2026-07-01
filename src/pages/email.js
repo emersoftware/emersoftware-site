@@ -1,251 +1,141 @@
-export const POST = async ({ request, locals }) => {
+import { RESEND_API_KEY, TURNSTILE_SECRET_KEY } from 'astro:env/server';
+
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  'Cache-Control': 'no-store',
+  'X-Robots-Tag': 'noindex, nofollow',
+};
+
+const json = (body, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: JSON_HEADERS,
+  });
+
+const getTextField = (data, name) => {
+  const value = data.get(name);
+  return typeof value === 'string' ? value.trim() : '';
+};
+
+const escapeHtml = (value) =>
+  value.replace(
+    /[&<>'"]/g,
+    (character) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;',
+      })[character]
+  );
+
+export const POST = async ({ request }) => {
+  const contentType = request.headers.get('content-type') || '';
+  if (
+    !contentType.startsWith('multipart/form-data') &&
+    !contentType.startsWith('application/x-www-form-urlencoded')
+  ) {
+    return json({ message: 'Invalid form submission' }, 415);
+  }
+
   try {
-    const commonHeaders = {
-      'Content-Type': 'application/json',
-      'X-Robots-Tag': 'noindex, nofollow',
-    };
-    if (request.method !== 'POST') {
-      console.error('❌ Method not allowed:', request.method);
-      return new Response(
-        JSON.stringify({
-          message: 'Method not allowed',
-        }),
-        {
-          status: 405,
-          headers: commonHeaders,
-        }
-      );
+    const data = await request.formData();
+    const firstname = getTextField(data, 'firstname');
+    const lastname = getTextField(data, 'lastname');
+    const email = getTextField(data, 'email');
+    const message = getTextField(data, 'message');
+    const turnstileResponse = getTextField(data, 'cf-turnstile-response');
+
+    const missing = Object.entries({ firstname, lastname, email, message })
+      .filter(([, value]) => !value)
+      .map(([name]) => name);
+
+    if (missing.length > 0) {
+      return json({ message: 'Missing required fields', missing }, 400);
     }
 
-    const data = await request.formData();
-    const firstname = data.get('firstname');
-    const lastname = data.get('lastname');
-    const email = data.get('email');
-    const message = data.get('message');
-    const turnstileResponse = data.get('cf-turnstile-response');
-
-    if (!firstname || !lastname || !email || !message) {
-      const missingFields = [];
-      if (!firstname) missingFields.push('firstname');
-      if (!lastname) missingFields.push('lastname');
-      if (!email) missingFields.push('email');
-      if (!message) missingFields.push('message');
-
-      console.error('❌ Missing required fields:', {
-        missingFields,
-        receivedFields: {
-          firstname: !!firstname,
-          lastname: !!lastname,
-          email: !!email,
-          message: !!message,
-        },
-      });
-
-      return new Response(
-        JSON.stringify({
-          message: 'Missing required fields',
-          missing: missingFields,
-        }),
-        {
-          status: 400,
-          headers: commonHeaders,
-        }
-      );
+    if (
+      firstname.length > 100 ||
+      lastname.length > 100 ||
+      email.length > 254 ||
+      message.length > 5000 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
+      return json({ message: 'Invalid form fields' }, 400);
     }
 
     if (!turnstileResponse) {
-      console.error('❌ Missing Turnstile response');
-      return new Response(
-        JSON.stringify({
-          message: 'CAPTCHA verification failed',
-          error: 'Missing Turnstile response',
-        }),
-        {
-          status: 400,
-          headers: commonHeaders,
-        }
-      );
+      return json({ message: 'CAPTCHA verification failed' }, 400);
     }
 
-    // Verify Turnstile token
-    let turnstileVerified = false;
-    try {
-      // Verify the token with Cloudflare
-      const TURNSTILE_SECRET_KEY = locals?.runtime?.env?.TURNSTILE_SECRET_KEY || import.meta.env.TURNSTILE_SECRET_KEY;
+    const verificationData = new FormData();
+    verificationData.append('secret', TURNSTILE_SECRET_KEY);
+    verificationData.append('response', turnstileResponse);
 
-      if (!TURNSTILE_SECRET_KEY) {
-        console.error('❌ Missing Turnstile Secret Key');
-        return new Response(
-          JSON.stringify({
-            message: 'Server configuration error',
-          }),
-          {
-            status: 500,
-            headers: commonHeaders,
-          }
-        );
+    const clientIp =
+      request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for');
+    if (clientIp) verificationData.append('remoteip', clientIp);
+
+    const turnstileResponseFromCloudflare = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        body: verificationData,
+        signal: AbortSignal.timeout(5000),
       }
+    );
 
-      const formData = new FormData();
-      formData.append('secret', TURNSTILE_SECRET_KEY);
-      formData.append('response', turnstileResponse);
-      formData.append('remoteip', request.headers.get('x-forwarded-for') || '');
-
-      const turnstileVerify = await fetch(
-        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
-
-      const turnstileResult = await turnstileVerify.json();
-      turnstileVerified = turnstileResult.success;
-
-      if (!turnstileVerified) {
-        console.error('❌ Turnstile verification failed:', turnstileResult);
-        return new Response(
-          JSON.stringify({
-            message: 'CAPTCHA verification failed',
-            error: turnstileResult['error-codes'] || 'Unknown error',
-          }),
-          {
-            status: 400,
-            headers: commonHeaders,
-          }
-        );
-      }
-    } catch (error) {
-      console.error('❌ Error during Turnstile verification:', error);
-      return new Response(
-        JSON.stringify({
-          message: 'Error during CAPTCHA verification',
-          error: error.message,
-        }),
-        {
-          status: 500,
-          headers: commonHeaders,
-        }
-      );
+    if (!turnstileResponseFromCloudflare.ok) {
+      console.error('Turnstile service error:', {
+        status: turnstileResponseFromCloudflare.status,
+      });
+      return json({ message: 'CAPTCHA verification unavailable' }, 502);
     }
 
-    const RESEND_API_KEY = locals?.runtime?.env?.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
-
-    if (!RESEND_API_KEY) {
-      console.error('❌ Missing Resend API Key');
-      return new Response(
-        JSON.stringify({
-          message: 'Missing Resend API Key',
-        }),
-        {
-          status: 500,
-          headers: commonHeaders,
-        }
-      );
+    const turnstileResult = await turnstileResponseFromCloudflare.json();
+    if (!turnstileResult.success) {
+      console.warn('Turnstile verification failed:', {
+        errorCodes: turnstileResult['error-codes'],
+      });
+      return json({ message: 'CAPTCHA verification failed' }, 400);
     }
 
-    const msg = {
-      from: 'onboarding@resend.dev',
-      to: ['e.benjaminsalazarrubilar@gmail.com'],
-      subject: 'Message from website',
-      html: `<p>Name: ${firstname} ${lastname}</p><p>Email: ${email}</p><p>Message: ${message}</p>`,
-    };
-
-    const res = await fetch('https://api.resend.com/emails', {
+    const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify(msg),
-    });
-
-    const data_res = await res.json();
-
-    if (res.ok) {
-      return new Response(
-        JSON.stringify({
-          message: 'Email sent successfully',
-          id: data_res?.id,
-        }),
-        {
-          status: 200,
-          headers: commonHeaders,
-        }
-      );
-    } else {
-      console.error('❌ Error from Resend API:', {
-        status: res.status,
-        statusText: res.statusText,
-        error: data_res?.error || 'Unknown error',
-        errorCode: data_res?.statusCode,
-        message: data_res?.message,
-        name: data_res?.name,
-      });
-
-      return new Response(
-        JSON.stringify({
-          message: 'Error sending email',
-          error: data_res?.error || 'Unknown error',
-          status: res.status,
-          errorDetails: {
-            code: data_res?.statusCode,
-            message: data_res?.message,
-          },
-        }),
-        {
-          status: 500,
-          headers: commonHeaders,
-        }
-      );
-    }
-  } catch (error) {
-    // Detailed error logging
-    console.error('❌ Server error:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-      type: typeof error,
-      isAxiosError: error.isAxiosError || false,
-      code: error.code,
-      timestamp: new Date().toISOString(),
-    });
-
-    // Try to extract more information if possible
-    let additionalInfo = {};
-    try {
-      if (error.response) {
-        additionalInfo.response = {
-          status: error.response.status,
-          statusText: error.response.statusText,
-          data: error.response.data,
-        };
-      }
-      if (error.request) {
-        additionalInfo.request = {
-          method: error.request.method,
-          path: error.request.path,
-          host: error.request.host,
-        };
-      }
-      if (Object.keys(additionalInfo).length > 0) {
-        console.error('📊 Additional error context:', additionalInfo);
-      }
-    } catch (innerError) {
-      console.error('❌ Error while extracting additional error info:', innerError.message);
-    }
-
-    return new Response(
-      JSON.stringify({
-        message: 'Server error',
-        error: error.message,
-        name: error.name,
-        code: error.code || 'UNKNOWN_ERROR',
+      body: JSON.stringify({
+        from: 'onboarding@resend.dev',
+        to: ['e.benjaminsalazarrubilar@gmail.com'],
+        subject: 'Message from website',
+        html: [
+          `<p>Name: ${escapeHtml(firstname)} ${escapeHtml(lastname)}</p>`,
+          `<p>Email: ${escapeHtml(email)}</p>`,
+          `<p>Message: ${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
+        ].join(''),
       }),
-      {
-        status: 500,
-        headers: commonHeaders,
-      }
-    );
+      signal: AbortSignal.timeout(10000),
+    });
+
+    const resendResult = await resendResponse.json().catch(() => ({}));
+    if (!resendResponse.ok) {
+      console.error('Resend API error:', {
+        status: resendResponse.status,
+        name: resendResult?.name,
+        message: resendResult?.message,
+      });
+      return json({ message: 'Error sending email' }, 502);
+    }
+
+    return json({ message: 'Email sent successfully', id: resendResult?.id });
+  } catch (error) {
+    console.error('Contact form error:', {
+      name: error instanceof Error ? error.name : 'UnknownError',
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return json({ message: 'Server error' }, 500);
   }
 };

@@ -88,10 +88,10 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   // Only auto-redirect to /en for users whose preferred language is EN
   if (pathname === '/' || pathname === '') {
     const acceptLanguage = request.headers.get('accept-language');
-    const vercelCountry = request.headers.get('x-vercel-ip-country');
+    const cloudflareCountry = request.headers.get('cf-ipcountry');
 
     const langFromAL = detectFromAcceptLanguage(acceptLanguage);
-    const langFromCC = detectFromCountry(vercelCountry);
+    const langFromCC = detectFromCountry(cloudflareCountry);
 
     const lang: SupportedLocale = langFromAL || langFromCC || defaultLocale;
 
