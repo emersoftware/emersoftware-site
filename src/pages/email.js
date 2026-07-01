@@ -1,4 +1,4 @@
-export const POST = async ({ request }) => {
+export const POST = async ({ request, locals }) => {
   try {
     const commonHeaders = {
       'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export const POST = async ({ request }) => {
     let turnstileVerified = false;
     try {
       // Verify the token with Cloudflare
-      const TURNSTILE_SECRET_KEY = import.meta.env.TURNSTILE_SECRET_KEY;
+      const TURNSTILE_SECRET_KEY = locals?.runtime?.env?.TURNSTILE_SECRET_KEY || import.meta.env.TURNSTILE_SECRET_KEY;
 
       if (!TURNSTILE_SECRET_KEY) {
         console.error('❌ Missing Turnstile Secret Key');
@@ -129,7 +129,7 @@ export const POST = async ({ request }) => {
       );
     }
 
-    const RESEND_API_KEY = import.meta.env.RESEND_API_KEY;
+    const RESEND_API_KEY = locals?.runtime?.env?.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
 
     if (!RESEND_API_KEY) {
       console.error('❌ Missing Resend API Key');
