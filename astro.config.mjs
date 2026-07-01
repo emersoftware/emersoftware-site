@@ -13,7 +13,7 @@ export default defineConfig({
   adapter: cloudflare(),
   env: {
     schema: {
-      PUBLIC_TURNSTILE_SITE_KEY: envField.string({
+      TURNSTILE_SITE_KEY: envField.string({
         context: 'client',
         access: 'public',
         optional: true,
