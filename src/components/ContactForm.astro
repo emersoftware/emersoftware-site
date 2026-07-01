@@ -62,11 +62,12 @@ const t = getDictionary(lang);
         rows="10"
         required></textarea>
       <div class="fade-in-delay-500 mt-6 flex justify-center md:justify-start">
-        <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY}></div>
+        {TURNSTILE_SITE_KEY && <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} />}
       </div>
       <button
         class="fade-in-delay-500 mt-6 w-full rounded-full bg-orange-400 py-2.5 text-base font-medium text-white transition-colors hover:bg-orange-500 lg:text-lg"
         type="submit"
+        disabled={!TURNSTILE_SITE_KEY}
       >
         {t.contact.form.submit}
       </button>
@@ -79,7 +80,11 @@ const t = getDictionary(lang);
   </div>
 </form>
 
-<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+{
+  TURNSTILE_SITE_KEY && (
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+  )
+}
 
 <script is:inline>
   const form = document.querySelector('#contact-form');

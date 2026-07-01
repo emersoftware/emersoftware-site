@@ -31,6 +31,14 @@ const escapeHtml = (value) =>
   );
 
 export const POST = async ({ request }) => {
+  if (!TURNSTILE_SECRET_KEY || !RESEND_API_KEY) {
+    console.error('Contact form configuration is incomplete:', {
+      hasTurnstileSecret: Boolean(TURNSTILE_SECRET_KEY),
+      hasResendApiKey: Boolean(RESEND_API_KEY),
+    });
+    return json({ message: 'Contact form unavailable' }, 503);
+  }
+
   const contentType = request.headers.get('content-type') || '';
   if (
     !contentType.startsWith('multipart/form-data') &&
