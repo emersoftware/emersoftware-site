@@ -6,6 +6,8 @@
 @theme {
   --color-*: initial;
 
+  --font-serif: 'Jacques Francois', serif;
+
   --color-white: #FFFFFF;
   --color-black: #000000;
   --color-red: #FF0000;

@@ -22,67 +22,46 @@ const TURNSTILE_SITE_KEY =
 ---
 
 <form id="contact-form" method="POST" class="mt-8 flex w-full flex-col lg:text-lg">
-  <h3 class="text-left text-lg text-black lg:text-2xl">{t.contact.form.sendMeAMessage}</h3>
+  <h3 class="text-center text-lg text-black lg:text-2xl">{t.contact.form.sendMeAMessage}</h3>
   <div class="flex">
     <div class="hidden w-1/2 items-center justify-start md:flex">
       <img src="/cats.jpeg" alt="" class="w-80 lg:w-96" loading="lazy" decoding="async" />
     </div>
     <div class="w-full md:w-1/2">
-      <label class="fade-in-delay-100 text-graphite-700 mt-4 block lg:mt-8" for="firstname"
-        >{t.contact.form.firstnameLabel}</label
-      >
-      <input
-        class="fade-in-delay-100 border-graphite-300 placeholder-graphite-400 w-full border-b bg-white py-2 text-black focus:border-orange-500 focus:outline-none"
-        type="text"
-        name="firstname"
-        id="firstname"
-        placeholder={t.contact.form.firstnamePlaceholder}
-        required
-      />
-      <label class="fade-in-delay-200 text-graphite-700 mt-4 block lg:mt-8" for="lastname"
-        >{t.contact.form.lastnameLabel}</label
-      >
-      <input
-        class="fade-in-delay-200 border-graphite-300 placeholder-graphite-400 w-full border-b bg-white py-2 text-black focus:border-orange-500 focus:outline-none"
-        type="text"
-        name="lastname"
-        id="lastname"
-        placeholder={t.contact.form.lastnamePlaceholder}
-        required
-      />
-      <label class="fade-in-delay-300 text-graphite-700 mt-4 block lg:mt-8" for="email"
+      <label class="fade-in-delay-100 text-graphite-700 mt-4 block lg:mt-8" for="email"
         >{t.contact.form.emailLabel}</label
       >
       <input
-        class="fade-in-delay-300 border-graphite-300 placeholder-graphite-400 w-full border-b bg-white py-2 text-black focus:border-orange-500 focus:outline-none"
+        class="contact-serif fade-in-delay-100 border-graphite-300 placeholder-graphite-400 w-full border-b bg-white py-2 font-serif text-black placeholder:font-serif focus:border-orange-500 focus:outline-none"
         type="email"
         name="email"
         id="email"
         placeholder={t.contact.form.emailPlaceholder}
         required
       />
-      <label class="fade-in-delay-400 text-graphite-700 mt-4 block lg:mt-8" for="message"
+      <label class="fade-in-delay-200 text-graphite-700 mt-4 block lg:mt-8" for="message"
         >{t.contact.form.messageLabel}</label
       >
       <textarea
-        class="fade-in-delay-400 border-graphite-300 placeholder-graphite-400 mt-2 h-24 w-full rounded-lg border bg-white p-3 text-black focus:border-orange-500 focus:outline-none"
+        class="contact-serif notebook-textarea fade-in-delay-200 placeholder-graphite-400 mt-2 h-40 w-full resize-none rounded-none border-0 px-1 font-serif text-black placeholder:font-serif focus:outline-none"
         name="message"
         id="message"
         cols="30"
         rows="10"
+        placeholder={t.contact.form.messagePlaceholder}
         required></textarea>
       <div class="fade-in-delay-500 mt-6 flex justify-center md:justify-start">
-        {TURNSTILE_SITE_KEY && (
-          <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} />
-        )}
+        {TURNSTILE_SITE_KEY && <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} />}
       </div>
-      <button
-        class="fade-in-delay-500 mt-6 w-full rounded-full bg-orange-400 py-2.5 text-base font-medium text-white transition-colors hover:bg-orange-500 lg:text-lg"
-        type="submit"
-        disabled={!TURNSTILE_SITE_KEY}
-      >
-        {t.contact.form.submit}
-      </button>
+      <div class="mt-6 flex justify-end">
+        <button
+          class="contact-serif fade-in-delay-500 inline-flex w-fit shrink-0 items-center justify-center rounded-none border-0 bg-orange-400 px-6 py-2.5 font-serif text-base font-normal text-white transition-colors hover:bg-orange-500 focus:outline-2 focus:outline-offset-2 focus:outline-orange-500 lg:text-lg"
+          type="submit"
+          disabled={!TURNSTILE_SITE_KEY}
+        >
+          {t.contact.form.submit}
+        </button>
+      </div>
     </div>
   </div>
 
@@ -91,6 +70,29 @@ const TURNSTILE_SITE_KEY =
     <img src="/cats.jpeg" alt="" class="w-64" loading="lazy" decoding="async" />
   </div>
 </form>
+
+<style is:global>
+  #contact-form .contact-serif,
+  #contact-form .contact-serif::placeholder {
+    font-family: 'Jacques Francois', serif !important;
+    font-weight: 400 !important;
+  }
+
+  #contact-form .notebook-textarea {
+    line-height: 2.25rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    caret-color: var(--color-orange-500);
+    background-color: transparent;
+    background-image: linear-gradient(
+      to bottom,
+      transparent calc(2.25rem - 1px),
+      var(--color-graphite-300) calc(2.25rem - 1px)
+    );
+    background-size: 100% 2.25rem;
+    background-attachment: local;
+  }
+</style>
 
 {
   TURNSTILE_SITE_KEY && (

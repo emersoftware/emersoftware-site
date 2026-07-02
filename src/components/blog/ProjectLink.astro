@@ -1,0 +1,39 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  icon?: string;
+}
+
+const { href, label, icon } = Astro.props;
+---
+
+<a
+  {href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="group mx-0.5 inline-flex items-baseline gap-1 whitespace-nowrap text-black no-underline transition-colors hover:text-orange-500"
+>
+  <span aria-hidden="true">[</span>
+  {
+    icon && (
+      <img
+        src={icon}
+        alt=""
+        class="project-link-icon size-3.5 self-center"
+        loading="lazy"
+        decoding="async"
+      />
+    )
+  }
+  <span>{label}</span>
+  <span aria-hidden="true">]</span>
+</a>
+
+<style is:global>
+  .blog-body img.project-link-icon {
+    display: inline-block;
+    margin: 0;
+    border-radius: 2px;
+  }
+</style>

@@ -1,5 +1,4 @@
 ---
-import ProjectCard from './ProjectCard.astro';
 import { getDictionary } from '../i18n/dictionaries';
 import { isSupportedLocale, defaultLocale } from '../i18n/config';
 
@@ -12,17 +11,66 @@ const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
 const t = getDictionary(lang);
 ---
 
-<div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-  {t.projectItems.map((project) => (
-    <ProjectCard
-      title={project.title}
-      description={project.description}
-      image={project.image}
-      imageSize={project.imageSize}
-      link={project.link}
-      repo={project.repo}
-      demo={project.demo}
-      techs={project.techs}
-    />
-  ))}
-</div>
+<h2 class="text-left text-lg text-black lg:text-2xl">{t.sectionHeadings.projects}</h2>
+<ul class="mt-8 text-sm text-black">
+  {
+    t.projectItems.map((project) => (
+      <li>
+        <details class="group">
+          <summary class="flex cursor-pointer list-none flex-wrap items-baseline gap-2 px-1 py-3 [&::-webkit-details-marker]:hidden">
+            <span>{project.title}</span>
+            <span class="text-graphite-400">-</span>
+            <span class="text-graphite-600 flex-1">{project.summary}</span>
+            <span class="flex shrink-0 items-center gap-3">
+              {project.repo && (
+                <a
+                  href={project.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-black underline-offset-2 transition-colors hover:text-orange-500 hover:underline"
+                  onclick="event.stopPropagation()"
+                >
+                  [ {t.list.github} ]
+                </a>
+              )}
+              {project.demo && (
+                <a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-black underline-offset-2 transition-colors hover:text-orange-500 hover:underline"
+                  onclick="event.stopPropagation()"
+                >
+                  [ {t.list.demo} ]
+                </a>
+              )}
+              {project.link && !project.demo && (
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-black underline-offset-2 transition-colors hover:text-orange-500 hover:underline"
+                  onclick="event.stopPropagation()"
+                >
+                  [ {t.list.view} ]
+                </a>
+              )}
+            </span>
+            <span class="text-graphite-500 ml-auto shrink-0 group-open:hidden" aria-hidden="true">
+              [ + ]
+            </span>
+            <span
+              class="text-graphite-500 ml-auto hidden shrink-0 group-open:inline"
+              aria-hidden="true"
+            >
+              [ - ]
+            </span>
+          </summary>
+          <div class="px-1 pb-4">
+            <p class="text-graphite-600 max-w-3xl leading-relaxed">{project.description}</p>
+          </div>
+        </details>
+      </li>
+    ))
+  }
+</ul>

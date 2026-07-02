@@ -1,26 +1,42 @@
 ---
+import LangSwitch from './LangSwitch.astro';
+import { isSupportedLocale, defaultLocale } from '../i18n/config';
+
+interface Props {
+  lang?: string;
+  currentPath?: string;
+  class?: string;
+}
+
+const {
+  lang: rawLang = defaultLocale,
+  currentPath = Astro.url.pathname,
+  class: className = '',
+} = Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="z-50 mt-16 py-8">
+<footer class={`z-50 mt-16 py-8 ${className}`}>
   <div
-    class="mx-auto flex w-full flex-col items-center justify-between gap-4 px-4 md:w-3/5 md:flex-row lg:w-1/2"
+    class="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-6 md:flex-row lg:px-10"
   >
     <div>
-      <p class="text-sm text-graphite-600">
+      <p class="text-graphite-600 text-sm">
         © {currentYear} Emerson Salazar Rubilar
       </p>
     </div>
-    <div class="flex gap-6">
+    <div class="flex items-center gap-6">
+      <LangSwitch lang={lang} currentPath={currentPath} />
       <a
         href="https://github.com/emersoftware"
-        class="text-graphite-600 transition-colors hover:text-orange-500"
+        class="text-graphite-600 text-sm transition-colors hover:text-orange-500"
       >
         GitHub
       </a>
       <a
         href="https://www.linkedin.com/in/emerson-salazar-rubilar-149468220/"
-        class="text-graphite-600 transition-colors hover:text-orange-500"
+        class="text-graphite-600 text-sm transition-colors hover:text-orange-500"
       >
         LinkedIn
       </a>

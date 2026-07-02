@@ -20,20 +20,16 @@ const navItems = [
 ];
 ---
 
-<nav
-  id="navbar"
-  class="navbar-hero relative z-20 transition-opacity duration-300"
-  data-hero-ui
-  data-hero-fade
->
-  <div class="mx-auto flex items-center justify-center px-4 py-4 md:px-12 lg:px-16">
-    <ul class="hidden flex-row items-center gap-6 text-sm md:flex">
+<div class="z-30 shrink-0 bg-white">
+  <div class="border-graphite-200 border-b">
+    <ul class="flex items-center gap-5 px-6 py-4 text-sm text-black md:gap-7">
       {
         navItems.map((item) => (
           <li>
             <a
               href={sectionHref(item.id)}
-              class="nav-link text-white/80 transition-colors hover:text-white"
+              data-nav-target={item.id}
+              class="nav-link text-graphite-600 transition-colors hover:text-orange-500"
             >
               {item.label}
             </a>
@@ -42,24 +38,10 @@ const navItems = [
       }
     </ul>
   </div>
-</nav>
+</div>
 
 <style>
-  .nav-link {
-    position: relative;
-    padding-bottom: 2px;
-  }
-  .nav-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    height: 1px;
-    background-color: currentColor;
-    transition: width 0.3s ease;
-  }
-  .nav-link:hover::after {
-    width: 100%;
+  .nav-link[data-active='true'] {
+    color: #ed8936;
   }
 </style>

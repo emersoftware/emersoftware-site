@@ -3,24 +3,23 @@ interface Props {
   title: string;
   description: string;
   lang?: string;
+  bare?: boolean;
 }
 
-import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import { supportedLocales, defaultLocale, isSupportedLocale } from '../i18n/config';
 
 import '../styles/tailwind.css';
 import '@fontsource-variable/inter';
-import '@fontsource-variable/eb-garamond';
+import '@fontsource/jacques-francois/latin.css';
 
-const { title, description, lang = 'es' } = Astro.props;
+const { title, description, lang = 'es', bare = false } = Astro.props;
 const siteUrl = Astro.url.origin;
 const currentPath = Astro.url.pathname;
 
 const normalizedLang = isSupportedLocale(lang) ? lang : defaultLocale;
 const stripEnPrefix = (path: string) => path.replace(/^\/en(?=\/|$)/, '') || '/';
-const ensureEnPrefix = (path: string) =>
-  /^\/en(?=\/|$)/.test(path) ? path : `/en${path}`;
+const ensureEnPrefix = (path: string) => (/^\/en(?=\/|$)/.test(path) ? path : `/en${path}`);
 
 const personLd = {
   '@context': 'https://schema.org',
@@ -95,15 +94,12 @@ const websiteLd = {
     <meta name="astro-view-transitions" />
     <script type="application/ld+json" set:html={JSON.stringify([websiteLd, personLd])} />
   </head>
-  <body class="bg-white">
+  <body class={`bg-white ${bare ? 'is-bare' : ''}`}>
     <div class="fixed h-full w-full">
       <div class="bg absolute inset-0 w-full items-center px-5 py-24"></div>
     </div>
-    <Navbar lang={normalizedLang} />
-    <div class="pt-20 md:pt-24">
-      <slot />
-    </div>
-    <Footer />
+    <slot />
+    {!bare && <Footer lang={normalizedLang} currentPath={currentPath} />}
 
     <style is:global>
       :root {
@@ -111,7 +107,7 @@ const websiteLd = {
       }
 
       html {
-        font-family: system-ui, sans-serif;
+        font-family: 'Jacques Francois', system-ui, serif;
         scroll-behavior: smooth;
       }
 
@@ -120,12 +116,60 @@ const websiteLd = {
         flex-direction: column;
         min-height: 100vh;
         overscroll-behavior: none;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Jacques Francois', serif;
         color: #000000;
       }
 
+      /* En páginas "hoja" (bare), quitamos el flex del body para que
+         position: sticky del hero y de la nav funcionen con normalidad. */
+      body.is-bare {
+        display: block;
+      }
+
+      /* Botones, inputs y elementos interactivos usan la sans (Inter) */
+      button,
+      input,
+      textarea,
+      select,
+      a.btn,
+      .contact-btn,
+      .hero-pill {
+        font-family: 'Inter', sans-serif;
+      }
+
+      /* Jacques Francois solo tiene peso 400: forzamos normal en todo el cuerpo
+         para evitar faux-bold. Los botones/inputs (Inter) conservan sus pesos. */
+      body,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      span,
+      a,
+      li,
+      strong,
+      b,
       .title {
-        font-family: 'EB Garamond', serif;
+        font-family: 'Jacques Francois', serif;
+        font-weight: 400 !important;
+      }
+
+      /* Excepciones: elementos interactivos siguen en Inter con sus pesos */
+      button,
+      input,
+      textarea,
+      select,
+      .contact-btn,
+      .hero-pill {
+        font-family: 'Inter', sans-serif;
+        font-weight: inherit;
+      }
+
+      .title {
+        font-family: 'Jacques Francois', serif;
         letter-spacing: -3px;
       }
 
@@ -216,6 +260,50 @@ const websiteLd = {
         }
       }
 
+      /* El hero no aplica opacity sobre ancestros de backdrop-filter: eso crea
+         una capa aislada y Chrome deja de muestrear correctamente el fondo. */
+      [data-hero-overlay] {
+        --hero-visibility: 1;
+        --hero-blur: 12px;
+        --hero-white-10-alpha: 0.1;
+        --hero-white-20-alpha: 0.2;
+        --hero-black-40-alpha: 0.4;
+        --hero-black-50-alpha: 0.5;
+      }
+
+      [data-hero-fade] {
+        opacity: var(--hero-visibility);
+      }
+
+      [data-hero-overlay] .hero-pill {
+        border-color: rgb(255 255 255 / var(--hero-white-20-alpha)) !important;
+        background-color: rgb(255 255 255 / var(--hero-white-10-alpha)) !important;
+        -webkit-backdrop-filter: blur(var(--hero-blur)) !important;
+        backdrop-filter: blur(var(--hero-blur)) !important;
+      }
+
+      [data-hero-overlay] .hero-pill:hover {
+        background-color: rgb(255 255 255 / var(--hero-white-20-alpha)) !important;
+      }
+
+      [data-hero-overlay] .hero-pill--dark {
+        background-color: rgb(0 0 0 / var(--hero-black-40-alpha)) !important;
+      }
+
+      [data-hero-overlay] .hero-pill--dark:hover {
+        background-color: rgb(0 0 0 / var(--hero-black-50-alpha)) !important;
+      }
+
+      [data-hero-overlay] .hero-pill > svg,
+      [data-hero-overlay] .hero-pill > span,
+      [data-hero-overlay] .hero-pill > code {
+        opacity: var(--hero-visibility);
+      }
+
+      [data-hero-overlay] .hero-pill > span {
+        font-family: 'Inter', sans-serif !important;
+      }
+
       /* Fallback for browsers that don't support dvh */
       @supports not (height: 100dvh) {
         .hero-section {
@@ -245,7 +333,6 @@ const websiteLd = {
           scroll-behavior: auto;
         }
       }
-
     </style>
   </body>
 </html>

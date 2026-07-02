@@ -1,0 +1,194 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import { displayDate, readingTime } from '../../lib/format';
+
+const { slug } = Astro.params;
+const posts = await getCollection('blog');
+const entry = slug ? posts.find((post) => post.id === slug) : undefined;
+const notFound = !entry;
+
+if (notFound) {
+  Astro.response.status = 404;
+}
+
+const data = entry?.data;
+const rendered = entry ? await render(entry) : null;
+const Content = rendered?.Content;
+
+const lang = Astro.url.pathname.startsWith('/en/') ? 'en' : 'es';
+const date = data ? displayDate(data.publishedAt, lang) : '';
+const rt = entry ? readingTime(entry.body) : '';
+---
+
+<Layout
+  title={entry ? `${data.title} | Emerson Software` : 'Post not found | Emerson Software'}
+  description={entry ? data.description : 'The requested blog post does not exist.'}
+  {lang}
+  bare
+>
+  {
+    notFound ? (
+      <div class="mx-auto max-w-[680px] px-6 py-24 md:px-10">
+        <h1 class="title mb-6 text-5xl text-black">Post not found</h1>
+        <p class="text-[18px] text-black opacity-75">The blog post you requested does not exist.</p>
+        <a href="/" class="mt-8 inline-block text-black underline">
+          Back to home
+        </a>
+      </div>
+    ) : (
+      <>
+        <div class="fixed inset-0 z-0" aria-hidden="true">
+          <picture>
+            <source media="(min-width: 768px)" srcset="/hero-bg.jpeg" />
+            <img
+              src="/hero-bg-mobile.jpeg"
+              alt=""
+              class="h-full w-full object-cover object-bottom md:object-center"
+            />
+          </picture>
+          <div class="absolute inset-0 bg-black/40" />
+        </div>
+
+        <main class="relative z-10">
+          {/* El encabezado vive sobre el fondo, antes de que comience la hoja. */}
+          <header class="mx-auto flex min-h-[72dvh] w-full max-w-4xl flex-col px-6 md:px-10">
+            <a
+              href="/"
+              class="group mt-10 inline-flex w-fit items-center gap-2.5 text-[13px] text-white/80 transition-colors hover:text-white"
+            >
+              <span
+                class="inline-block transition-transform duration-300 group-hover:-translate-x-1"
+                aria-hidden="true"
+              >
+                ←
+              </span>{' '}
+              {lang === 'en' ? 'back to home' : 'volver al inicio'}
+            </a>
+
+            <div class="mt-auto pb-14 md:pb-16">
+              <div
+                class="enter mb-6 flex flex-wrap items-center gap-3 text-[13px] text-white/70"
+                style="letter-spacing:0.06em;--enter-delay:60ms"
+              >
+                <span class="tabular-nums">{date}</span>
+                <span aria-hidden="true">·</span>
+                <span class="tabular-nums">{rt}</span>
+              </div>
+              <h1
+                class="enter m-0 max-w-3xl font-serif font-normal text-balance text-white"
+                style="font-size:clamp(32px,5vw,64px);line-height:1;letter-spacing:-0.025em;--enter-delay:140ms"
+              >
+                {data.title}
+              </h1>
+              <p
+                class="enter mt-5 max-w-2xl text-base leading-relaxed text-white/75 md:text-lg"
+                style="--enter-delay:200ms"
+              >
+                {data.description}
+              </p>
+            </div>
+          </header>
+
+          {/* La hoja se desplaza normalmente; el fondo permanece fijo detrás. */}
+          <div class="blog-paper mx-auto min-h-screen w-full max-w-4xl bg-white shadow-2xl">
+            <article class="blog-body mx-auto max-w-[680px] px-6 pt-28 pb-24 md:px-10 md:pt-36">
+              <Content />
+            </article>
+          </div>
+          <Footer
+            lang={lang}
+            currentPath={Astro.url.pathname}
+            class="mt-0 [&_a]:!text-white/80 [&_a:hover]:!text-white [&_p]:!text-white/80 [&_span]:!text-white/50"
+          />
+        </main>
+      </>
+    )
+  }
+</Layout>
+
+<style>
+  .blog-body {
+    font-family: 'Jacques Francois', serif;
+    font-size: 18px;
+    line-height: 1.8;
+  }
+
+  .blog-body :global(h2) {
+    font-family: 'Jacques Francois', serif;
+    font-size: 32px;
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+    font-weight: normal;
+  }
+
+  .blog-body :global(h1) {
+    font-family: 'Jacques Francois', serif;
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 1.1;
+    margin-bottom: 1.25em;
+    font-weight: normal;
+  }
+
+  .blog-body :global(hr) {
+    width: 100%;
+    height: 1.5rem;
+    margin: 3.5rem 0;
+    border: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='24' viewBox='0 0 34 24'%3E%3Ctext x='1' y='17' fill='%239ca3af' font-family='monospace' font-size='15'%3E%26gt;%26lt;%3C/text%3E%3C/svg%3E");
+    background-repeat: space no-repeat;
+    background-position: left center;
+    background-size: 34px 24px;
+  }
+
+  .blog-body :global(h3) {
+    font-family: 'Jacques Francois', serif;
+    font-size: 24px;
+    margin-top: 2em;
+    margin-bottom: 0.75em;
+    font-weight: normal;
+  }
+
+  .blog-body :global(p) {
+    margin-bottom: 1.5em;
+  }
+
+  .blog-body :global(img) {
+    border-radius: 8px;
+    margin: 2em 0;
+  }
+
+  .blog-body :global(pre) {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 1.5em;
+    overflow-x: auto;
+    margin: 2em 0;
+  }
+
+  .blog-body :global(code) {
+    background: #f0f0f0;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  .blog-body :global(blockquote) {
+    border-left: 4px solid #3b82f6;
+    padding-left: 1.5em;
+    margin: 2em 0;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  .blog-body :global(ul),
+  .blog-body :global(ol) {
+    padding-left: 2em;
+    margin-bottom: 1.5em;
+  }
+
+  .blog-body :global(li) {
+    margin-bottom: 0.5em;
+  }
+</style>

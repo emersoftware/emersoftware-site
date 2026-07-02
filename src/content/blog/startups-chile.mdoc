@@ -1,0 +1,32 @@
+---
+title: "¿Cómo se mueven las startups en Chile?"
+publishedAt: 2026-06-30
+category: Blog
+description: "Cómo armé un dataset para ver cuánto pivotean las startups chilenas, cómo lo hacen, qué rondas de inversión levantan y cuándo cierran silenciosamente."
+---
+
+Me surgió la pregunta de cuánto pivotean las startups en Chile y cómo lo hacen. Cuando levantan plata es público; todos quieren saberlo, le conviene a la empresa, al fondo y a la prensa. En cambio, los pivots y los cierres rara vez se anuncian. Terminé armando {% project href="https://startups.emersoftware.cl" label="Startups, Chile" icon="https://startups.emersoftware.cl/favicon.svg" /%} para reunir todos estos datos y tener la trayectoria completa de cada una.
+
+El desafío, justamente, es eso último: determinar cuándo y cómo pivoteó una startup, y si finalmente cerró. Muchas, la mayoría, cierran silenciosamente. La motivación de este sitio fue principalmente esa: se me ocurrió una forma de determinarlo y la terminé implementando para validarla.
+
+---
+
+La fundación es casi trivial. Generalmente en rondas pre-seed, como Platanus o Startup Chile, se puede marcar el origen cuando entran al batch. Para el alcance de este experimento scrapeé el sitio de Platanus, que tenía ordenaditos sus batches desde 2020 a 2024 (no sé qué onda 2025 y 2026), obteniendo nombres, founders, sitios y descripción del producto.
+
+Por otro lado, las rondas de inversión se comunican por todos lados, tanto en prensa como en los mismos sitios de las startups. Por cada una le pedí a Claude que, con subagentes y web search, buscara qué había pasado: si cerró, si levantó plata, cuándo y cuánto.
+
+Y finalmente, los pivots y los cierres silenciosos. El sentido de armar todo esto. La forma que ya había visto para determinar cómo pivoteó una startup es revisar su landing page y darse cuenta de que dice algo distinto a lo que decía hace un mes. Quise hacer eso más programático.
+
+Desde las landings de las startups que encontré en Platanus revisé Wayback Machine descargando una captura por mes. Luego, cuando ya tenía todo eso, medí cuánto cambiaba una landing de un mes a otro vectorizando el contenido con TF-IDF y midiendo la distancia entre meses. Ahí ya tenemos puntos que Claude puede usar para identificar cómo cambió el producto, y una fecha estimada del pivot.
+
+Algo similar con las que cierran silenciosamente: las capturas de Wayback dejan de aparecer, o el dominio queda caído, redirige a otro sitio o se vendió a un tercero.
+
+Muchas veces las startups, en un punto, hacen un rebranding. Acá tuve una gran ayuda de la página de la startup en Platanus, porque le hice el mismo proceso y se puede ver cuándo cambiaron de nombre o de sitio. En base a eso también reconstruí la cadena, y de esa forma quedan dentro algunos rebrandings.
+
+---
+
+Claude encontraba datos correctos y construía trayectorias coherentes, pero solía detenerse demasiado pronto: entregaba respuestas eficientes, no siempre eficaces. Lo ideal habría sido aplicar loop engineering, haciendo que el agente iterara sobre su respuesta a partir de la verificación de otro agente. Para este experimento hice algo más simple: comparé sus resultados con startups cuya historia conocía y le pedí que reescribiera su propia skill a partir de mis críticas; así completó varias trayectorias que antes estaban correctas, pero incompletas.
+
+Puedes mirar lo que encontré en {% project href="https://startups.emersoftware.cl" label="Startups, Chile" icon="https://startups.emersoftware.cl/favicon.svg" /%}. Si conoces la trayectoria de alguna startup que listé y dejé algún dato mal, por favor {% project href="https://github.com/emersoftware/startups/issues/new" label="abre una issue" icon="https://github.githubassets.com/favicons/favicon.svg" /%}.
+
+Como próximos pasos, quiero incorporar las startups de Kayak Ventures y una muestra de las que han pasado por Startup Chile. También quiero implementar loop engineering para mejorar la cobertura y la calidad de los resultados.

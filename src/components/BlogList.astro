@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import { displayDate } from '../lib/format';
+import { isSupportedLocale, defaultLocale } from '../i18n/config';
+import { getDictionary } from '../i18n/dictionaries';
+
+interface Props {
+  lang?: string;
+}
+
+const { lang: rawLang = defaultLocale } = Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
+const t = getDictionary(lang);
+
+const blogPosts = (await getCollection('blog'))
+  .filter((post) => post.filePath?.endsWith('.mdoc'))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+
+<h2 class="text-left text-lg text-black lg:text-2xl">{t.sectionHeadings.blog}</h2>
+<ul class="mt-8 text-sm text-black">
+  {
+    blogPosts.length > 0 ? (
+      blogPosts.map((post) => (
+        <li>
+          <a href={`/blog/${post.id}`} class="group flex flex-wrap items-baseline gap-2 px-1 py-3">
+            <span class="text-graphite-400 w-3 shrink-0">-</span>
+            <span class="transition-colors group-hover:text-orange-500">{post.data.title}</span>
+            <span class="text-graphite-400">-</span>
+            <span class="text-graphite-500 flex-1">{displayDate(post.data.publishedAt, lang)}</span>
+            <span class="shrink-0 text-black underline-offset-2 transition-colors group-hover:text-orange-500 group-hover:underline">
+              [ {t.list.read} ]
+            </span>
+          </a>
+        </li>
+      ))
+    ) : (
+      <li class="text-graphite-500 px-1 py-3 text-sm">No posts published yet.</li>
+    )
+  }
+</ul>

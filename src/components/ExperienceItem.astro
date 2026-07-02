@@ -1,68 +1,46 @@
 ---
 interface Props {
   company: string;
-  role: string;
   date: string;
   product: string;
   description: string;
   link?: string;
+  viewLabel?: string;
 }
 
-const { company, role, date, product, description, link } = Astro.props;
+const { company, date, product, description, link, viewLabel = 'ir a verlo' } = Astro.props;
 ---
 
-<!-- Línea horizontal del timeline -->
-<div
-  class="absolute -start-[1.70rem] top-[0.9rem] h-[2px] w-5 bg-black lg:top-[1.35rem]"
->
-</div>
-
-<div class="ml-7">
-  <!-- Header: Empresa + Fecha -->
-  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-    <h3 class="font-serif text-2xl font-medium text-black lg:text-3xl">
-      {link ? (
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group/link inline-flex items-baseline gap-1.5 transition-colors hover:text-orange-600"
-        >
-          {company}
-          <svg
-            class="h-4 w-4 shrink-0 self-center text-graphite-400 transition-colors group-hover/link:text-orange-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+<li>
+  <details class="group">
+    <summary
+      class="flex cursor-pointer list-none flex-wrap items-baseline gap-2 px-1 py-3 [&::-webkit-details-marker]:hidden"
+    >
+      <span>{company}</span>
+      <span class="text-graphite-400">-</span>
+      <span>{product}</span>
+      <span class="text-graphite-400">-</span>
+      <span>{date}</span>
+      {
+        link && (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="ml-auto shrink-0 text-black underline-offset-2 hover:text-orange-500 hover:underline"
+            onclick="event.stopPropagation()"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </a>
-      ) : (
-        company
-      )}
-    </h3>
-    <span class="shrink-0 text-sm text-graphite-500">{date}</span>
-  </div>
-
-  <!-- Grid de 3 columnas en desktop, stack en mobile -->
-  <div class="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1fr_1.5fr] lg:gap-8">
-    <!-- Columna 1: Producto -->
-    <div>
-      <p class="text-sm text-graphite-600">{product}</p>
+            [ {viewLabel} ]
+          </a>
+        )
+      }
+      <span class="text-graphite-500 shrink-0 group-open:hidden" aria-hidden="true">[ + ]</span>
+      <span class="text-graphite-500 hidden shrink-0 group-open:inline" aria-hidden="true"
+        >[ - ]</span
+      >
+    </summary>
+    <div class="px-1 pb-4">
+      <p class="text-graphite-600 max-w-3xl text-sm leading-relaxed">{description}</p>
     </div>
-
-    <!-- Columna 2: Cargo + Tecnologías -->
-    <div class="space-y-3">
-      <span class="text-sm font-medium text-black">{role}</span>
-      <ul class="flex flex-row flex-wrap gap-1.5">
-        <slot />
-      </ul>
-    </div>
-
-    <!-- Columna 3: Descripción -->
-    <p class="text-sm leading-relaxed text-graphite-600">
-      {description}
-    </p>
-  </div>
-</div>
+  </details>
+</li>

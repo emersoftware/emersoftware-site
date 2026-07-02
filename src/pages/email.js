@@ -49,13 +49,11 @@ export const POST = async ({ request }) => {
 
   try {
     const data = await request.formData();
-    const firstname = getTextField(data, 'firstname');
-    const lastname = getTextField(data, 'lastname');
     const email = getTextField(data, 'email');
     const message = getTextField(data, 'message');
     const turnstileResponse = getTextField(data, 'cf-turnstile-response');
 
-    const missing = Object.entries({ firstname, lastname, email, message })
+    const missing = Object.entries({ email, message })
       .filter(([, value]) => !value)
       .map(([name]) => name);
 
@@ -63,13 +61,7 @@ export const POST = async ({ request }) => {
       return json({ message: 'Missing required fields', missing }, 400);
     }
 
-    if (
-      firstname.length > 100 ||
-      lastname.length > 100 ||
-      email.length > 254 ||
-      message.length > 5000 ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    ) {
+    if (email.length > 254 || message.length > 5000 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json({ message: 'Invalid form fields' }, 400);
     }
 
@@ -120,7 +112,6 @@ export const POST = async ({ request }) => {
         to: ['e.benjaminsalazarrubilar@gmail.com'],
         subject: 'Message from website',
         html: [
-          `<p>Name: ${escapeHtml(firstname)} ${escapeHtml(lastname)}</p>`,
           `<p>Email: ${escapeHtml(email)}</p>`,
           `<p>Message: ${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
         ].join(''),

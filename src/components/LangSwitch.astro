@@ -1,0 +1,35 @@
+---
+import { isSupportedLocale, defaultLocale } from '../i18n/config';
+
+interface Props {
+  lang?: string;
+  currentPath?: string;
+  class?: string;
+}
+
+const { lang: rawLang = defaultLocale, currentPath = Astro.url.pathname, class: className = '' } =
+  Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
+
+const stripEnPrefix = (path: string) => path.replace(/^\/en(?=\/|$)/, '') || '/';
+const ensureEnPrefix = (path: string) => (/^\/en(?=\/|$)/.test(path) ? path : `/en${path}`);
+
+const esHref = stripEnPrefix(currentPath);
+const enHref = ensureEnPrefix(currentPath);
+---
+
+<div class={`flex items-center gap-2 text-sm ${className}`}>
+  <a
+    href={esHref}
+    class={`transition-colors hover:text-orange-500 ${lang === 'es' ? 'text-orange-500' : 'text-graphite-500'}`}
+  >
+    ES
+  </a>
+  <span class="text-graphite-400" aria-hidden="true">/</span>
+  <a
+    href={enHref}
+    class={`transition-colors hover:text-orange-500 ${lang === 'en' ? 'text-orange-500' : 'text-graphite-500'}`}
+  >
+    EN
+  </a>
+</div>

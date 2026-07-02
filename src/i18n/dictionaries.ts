@@ -12,6 +12,7 @@ export type ExperienceItem = {
 
 export type ProjectItem = {
   title: string;
+  summary: string;
   description: string;
   image?: string;
   imageSize?: 'sm' | 'md';
@@ -28,6 +29,7 @@ export type Dictionary = {
     home: string;
     experience: string;
     projects: string;
+    blog: string;
     contact: string;
     langShort: string;
   };
@@ -54,6 +56,11 @@ export type Dictionary = {
     projects: string;
     contact: string;
   };
+  sectionHeadings: {
+    experience: string;
+    projects: string;
+    blog: string;
+  };
   sectionIds: {
     home: string;
     experience: string;
@@ -64,18 +71,21 @@ export type Dictionary = {
     role: string;
     stack: string;
   };
+  list: {
+    view: string;
+    read: string;
+    github: string;
+    demo: string;
+  };
   contact: {
     success: string;
     error: string;
     form: {
       sendMeAMessage: string;
-      firstnameLabel: string;
-      firstnamePlaceholder: string;
-      lastnameLabel: string;
-      lastnamePlaceholder: string;
       emailLabel: string;
       emailPlaceholder: string;
       messageLabel: string;
+      messagePlaceholder: string;
       submit: string;
     };
   };
@@ -91,6 +101,7 @@ const es: Dictionary = {
     home: 'Inicio',
     experience: 'Experiencia',
     projects: 'Proyectos',
+    blog: 'Blog',
     contact: 'Contacto',
     langShort: 'ES',
   },
@@ -98,8 +109,7 @@ const es: Dictionary = {
     brand: 'emersoftware',
     name: 'Emerson Salazar Rubilar',
     role: 'Ingeniero de Software',
-    about:
-      'Construyo productos de software con foco en inteligencia artificial. Disponible para consultoría en desarrollo y agentes de IA.',
+    about: 'Construyo software. Atención al detalle y sentido de urgencia.',
     email: 'hola@emersoftware.cl',
   },
   githubCommit: {
@@ -118,6 +128,11 @@ const es: Dictionary = {
     projects: 'Proyectos',
     contact: 'Contacto',
   },
+  sectionHeadings: {
+    experience: 'Dónde he trabajado',
+    projects: 'Por amor al arte',
+    blog: 'Cosas que escribo',
+  },
   sectionIds: {
     home: 'inicio',
     experience: 'experiencia',
@@ -128,29 +143,32 @@ const es: Dictionary = {
     role: 'Cargo',
     stack: 'Stack',
   },
+  list: {
+    view: 'ir al sitio',
+    read: 'leer',
+    github: 'github',
+    demo: 'demo',
+  },
   contact: {
     success: 'Gracias por tu mensaje! <br /> Te responderé lo antes posible.',
     error:
       'Hubo un error al enviar tu mensaje, por favor intenta de nuevo o contactame por otro medio',
     form: {
       sendMeAMessage: '¿Seamos amigos? ¿Trabajemos juntos?',
-      firstnameLabel: 'Nombre',
-      firstnamePlaceholder: 'Ingresa tu nombre',
-      lastnameLabel: 'Apellido',
-      lastnamePlaceholder: 'Ingresa tu apellido',
       emailLabel: 'Email',
       emailPlaceholder: 'Ingresa tu email',
       messageLabel: 'Mensaje',
+      messagePlaceholder: 'Escribe tu mensaje...',
       submit: 'Enviar',
     },
   },
   experienceItems: [
     {
-      company: 'Cámara Chilena de la Construcción (CChC)',
+      company: 'Revi (CChC)',
       role: 'Software Engineer',
       date: 'ene. 2026 - actualidad',
       link: 'https://ia-revi.cl',
-      product: 'Revi – Revisión de Permisos con IA',
+      product: 'Revisión de permisos con IA',
       description:
         'Desarrollo en una plataforma basada en IA para la revisión automatizada de permisos de edificación. Implementación de flujos de análisis inteligente para validación normativa.',
       techs: ['React', 'Python', 'TypeScript', 'AI'],
@@ -199,8 +217,9 @@ const es: Dictionary = {
   projectItems: [
     {
       title: 'The Stack',
+      summary: 'Un rincón para descubrir la tecnología que se crea en Latinoamérica.',
       description:
-        'Hacker News orientado a Latinoamérica. Un índice de contenido tech para centralizar contenido humano, original y de calidad: side projects, blogs, noticias del ecosistema, reflexiones técnicas y meetups. Save the internet.',
+        'Un índice de contenido tecnológico hecho en Latinoamérica. Reúne proyectos independientes, blogs, noticias del ecosistema, reflexiones técnicas y meetups en un espacio dedicado al contenido humano, original y de calidad. Save the internet.',
       image: '/thestack-mini.jpeg',
       link: 'https://thestack.cl',
       repo: 'https://github.com/emersoftware/thestack',
@@ -208,8 +227,9 @@ const es: Dictionary = {
     },
     {
       title: 'Themis',
+      summary: 'IA que encuentra señales de riesgo en licitaciones públicas.',
       description:
-        'Auditoría automatizada de licitaciones públicas con IA. Analiza licitaciones de Mercado Público para detectar incumplimientos normativos, patrones sospechosos y irregularidades. Primer lugar en el track Legacy de Platanus Hack 25.',
+        'Una plataforma de auditoría automatizada que analiza licitaciones de Mercado Público para detectar incumplimientos normativos, patrones sospechosos e irregularidades. Ganó el primer lugar del track Legacy en Platanus Hack 25.',
       image: '/themis-mini.jpeg',
       imageSize: 'md',
       link: 'https://themis.lat',
@@ -218,8 +238,9 @@ const es: Dictionary = {
     },
     {
       title: 'Kapin',
+      summary: 'Un agente que convierte repositorios en métricas de producto accionables.',
       description:
-        'Agente de auditoría de métricas de producto para repositorios de software. Analiza repositorios y entrega métricas relevantes, consultas para medirlas y la base técnica para persistir los datos. Reduce la fricción entre desarrollo y medición.',
+        'Un agente que examina repositorios de software, identifica métricas de producto relevantes y genera las consultas y la estructura técnica necesarias para medirlas y persistirlas. Su objetivo es reducir la distancia entre construir un producto y entender cómo se usa.',
       image: '/kapin-mini.jpeg',
       imageSize: 'md',
       repo: 'https://github.com/emersoftware/kapin',
@@ -237,6 +258,7 @@ const en: Dictionary = {
     home: 'Home',
     experience: 'Experience',
     projects: 'Projects',
+    blog: 'Blog',
     contact: 'Contact',
     langShort: 'EN',
   },
@@ -264,6 +286,11 @@ const en: Dictionary = {
     projects: 'Projects',
     contact: 'Contact',
   },
+  sectionHeadings: {
+    experience: "Where I've worked",
+    projects: 'For the love of it',
+    blog: 'Things I write',
+  },
   sectionIds: {
     home: 'home',
     experience: 'experience',
@@ -274,29 +301,32 @@ const en: Dictionary = {
     role: 'Role',
     stack: 'Stack',
   },
+  list: {
+    view: 'view',
+    read: 'read',
+    github: 'github',
+    demo: 'demo',
+  },
   contact: {
     success: 'Thanks for your message! <br /> I will reply as soon as possible.',
     error:
       'There was an error sending your message, please try again or contact me through another channel',
     form: {
       sendMeAMessage: "Let's be friends? Work together?",
-      firstnameLabel: 'First name',
-      firstnamePlaceholder: 'Enter your first name',
-      lastnameLabel: 'Last name',
-      lastnamePlaceholder: 'Enter your last name',
       emailLabel: 'Email',
       emailPlaceholder: 'Enter your email',
       messageLabel: 'Message',
+      messagePlaceholder: 'Write your message...',
       submit: 'Send',
     },
   },
   experienceItems: [
     {
-      company: 'Cámara Chilena de la Construcción (CChC)',
+      company: 'Revi (CChC)',
       role: 'Software Engineer',
       date: 'Jan. 2026 - present',
       link: 'https://ia-revi.cl',
-      product: 'Revi – AI-Powered Permit Review',
+      product: 'AI-Powered Permit Review',
       description:
         'Development on an AI-based platform for automated building permit review. Implementation of intelligent analysis workflows for regulatory validation.',
       techs: ['React', 'Python', 'TypeScript', 'AI'],
@@ -345,8 +375,9 @@ const en: Dictionary = {
   projectItems: [
     {
       title: 'The Stack',
+      summary: 'A place to discover the technology being built in Latin America.',
       description:
-        'Hacker News for Latin America. A tech content index to centralize human, original, and quality content: side projects, blogs, ecosystem news, technical reflections, and meetups. Save the internet.',
+        'A technology content index made in Latin America. It brings independent projects, blogs, ecosystem news, technical reflections, and meetups into one place dedicated to original, human-made, high-quality content. Save the internet.',
       image: '/thestack-mini.jpeg',
       link: 'https://thestack.cl',
       repo: 'https://github.com/emersoftware/thestack',
@@ -354,8 +385,9 @@ const en: Dictionary = {
     },
     {
       title: 'Themis',
+      summary: 'AI that uncovers risk signals in public tenders.',
       description:
-        'AI-powered automated audit of public tenders. Analyzes tenders from Mercado Público to detect regulatory violations, suspicious patterns, and irregularities. First place in the Legacy track at Platanus Hack 25.',
+        'An automated auditing platform that analyzes Mercado Público tenders to detect regulatory violations, suspicious patterns, and irregularities. It won first place in the Legacy track at Platanus Hack 25.',
       image: '/themis-mini.jpeg',
       imageSize: 'md',
       link: 'https://themis.lat',
@@ -364,8 +396,9 @@ const en: Dictionary = {
     },
     {
       title: 'Kapin',
+      summary: 'An agent that turns repositories into actionable product metrics.',
       description:
-        'Product metrics audit agent for software repositories. Analyzes repositories and delivers relevant metrics, queries to measure them, and the technical foundation to persist data. Reduces friction between development and measurement.',
+        'An agent that examines software repositories, identifies relevant product metrics, and generates the queries and technical structure needed to measure and persist them. Its goal is to close the gap between building a product and understanding how it is used.',
       image: '/kapin-mini.jpeg',
       imageSize: 'md',
       repo: 'https://github.com/emersoftware/kapin',
