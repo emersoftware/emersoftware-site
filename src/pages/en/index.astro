@@ -179,9 +179,11 @@ const t = getDictionary(lang);
   <!-- "Peek" strip: replicates the hero across the top band to hide content
        passing above the sticky nav. Only shown once the sheet is docked; at
        rest it would cover the hero Navbar. -->
+  <!-- bg-black on the fixed element itself: it is the tint source Liquid Glass
+       samples for the top chrome while the sheet is docked. -->
   <div
     data-hero-peek
-    class="pointer-events-none fixed inset-x-0 top-0 z-30 overflow-hidden"
+    class="pointer-events-none fixed inset-x-0 top-0 z-30 overflow-hidden bg-black"
     aria-hidden="true"
   >
     <div class="hero-peek-inner absolute top-0 left-0 h-lvh w-screen">

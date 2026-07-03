@@ -57,7 +57,9 @@ const websiteLd = {
 ---
 
 <!doctype html>
-<html lang={normalizedLang}>
+<!-- Color de root explícito: Liquid Glass usa el color muestreado/raíz para el
+     chrome; sin él, Safari 26 cae a blanco tras el notch. -->
+<html lang={normalizedLang} class={bare ? 'bg-black' : 'bg-white'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />

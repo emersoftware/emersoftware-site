@@ -172,9 +172,11 @@ const t = getDictionary(lang);
   <!-- Franja "peek": replica el hero en la banda superior para ocultar el
        contenido que pasa por encima del nav sticky. Solo se muestra dockeada
        la hoja; en reposo taparía la Navbar del hero. -->
+  <!-- bg-black en el fixed mismo: es la fuente de tinte que Liquid Glass
+       muestrea para el chrome superior cuando la hoja está dockeada. -->
   <div
     data-hero-peek
-    class="pointer-events-none fixed inset-x-0 top-0 z-30 overflow-hidden"
+    class="pointer-events-none fixed inset-x-0 top-0 z-30 overflow-hidden bg-black"
     aria-hidden="true"
   >
     <div class="hero-peek-inner absolute top-0 left-0 h-lvh w-screen">
