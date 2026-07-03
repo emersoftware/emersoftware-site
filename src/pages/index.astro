@@ -133,49 +133,58 @@ const t = getDictionary(lang);
     </div>
   </section>
 
-  <!-- Este track aporta al documento la distancia de aproximacion y el recorrido del contenido. -->
-  <!-- svh (no dvh): la altura no debe cambiar cuando la barra de Safari colapsa mid-scroll. -->
-  <div data-sheet-track class="h-[200svh]" aria-hidden="true"></div>
+  <!-- Espaciador: la primera pantalla de scroll es la aproximación de la hoja.
+       lvh (constante): con la barra de Safari expandida la hoja reposa bajo el
+       viewport y su filo nunca asoma sobre la barra inferior. -->
+  <div data-hero-spacer class="pointer-events-none h-lvh" aria-hidden="true"></div>
 
-  <!-- Sonda para medir 100lvh desde JS (window.innerHeight varía con la barra de Safari). -->
-  <div data-viewport-probe class="invisible fixed top-0 left-0 h-lvh w-px" aria-hidden="true"></div>
+  <!-- La hoja vive en el flujo del documento: el desplazamiento es 100% nativo,
+       ningún JavaScript traslada el contenido durante el scroll. -->
+  <div data-sheet class="relative z-20 mx-auto w-full max-w-4xl px-3 md:max-w-5xl md:px-6">
+    <div class="bg-white shadow-2xl">
+      <SectionNav lang={lang} />
 
-  <!-- La ventana fija recorta la hoja en su posicion de reposo. -->
-  <div
-    data-sheet-viewport
-    class="sheet-viewport pointer-events-none fixed right-0 bottom-0 left-0 z-20 overflow-hidden"
-  >
-    <div class="mx-auto h-full w-full max-w-4xl px-3 md:max-w-5xl md:px-6">
-      <div
-        data-sheet-panel
-        class="pointer-events-auto flex h-full flex-col bg-white shadow-2xl will-change-transform"
-      >
-        <SectionNav lang={lang} />
+      <div class="px-6 py-16 md:px-12 md:py-20">
+        <section id="experiencia" data-section="experiencia">
+          <Experience lang={lang} />
+        </section>
 
-        <div data-sheet-body-viewport class="min-h-0 flex-1 overflow-clip">
-          <div data-sheet-body class="will-change-transform">
-            <div class="px-6 py-16 md:px-12 md:py-20">
-              <section id="experiencia" data-section="experiencia">
-                <Experience lang={lang} />
-              </section>
+        <section id="proyectos" data-section="proyectos" class="mt-20 md:mt-28">
+          <Projects lang={lang} />
+        </section>
 
-              <section id="proyectos" data-section="proyectos" class="mt-20 md:mt-28">
-                <Projects lang={lang} />
-              </section>
+        <section id="blog" data-section="blog" class="mt-20 md:mt-28">
+          <BlogList lang={lang} />
+        </section>
 
-              <section id="blog" data-section="blog" class="mt-20 md:mt-28">
-                <BlogList lang={lang} />
-              </section>
-
-              <section id="contacto" data-section="contacto" class="mt-20 md:mt-28">
-                <Contact lang={lang} />
-              </section>
-            </div>
-
-            <Footer lang={lang} currentPath={Astro.url.pathname} />
-          </div>
-        </div>
+        <section id="contacto" data-section="contacto" class="mt-20 md:mt-28">
+          <Contact lang={lang} />
+        </section>
       </div>
+
+      <Footer lang={lang} currentPath={Astro.url.pathname} />
+    </div>
+  </div>
+
+  <!-- Franja "peek": replica el hero en la banda superior para ocultar el
+       contenido que pasa por encima del nav sticky. Solo se muestra dockeada
+       la hoja; en reposo taparía la Navbar del hero. -->
+  <div
+    data-hero-peek
+    class="pointer-events-none fixed inset-x-0 top-0 z-30 overflow-hidden"
+    aria-hidden="true"
+  >
+    <div class="hero-peek-inner absolute top-0 left-0 h-dvh w-screen">
+      <picture>
+        <source media="(min-width: 768px)" srcset="/hero-bg.jpeg" />
+        <img
+          src="/hero-bg-mobile.jpeg"
+          alt=""
+          class="h-full w-full object-cover object-bottom md:object-center"
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
     </div>
   </div>
 </Layout>
@@ -197,20 +206,29 @@ const t = getDictionary(lang);
     }
   }
 
-  .sheet-viewport {
-    top: var(--sheet-top);
+  /* Los anchors nativos deben aterrizar bajo la banda superior + nav sticky. */
+  [data-section] {
+    scroll-margin-top: calc(var(--sheet-top) + 3.5rem);
   }
 
-  /* lvh: el panel reposa bajo el viewport más grande posible. Así nunca asoma
-     un filo blanco sobre la barra de Safari, y la distancia es constante
-     aunque la barra colapse o se expanda. */
-  [data-sheet-panel] {
-    transform: translate3d(0, calc(100lvh - var(--sheet-top)), 0);
+  [data-hero-peek] {
+    height: var(--sheet-top);
+    display: none;
+  }
+
+  :global(html[data-docked]) [data-hero-peek] {
+    display: block;
   }
 
   @supports not (height: 100lvh) {
-    [data-sheet-panel] {
-      transform: translate3d(0, calc(100vh - var(--sheet-top)), 0);
+    [data-hero-spacer] {
+      height: 100vh;
+    }
+  }
+
+  @supports not (height: 100dvh) {
+    .hero-peek-inner {
+      height: 100vh;
     }
   }
 </style>

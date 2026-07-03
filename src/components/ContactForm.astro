@@ -50,14 +50,24 @@ const TURNSTILE_SITE_KEY =
         rows="10"
         placeholder={t.contact.form.messagePlaceholder}
         required></textarea>
-      <div class="fade-in-delay-500 mt-6 flex justify-center md:justify-start">
-        {TURNSTILE_SITE_KEY && <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} />}
+      <div class="fade-in-delay-500 mt-6 min-h-[65px]">
+        <!-- Render explícito y diferido: sin la clase cf-turnstile no hay
+             auto-render; el script se inyecta al acercarse el formulario. -->
+        <div class="flex justify-center md:justify-start">
+          {TURNSTILE_SITE_KEY && <div data-turnstile-slot data-sitekey={TURNSTILE_SITE_KEY} />}
+        </div>
+        <p data-turnstile-status class="text-red mt-2 hidden text-center text-sm md:text-left">
+          {t.contact.form.verificationFailed}
+          <button type="button" data-turnstile-retry class="cursor-pointer underline">
+            {t.contact.form.retry}
+          </button>
+        </p>
       </div>
       <div class="mt-6 flex justify-end">
         <button
-          class="contact-serif fade-in-delay-500 inline-flex w-fit shrink-0 items-center justify-center rounded-none border-0 bg-orange-400 px-6 py-2.5 font-serif text-base font-normal text-white transition-colors hover:bg-orange-500 focus:outline-2 focus:outline-offset-2 focus:outline-orange-500 lg:text-lg"
+          class="contact-serif fade-in-delay-500 inline-flex w-fit shrink-0 items-center justify-center rounded-none border-0 bg-orange-400 px-6 py-2.5 font-serif text-base font-normal text-white transition-colors hover:bg-orange-500 focus:outline-2 focus:outline-offset-2 focus:outline-orange-500 disabled:cursor-not-allowed disabled:opacity-60 lg:text-lg"
           type="submit"
-          disabled={!TURNSTILE_SITE_KEY}
+          disabled
         >
           {t.contact.form.submit}
         </button>
@@ -94,57 +104,146 @@ const TURNSTILE_SITE_KEY =
   }
 </style>
 
-{
-  TURNSTILE_SITE_KEY && (
-    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
-  )
-}
-
 <script is:inline>
-  const form = document.querySelector('#contact-form');
-  const alertSuccess = document.querySelector('#alertSuccessEmail');
-  const alertError = document.querySelector('#alertErrorEmail');
+  (() => {
+    const form = document.querySelector('#contact-form');
+    if (!form) return;
 
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const submitLabel = submitBtn ? submitBtn.textContent : '';
+    const alertSuccess = document.querySelector('#alertSuccessEmail');
+    const alertError = document.querySelector('#alertErrorEmail');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const submitLabel = submitBtn ? submitBtn.textContent : '';
+    const slot = form.querySelector('[data-turnstile-slot]');
+    const statusEl = form.querySelector('[data-turnstile-status]');
+    const retryBtn = form.querySelector('[data-turnstile-retry]');
 
-  const showAlert = (el) => {
-    el.classList.remove('hidden');
-    clearTimeout(el._hideTimer);
-    el._hideTimer = setTimeout(() => el.classList.add('hidden'), 10000);
-  };
+    let widgetId = null;
+    let scriptEl = null;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (submitBtn?.disabled) return;
+    const setSubmitEnabled = (enabled) => {
+      if (submitBtn) submitBtn.disabled = !enabled;
+    };
 
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
-      submitBtn.textContent = '...';
-    }
+    const showStatus = (visible) => {
+      statusEl?.classList.toggle('hidden', !visible);
+    };
 
-    try {
-      const res = await fetch('/email', {
-        method: 'POST',
-        body: new FormData(form),
-      });
+    const showAlert = (el) => {
+      if (!el) return;
+      el.classList.remove('hidden');
+      clearTimeout(el._hideTimer);
+      el._hideTimer = setTimeout(() => el.classList.add('hidden'), 10000);
+    };
 
-      if (res.ok) {
-        showAlert(alertSuccess);
-        form.reset();
-        window.turnstile?.reset();
+    // --- Turnstile diferido con render explícito -------------------------
+    // El script no se descarga en la carga inicial del home: se inyecta al
+    // acercarse el formulario (o al enfocarlo). El botón solo se habilita
+    // cuando el widget entrega un token; el server sigue validando siempre.
+
+    const renderWidget = () => {
+      if (!slot || widgetId !== null || !window.turnstile) return;
+      try {
+        widgetId = window.turnstile.render(slot, {
+          sitekey: slot.dataset.sitekey,
+          callback: () => {
+            showStatus(false);
+            setSubmitEnabled(true);
+          },
+          'expired-callback': () => setSubmitEnabled(false),
+          'error-callback': () => {
+            setSubmitEnabled(false);
+            showStatus(true);
+          },
+          'timeout-callback': () => setSubmitEnabled(false),
+        });
+      } catch (_) {
+        showStatus(true);
+      }
+    };
+
+    window.__onTurnstileLoad = renderWidget;
+
+    const loadTurnstile = () => {
+      if (!slot) return;
+      if (window.turnstile) {
+        renderWidget();
+        return;
+      }
+      if (scriptEl) return;
+      showStatus(false);
+      scriptEl = document.createElement('script');
+      scriptEl.src =
+        'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=__onTurnstileLoad&render=explicit';
+      scriptEl.async = true;
+      scriptEl.onerror = () => {
+        scriptEl?.remove();
+        scriptEl = null;
+        setSubmitEnabled(false);
+        showStatus(true);
+      };
+      document.head.appendChild(scriptEl);
+    };
+
+    retryBtn?.addEventListener('click', loadTurnstile);
+
+    if (slot) {
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) {
+              io.disconnect();
+              loadTurnstile();
+            }
+          },
+          { rootMargin: '800px 0px' }
+        );
+        io.observe(form);
+        // Por si el usuario llega por teclado o autofocus antes del umbral.
+        form.addEventListener('focusin', () => {
+          io.disconnect();
+          loadTurnstile();
+        });
       } else {
-        showAlert(alertError);
-      }
-    } catch (_) {
-      showAlert(alertError);
-    } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
-        submitBtn.textContent = submitLabel;
+        loadTurnstile();
       }
     }
-  });
+
+    // --- Envío ------------------------------------------------------------
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (submitBtn?.disabled) return;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '...';
+      }
+
+      try {
+        const res = await fetch('/email', {
+          method: 'POST',
+          body: new FormData(form),
+        });
+
+        if (res.ok) {
+          showAlert(alertSuccess);
+          form.reset();
+        } else {
+          showAlert(alertError);
+        }
+      } catch (_) {
+        showAlert(alertError);
+      } finally {
+        if (submitBtn) submitBtn.textContent = submitLabel;
+        // El token es de un solo uso: tras cualquier intento se renueva y el
+        // botón queda deshabilitado hasta que llegue el token nuevo.
+        if (widgetId !== null && window.turnstile) {
+          setSubmitEnabled(false);
+          window.turnstile.reset(widgetId);
+        } else {
+          setSubmitEnabled(false);
+        }
+      }
+    });
+  })();
 </script>

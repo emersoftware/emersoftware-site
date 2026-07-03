@@ -1,21 +1,26 @@
+// El scroll de la hoja es 100% nativo: este script NO traslada contenido.
+// Solo maneja tres cosas acotadas:
+//   1. el desvanecimiento del hero (una custom property de opacidad),
+//   2. el estado "dockeado" (activa la franja peek sobre el nav sticky),
+//   3. la sección activa del nav (IntersectionObserver, sin trabajo por frame).
+
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 const overlay = document.querySelector<HTMLElement>('[data-hero-overlay]');
-const track = document.querySelector<HTMLElement>('[data-sheet-track]');
-const sheetViewport = document.querySelector<HTMLElement>('[data-sheet-viewport]');
-const panel = document.querySelector<HTMLElement>('[data-sheet-panel]');
-const bodyViewport = document.querySelector<HTMLElement>('[data-sheet-body-viewport]');
-const sheetBody = document.querySelector<HTMLElement>('[data-sheet-body]');
-const viewportProbe = document.querySelector<HTMLElement>('[data-viewport-probe]');
+const sheet = document.querySelector<HTMLElement>('[data-sheet]');
+const sectionNav = document.querySelector<HTMLElement>('[data-section-nav]');
 
-if (overlay && track && sheetViewport && panel && bodyViewport && sheetBody) {
-  const sections = Array.from(sheetBody.querySelectorAll<HTMLElement>('[data-section]'));
+if (overlay && sheet) {
+  const root = document.documentElement;
+  const sections = Array.from(sheet.querySelectorAll<HTMLElement>('[data-section]'));
   const navLinks = Array.from(document.querySelectorAll<HTMLElement>('[data-nav-target]'));
 
-  let approachDistance = 0;
-  let contentTravel = 0;
-  let sectionOffsets: Array<{ id: string; top: number }> = [];
+  let fadeDistance = 1;
+  let dockPoint = Number.POSITIVE_INFINITY;
   let frame = 0;
+  let lastVisibility = -1;
+  let lastFaded = false;
+  let lastDocked = false;
 
   const setActive = (id: string) => {
     navLinks.forEach((link) => {
@@ -28,26 +33,30 @@ if (overlay && track && sheetViewport && panel && bodyViewport && sheetBody) {
 
   const update = () => {
     frame = 0;
+    const y = window.scrollY;
 
-    const scroll = clamp(window.scrollY, 0, approachDistance + contentTravel);
-    const panelOffset = approachDistance - Math.min(scroll, approachDistance);
-    const bodyOffset = clamp(scroll - approachDistance, 0, contentTravel);
+    // Solo se anima la opacidad (composición en GPU); el blur queda estático.
+    const progress = clamp(y / fadeDistance, 0, 1);
+    const visibility = Math.round((1 - progress) * 1000) / 1000;
+    if (visibility !== lastVisibility) {
+      lastVisibility = visibility;
+      overlay.style.setProperty('--hero-visibility', String(visibility));
+    }
 
-    panel.style.transform = `translate3d(0, ${panelOffset}px, 0)`;
-    sheetBody.style.transform = `translate3d(0, ${-bodyOffset}px, 0)`;
+    // visibility libera las capas de backdrop-filter cuando el hero no se ve.
+    const faded = progress >= 1;
+    if (faded !== lastFaded) {
+      lastFaded = faded;
+      overlay.style.visibility = faded ? 'hidden' : '';
+    }
 
-    const fadeDistance = Math.max(1, window.innerHeight * 0.3);
-    const fadeProgress = clamp(scroll / fadeDistance, 0, 1);
-    // Solo se anima la opacidad (composición en GPU). Animar el radio del
-    // backdrop-filter obliga a WebKit a re-rasterizar el fondo en cada frame.
-    overlay.style.setProperty('--hero-visibility', String(1 - fadeProgress));
-    // visibility libera las capas de backdrop-filter cuando el hero ya no se ve.
-    overlay.style.visibility = fadeProgress >= 1 ? 'hidden' : '';
-    overlay.style.pointerEvents = fadeProgress > 0.95 ? 'none' : 'auto';
-
-    const probe = bodyOffset + bodyViewport.clientHeight * 0.2;
-    const active = [...sectionOffsets].reverse().find((section) => section.top <= probe);
-    if (active) setActive(active.id);
+    // Dockeada la hoja, la franja peek tapa el contenido que sube sobre el nav.
+    const docked = y >= dockPoint;
+    if (docked !== lastDocked) {
+      lastDocked = docked;
+      if (docked) root.setAttribute('data-docked', '');
+      else root.removeAttribute('data-docked');
+    }
   };
 
   const requestUpdate = () => {
@@ -55,84 +64,36 @@ if (overlay && track && sheetViewport && panel && bodyViewport && sheetBody) {
   };
 
   const measure = () => {
-    // Native hash navigation can scroll an overflow-hidden ancestor before this
-    // script takes control, which would apply the section offset twice.
-    bodyViewport.scrollTop = 0;
-
-    const panelTop = Number.parseFloat(getComputedStyle(sheetViewport).top) || 0;
-    // 100lvh (sonda), no innerHeight: en iOS innerHeight varía con la barra de
-    // Safari; lvh es constante y garantiza que el panel repose fuera de pantalla.
-    const viewportMax = viewportProbe?.clientHeight || window.innerHeight;
-    approachDistance = Math.max(0, viewportMax - panelTop);
-    contentTravel = Math.max(0, sheetBody.scrollHeight - bodyViewport.clientHeight);
-    track.style.height = `${viewportMax + approachDistance + contentTravel}px`;
-
-    const bodyRect = sheetBody.getBoundingClientRect();
-    sectionOffsets = sections.map((section) => ({
-      id: section.dataset.section ?? '',
-      top: section.getBoundingClientRect().top - bodyRect.top,
-    }));
-
+    fadeDistance = Math.max(1, root.clientHeight * 0.3);
+    const sheetTop = sectionNav ? Number.parseFloat(getComputedStyle(sectionNav).top) || 0 : 0;
+    // offsetTop de la hoja = alto del espaciador (100lvh, constante en iOS).
+    dockPoint = Math.max(0, sheet.offsetTop - sheetTop - 1);
     update();
   };
 
-  const scrollToSection = (id: string, behavior: ScrollBehavior = 'smooth') => {
-    const target = sections.find((section) => section.id === id);
-    if (!target) return false;
-
-    bodyViewport.scrollTop = 0;
-    const bodyRect = sheetBody.getBoundingClientRect();
-    const targetOffset = target.getBoundingClientRect().top - bodyRect.top;
-    const destination = approachDistance + clamp(targetOffset, 0, contentTravel);
-    window.scrollTo({ top: destination, behavior });
-    return true;
-  };
-
-  document.querySelectorAll<HTMLAnchorElement>('a[href*="#"]').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      const url = new URL(link.href, window.location.href);
-      if (url.origin !== window.location.origin || url.pathname !== window.location.pathname)
-        return;
-
-      const id = decodeURIComponent(url.hash.slice(1));
-      if (!id || !scrollToSection(id)) return;
-
-      event.preventDefault();
-      history.pushState(null, '', url.hash);
-    });
-  });
-
-  // En iOS Safari, colapsar/expandir la barra de URL dispara resize con cambio
-  // de altura solamente. Re-medir ahí fuerza un reflow en pleno scroll, así que
-  // esos casos se difieren hasta que el viewport se estabiliza.
-  let resizeTimer = 0;
-  let lastWidth = window.innerWidth;
-  const onResize = () => {
-    window.clearTimeout(resizeTimer);
-    if (window.innerWidth !== lastWidth) {
-      lastWidth = window.innerWidth;
-      measure();
-      return;
-    }
-    resizeTimer = window.setTimeout(measure, 250);
-  };
+  // Sección activa sin tocar el hilo por frame: una banda en el 15%–35% del
+  // viewport decide qué sección manda. Si más de una intersecta (secciones
+  // cortas), gana la primera en orden de documento: la que está en la posición
+  // de lectura.
+  const intersecting = new Set<HTMLElement>();
+  const activeObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) intersecting.add(entry.target as HTMLElement);
+        else intersecting.delete(entry.target as HTMLElement);
+      }
+      const current = sections.find((section) => intersecting.has(section));
+      if (current?.dataset.section) setActive(current.dataset.section);
+    },
+    { rootMargin: '-15% 0px -65% 0px' }
+  );
+  sections.forEach((section) => activeObserver.observe(section));
+  if (sections[0]?.dataset.section) setActive(sections[0].dataset.section);
 
   window.addEventListener('scroll', requestUpdate, { passive: true });
-  window.addEventListener('resize', onResize, { passive: true });
-  window.addEventListener('popstate', () => {
-    const id = decodeURIComponent(window.location.hash.slice(1));
-    if (id) {
-      scrollToSection(id);
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  });
-  new ResizeObserver(measure).observe(sheetBody);
+  // Sin trabajo de layout dentro del handler de scroll: re-medir solo en resize
+  // es barato (dos lecturas) y ya no hay geometría JS que pueda saltar.
+  window.addEventListener('resize', measure, { passive: true });
 
   measure();
-
-  if (window.location.hash) {
-    const id = decodeURIComponent(window.location.hash.slice(1));
-    window.requestAnimationFrame(() => scrollToSection(id, 'auto'));
-  }
 }

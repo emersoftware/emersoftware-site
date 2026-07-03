@@ -87,6 +87,8 @@ export type Dictionary = {
       messageLabel: string;
       messagePlaceholder: string;
       submit: string;
+      verificationFailed: string;
+      retry: string;
     };
   };
   experienceItems: ExperienceItem[];
@@ -160,6 +162,8 @@ const es: Dictionary = {
       messageLabel: 'Mensaje',
       messagePlaceholder: 'Escribe tu mensaje...',
       submit: 'Enviar',
+      verificationFailed: 'No se pudo cargar la verificación anti-spam.',
+      retry: 'Reintentar',
     },
   },
   experienceItems: [
@@ -318,6 +322,8 @@ const en: Dictionary = {
       messageLabel: 'Message',
       messagePlaceholder: 'Write your message...',
       submit: 'Send',
+      verificationFailed: 'The anti-spam verification failed to load.',
+      retry: 'Retry',
     },
   },
   experienceItems: [
