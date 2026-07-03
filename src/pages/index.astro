@@ -21,8 +21,11 @@ const t = getDictionary(lang);
 ---
 
 <Layout title={t.metaTitle} description={t.metaDescription} lang={lang} bare>
-  <!-- El hero permanece fijo mientras la hoja lo cubre. -->
-  <section class="hero-section fixed inset-0 z-0 h-dvh overflow-hidden">
+  <!-- El hero permanece fijo mientras la hoja lo cubre. h-lvh: cubre siempre la
+       pantalla física completa (notch a home indicator) sin importar el estado
+       de las barras de Safari — cero reflow al colapsarlas y el gradiente llega
+       al borde real. El contenido se ancla a h-svh para no quedar tras la barra. -->
+  <section class="hero-section fixed inset-0 z-0 h-lvh overflow-hidden">
     <div class="absolute inset-0">
       <picture>
         <source media="(min-width: 768px)" srcset="/hero-bg.jpeg" />
@@ -42,7 +45,7 @@ const t = getDictionary(lang);
     >
     </div>
 
-    <div data-hero-overlay class="relative h-full">
+    <div data-hero-overlay class="relative h-svh">
       <Navbar lang={lang} />
 
       <div class="relative z-10 flex h-full items-end">
@@ -141,7 +144,7 @@ const t = getDictionary(lang);
   <!-- La hoja vive en el flujo del documento: el desplazamiento es 100% nativo,
        ningún JavaScript traslada el contenido durante el scroll. -->
   <div data-sheet class="relative z-20 mx-auto w-full max-w-4xl px-3 md:max-w-5xl md:px-6">
-    <div class="bg-white shadow-2xl">
+    <div class="bg-white pb-[env(safe-area-inset-bottom,0px)] shadow-2xl">
       <SectionNav lang={lang} />
 
       <div class="px-6 py-16 md:px-12 md:py-20">
@@ -174,7 +177,7 @@ const t = getDictionary(lang);
     class="pointer-events-none fixed inset-x-0 top-0 z-30 overflow-hidden"
     aria-hidden="true"
   >
-    <div class="hero-peek-inner absolute top-0 left-0 h-dvh w-screen">
+    <div class="hero-peek-inner absolute top-0 left-0 h-lvh w-screen">
       <picture>
         <source media="(min-width: 768px)" srcset="/hero-bg.jpeg" />
         <img
@@ -208,11 +211,13 @@ const t = getDictionary(lang);
 
   /* Los anchors nativos deben aterrizar bajo la banda superior + nav sticky. */
   [data-section] {
-    scroll-margin-top: calc(var(--sheet-top) + 3.5rem);
+    scroll-margin-top: calc(env(safe-area-inset-top, 0px) + var(--sheet-top) + 3.5rem);
   }
 
+  /* La franja cubre también la zona de la status bar (safe-area): en Safari
+     minimizado el documento pinta detrás del notch y hay que taparlo. */
   [data-hero-peek] {
-    height: var(--sheet-top);
+    height: calc(env(safe-area-inset-top, 0px) + var(--sheet-top));
     display: none;
   }
 
@@ -224,9 +229,7 @@ const t = getDictionary(lang);
     [data-hero-spacer] {
       height: 100vh;
     }
-  }
 
-  @supports not (height: 100dvh) {
     .hero-peek-inner {
       height: 100vh;
     }

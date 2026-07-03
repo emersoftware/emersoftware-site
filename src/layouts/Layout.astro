@@ -61,7 +61,9 @@ const websiteLd = {
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
-    <meta name="viewport" content="width=device-width" />
+    <!-- viewport-fit=cover: la página pinta hasta los bordes físicos (notch y
+         home indicator) y env(safe-area-inset-*) pasa a tener valor en iOS. -->
+    <meta name="viewport" content="width=device-width, viewport-fit=cover" />
     <link rel="canonical" href={Astro.url.href} />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
@@ -125,6 +127,12 @@ const websiteLd = {
          position: sticky del hero y de la nav funcionen con normalidad. */
       body.is-bare {
         display: block;
+      }
+
+      /* Con viewport-fit=cover, las páginas normales no deben quedar bajo la
+         status bar. El home (bare) sí pinta edge-to-edge: su hero lo cubre. */
+      body:not(.is-bare) {
+        padding-top: env(safe-area-inset-top, 0px);
       }
 
       /* Botones, inputs y elementos interactivos usan la sans (Inter) */
@@ -282,10 +290,14 @@ const websiteLd = {
         font-family: 'Inter', sans-serif !important;
       }
 
-      /* Fallback for browsers that don't support dvh */
-      @supports not (height: 100dvh) {
+      /* Fallback for browsers that don't support lvh/svh units */
+      @supports not (height: 100lvh) {
         .hero-section {
           height: 100vh;
+        }
+
+        [data-hero-overlay] {
+          height: 100%;
         }
       }
 

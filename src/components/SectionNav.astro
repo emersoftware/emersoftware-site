@@ -20,9 +20,12 @@ const navItems = [
 ];
 ---
 
-<!-- Sticky: se ancla justo bajo la banda superior mientras el contenido de la
-     hoja se desplaza nativamente por debajo. -->
-<div data-section-nav class="sticky top-[var(--sheet-top)] z-30 shrink-0 bg-white">
+<!-- Sticky: se ancla justo bajo la banda superior (más la safe-area del notch)
+     mientras el contenido de la hoja se desplaza nativamente por debajo. -->
+<div
+  data-section-nav
+  class="sticky top-[calc(env(safe-area-inset-top,0px)+var(--sheet-top))] z-30 shrink-0 bg-white"
+>
   <div class="border-graphite-200 overflow-x-auto border-b">
     <ul
       class="flex w-max min-w-full items-center justify-between gap-4 px-4 py-4 text-sm text-black sm:px-6 md:gap-7"

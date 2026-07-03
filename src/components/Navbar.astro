@@ -22,13 +22,13 @@ const navItems = [
 
 <nav
   id="navbar"
-  class="navbar-hero relative z-20 transition-opacity duration-300"
+  class="navbar-hero relative z-20 pt-[env(safe-area-inset-top,0px)] transition-opacity duration-300"
   data-hero-ui
   data-hero-fade
 >
   <div class="mx-auto flex items-center justify-center px-4 py-4 md:px-12 lg:px-16">
     <ul
-      class="absolute top-4 left-1/2 flex -translate-x-1/2 flex-row items-center gap-4 text-xs whitespace-nowrap md:static md:translate-x-0 md:gap-6 md:text-sm"
+      class="absolute top-[calc(env(safe-area-inset-top,0px)+1rem)] left-1/2 flex -translate-x-1/2 flex-row items-center gap-4 text-xs whitespace-nowrap md:static md:translate-x-0 md:gap-6 md:text-sm"
     >
       {
         navItems.map((item) => (
