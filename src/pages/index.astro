@@ -36,13 +36,19 @@ const t = getDictionary(lang);
       </picture>
     </div>
 
+    <div
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent lg:hidden"
+      aria-hidden="true"
+    >
+    </div>
+
     <div data-hero-overlay class="relative h-full">
       <Navbar lang={lang} />
 
       <div class="relative z-10 flex h-full items-end">
-        <div class="px-6 pb-16 md:px-12 md:pb-24 lg:px-16 lg:pb-32">
-          <div class="max-w-2xl">
-            <GitHubLatestCommit lang={lang} class="mb-4 hidden md:flex" />
+        <div class="w-full min-w-0 px-6 pb-36 md:px-12 md:pb-48 lg:px-16 lg:pb-32">
+          <div class="w-full max-w-2xl min-w-0">
+            <GitHubLatestCommit lang={lang} class="mb-4 flex w-full" />
 
             <div class="fade-in">
               <h1 data-hero-fade class="title text-lg text-white md:text-2xl lg:text-4xl">
@@ -57,12 +63,40 @@ const t = getDictionary(lang);
             </div>
 
             <div class="fade-in-delay-200 mt-6">
-              <p data-hero-fade class="max-w-lg text-base text-white/70 md:text-lg">
+              <p data-hero-fade class="max-w-lg text-base break-words text-white/70 md:text-lg">
                 {t.hero.about}
               </p>
             </div>
 
-            <GitHubLatestCommit lang={lang} class="mt-4 flex md:hidden" />
+            <nav class="mt-4 flex min-w-0 justify-center gap-1 md:hidden">
+              <a
+                href="https://github.com/emersoftware"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hero-pill flex min-w-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-2 text-xs text-white backdrop-blur-md hover:bg-white/20"
+              >
+                <GitHubIcon class="size-4" />
+                <span>github</span>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/emerson-salazar-rubilar"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hero-pill flex min-w-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-2 text-xs text-white backdrop-blur-md hover:bg-white/20"
+              >
+                <LinkedInIcon class="size-4" />
+                <span>linkedin</span>
+              </a>
+              <button
+                id="emailButtonMobile"
+                class="hero-pill flex min-w-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-2 text-xs text-white backdrop-blur-md hover:bg-white/20"
+              >
+                <Mail class="size-4" />
+                <span>email</span>
+                <Copy id="copyEmailMobile" class="size-4" />
+                <CopyCheck id="copyEmailCheckMobile" class="hidden size-4" />
+              </button>
+            </nav>
 
             <nav class="mt-8 hidden flex-wrap gap-3 md:flex">
               <a
@@ -96,36 +130,6 @@ const t = getDictionary(lang);
           </div>
         </div>
       </div>
-
-      <nav class="absolute right-0 bottom-8 left-0 z-10 flex justify-center gap-2 px-4 md:hidden">
-        <a
-          href="https://github.com/emersoftware"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="hero-pill flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-md hover:bg-white/20"
-        >
-          <GitHubIcon class="size-4" />
-          <span>github</span>
-        </a>
-        <a
-          href="https://www.linkedin.com/in/emerson-salazar-rubilar"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="hero-pill flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-md hover:bg-white/20"
-        >
-          <LinkedInIcon class="size-4" />
-          <span>linkedin</span>
-        </a>
-        <button
-          id="emailButtonMobile"
-          class="hero-pill flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-md hover:bg-white/20"
-        >
-          <Mail class="size-4" />
-          <span>copiar email</span>
-          <Copy id="copyEmailMobile" class="size-4" />
-          <CopyCheck id="copyEmailCheckMobile" class="hidden size-4" />
-        </button>
-      </nav>
     </div>
   </section>
 
@@ -144,7 +148,7 @@ const t = getDictionary(lang);
       >
         <SectionNav lang={lang} />
 
-        <div data-sheet-body-viewport class="min-h-0 flex-1 overflow-hidden">
+        <div data-sheet-body-viewport class="min-h-0 flex-1 overflow-clip">
           <div data-sheet-body class="will-change-transform">
             <div class="px-6 py-16 md:px-12 md:py-20">
               <section id="experiencia" data-section="experiencia">
@@ -174,7 +178,19 @@ const t = getDictionary(lang);
 
 <style>
   :global(:root) {
-    --sheet-top: 4.5rem;
+    --sheet-top: 0.75rem;
+  }
+
+  @media (min-width: 48rem) {
+    :global(:root) {
+      --sheet-top: 1.5rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    :global(:root) {
+      --sheet-top: 4.5rem;
+    }
   }
 
   .sheet-viewport {

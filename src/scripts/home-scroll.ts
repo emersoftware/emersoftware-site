@@ -56,6 +56,10 @@ if (overlay && track && sheetViewport && panel && bodyViewport && sheetBody) {
   };
 
   const measure = () => {
+    // Native hash navigation can scroll an overflow-hidden ancestor before this
+    // script takes control, which would apply the section offset twice.
+    bodyViewport.scrollTop = 0;
+
     const panelTop = Number.parseFloat(getComputedStyle(sheetViewport).top) || 0;
     approachDistance = Math.max(0, window.innerHeight - panelTop);
     contentTravel = Math.max(0, sheetBody.scrollHeight - bodyViewport.clientHeight);
@@ -74,6 +78,7 @@ if (overlay && track && sheetViewport && panel && bodyViewport && sheetBody) {
     const target = sections.find((section) => section.id === id);
     if (!target) return false;
 
+    bodyViewport.scrollTop = 0;
     const bodyRect = sheetBody.getBoundingClientRect();
     const targetOffset = target.getBoundingClientRect().top - bodyRect.top;
     const destination = approachDistance + clamp(targetOffset, 0, contentTravel);

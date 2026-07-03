@@ -14,30 +14,40 @@ const { company, date, product, description, link, viewLabel = 'ir a verlo' } = 
 <li>
   <details class="group">
     <summary
-      class="flex cursor-pointer list-none flex-wrap items-baseline gap-2 px-1 py-3 [&::-webkit-details-marker]:hidden"
+      class="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-2 px-1 py-3 sm:items-baseline [&::-webkit-details-marker]:hidden"
     >
-      <span>{company}</span>
-      <span class="text-graphite-400">-</span>
-      <span>{product}</span>
-      <span class="text-graphite-400">-</span>
-      <span>{date}</span>
-      {
-        link && (
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="ml-auto shrink-0 text-black underline-offset-2 hover:text-orange-500 hover:underline"
-            onclick="event.stopPropagation()"
-          >
-            [ {viewLabel} ]
-          </a>
-        )
-      }
-      <span class="text-graphite-500 shrink-0 group-open:hidden" aria-hidden="true">[ + ]</span>
-      <span class="text-graphite-500 hidden shrink-0 group-open:inline" aria-hidden="true"
-        >[ - ]</span
-      >
+      <span class="flex min-w-0 items-baseline gap-x-1 whitespace-nowrap sm:hidden">
+        <span>{company}</span>
+        <span class="text-graphite-400">-</span>
+        <span>{date}</span>
+      </span>
+      <span class="text-graphite-600 col-span-2 row-start-2 sm:hidden">{product}</span>
+      <span class="hidden min-w-0 flex-wrap items-baseline gap-x-2 sm:flex">
+        <span>{company}</span>
+        <span class="text-graphite-400">-</span>
+        <span>{product}</span>
+        <span class="text-graphite-400">-</span>
+        <span>{date}</span>
+      </span>
+      <span class="col-start-2 row-start-1 flex shrink-0 items-center gap-3">
+        {
+          link && (
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="shrink-0 text-black underline-offset-2 hover:text-orange-500 hover:underline"
+              onclick="event.stopPropagation()"
+            >
+              [ {viewLabel} ]
+            </a>
+          )
+        }
+        <span class="text-graphite-500 shrink-0 group-open:hidden" aria-hidden="true">[ + ]</span>
+        <span class="text-graphite-500 hidden shrink-0 group-open:inline" aria-hidden="true"
+          >[ - ]</span
+        >
+      </span>
     </summary>
     <div class="px-1 pb-4">
       <p class="text-graphite-600 max-w-3xl text-sm leading-relaxed">{description}</p>

@@ -17,11 +17,13 @@ const t = getDictionary(lang);
     t.projectItems.map((project) => (
       <li>
         <details class="group">
-          <summary class="flex cursor-pointer list-none flex-wrap items-baseline gap-2 px-1 py-3 [&::-webkit-details-marker]:hidden">
-            <span>{project.title}</span>
-            <span class="text-graphite-400">-</span>
-            <span class="text-graphite-600 flex-1">{project.summary}</span>
-            <span class="flex shrink-0 items-center gap-3">
+          <summary class="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-2 px-1 py-3 sm:items-baseline [&::-webkit-details-marker]:hidden">
+            <span class="col-span-2 flex min-w-0 flex-wrap items-baseline gap-x-2 sm:col-span-1">
+              <span>{project.title}</span>
+              <span class="text-graphite-400">-</span>
+              <span class="text-graphite-600">{project.summary}</span>
+            </span>
+            <span class="col-start-2 row-start-2 flex shrink-0 items-center gap-3 sm:row-start-1">
               {project.repo && (
                 <a
                   href={project.repo}
@@ -55,15 +57,12 @@ const t = getDictionary(lang);
                   [ {t.list.view} ]
                 </a>
               )}
-            </span>
-            <span class="text-graphite-500 ml-auto shrink-0 group-open:hidden" aria-hidden="true">
-              [ + ]
-            </span>
-            <span
-              class="text-graphite-500 ml-auto hidden shrink-0 group-open:inline"
-              aria-hidden="true"
-            >
-              [ - ]
+              <span class="text-graphite-500 shrink-0 group-open:hidden" aria-hidden="true">
+                [ + ]
+              </span>
+              <span class="text-graphite-500 hidden shrink-0 group-open:inline" aria-hidden="true">
+                [ - ]
+              </span>
             </span>
           </summary>
           <div class="px-1 pb-4">
