@@ -67,7 +67,8 @@ const websiteLd = {
     <meta name="generator" content={Astro.generator} />
     <meta name="author" content="Emerson Salazar Rubilar" />
     <meta http-equiv="content-language" content={normalizedLang === 'en' ? 'en' : 'es-CL'} />
-    <meta name="theme-color" content="#ffffff" />
+    <!-- En el home (bare) la UI de Safari debe teñirse oscura como el hero. -->
+    <meta name="theme-color" content={bare ? '#000000' : '#ffffff'} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -94,7 +95,7 @@ const websiteLd = {
     <meta name="astro-view-transitions" />
     <script type="application/ld+json" set:html={JSON.stringify([websiteLd, personLd])} />
   </head>
-  <body class={`bg-white ${bare ? 'is-bare' : ''}`}>
+  <body class={bare ? 'bg-black is-bare' : 'bg-white'}>
     <div class="fixed h-full w-full">
       <div class="bg absolute inset-0 w-full items-center px-5 py-24"></div>
     </div>
@@ -260,15 +261,13 @@ const websiteLd = {
         }
       }
 
-      /* El hero no aplica opacity sobre ancestros de backdrop-filter: eso crea
-         una capa aislada y Chrome deja de muestrear correctamente el fondo. */
+      /* El desvanecimiento del hero anima solo opacity (composición en GPU).
+         El blur de las pills queda fijo (backdrop-blur-md de Tailwind): animar
+         el radio del backdrop-filter re-rasteriza el fondo por frame en WebKit.
+         La opacidad va en la pill misma, no en un ancestro: opacity sobre un
+         ancestro de backdrop-filter crea un backdrop root y rompe el muestreo. */
       [data-hero-overlay] {
         --hero-visibility: 1;
-        --hero-blur: 12px;
-        --hero-white-10-alpha: 0.1;
-        --hero-white-20-alpha: 0.2;
-        --hero-black-40-alpha: 0.4;
-        --hero-black-50-alpha: 0.5;
       }
 
       [data-hero-fade] {
@@ -276,27 +275,6 @@ const websiteLd = {
       }
 
       [data-hero-overlay] .hero-pill {
-        border-color: rgb(255 255 255 / var(--hero-white-20-alpha)) !important;
-        background-color: rgb(255 255 255 / var(--hero-white-10-alpha)) !important;
-        -webkit-backdrop-filter: blur(var(--hero-blur)) !important;
-        backdrop-filter: blur(var(--hero-blur)) !important;
-      }
-
-      [data-hero-overlay] .hero-pill:hover {
-        background-color: rgb(255 255 255 / var(--hero-white-20-alpha)) !important;
-      }
-
-      [data-hero-overlay] .hero-pill--dark {
-        background-color: rgb(0 0 0 / var(--hero-black-40-alpha)) !important;
-      }
-
-      [data-hero-overlay] .hero-pill--dark:hover {
-        background-color: rgb(0 0 0 / var(--hero-black-50-alpha)) !important;
-      }
-
-      [data-hero-overlay] .hero-pill > svg,
-      [data-hero-overlay] .hero-pill > span,
-      [data-hero-overlay] .hero-pill > code {
         opacity: var(--hero-visibility);
       }
 

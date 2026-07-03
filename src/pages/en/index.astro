@@ -133,7 +133,11 @@ const t = getDictionary(lang);
   </section>
 
   <!-- This track supplies the approach distance and the content travel to the document. -->
-  <div data-sheet-track class="h-[200dvh]" aria-hidden="true"></div>
+  <!-- svh (not dvh): the height must not change when the Safari toolbar collapses mid-scroll. -->
+  <div data-sheet-track class="h-[200svh]" aria-hidden="true"></div>
+
+  <!-- Probe to measure 100lvh from JS (window.innerHeight varies with the Safari toolbar). -->
+  <div data-viewport-probe class="invisible fixed top-0 left-0 h-lvh w-px" aria-hidden="true"></div>
 
   <!-- The fixed viewport clips the sheet at its resting position. -->
   <div
@@ -204,11 +208,14 @@ const t = getDictionary(lang);
     top: var(--sheet-top);
   }
 
+  /* lvh: the panel rests below the largest possible viewport. That way no white
+     edge ever peeks above the Safari toolbar, and the distance stays constant
+     whether the toolbar collapses or expands. */
   [data-sheet-panel] {
-    transform: translate3d(0, calc(100dvh - var(--sheet-top)), 0);
+    transform: translate3d(0, calc(100lvh - var(--sheet-top)), 0);
   }
 
-  @supports not (height: 100dvh) {
+  @supports not (height: 100lvh) {
     [data-sheet-panel] {
       transform: translate3d(0, calc(100vh - var(--sheet-top)), 0);
     }

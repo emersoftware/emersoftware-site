@@ -134,7 +134,11 @@ const t = getDictionary(lang);
   </section>
 
   <!-- Este track aporta al documento la distancia de aproximacion y el recorrido del contenido. -->
-  <div data-sheet-track class="h-[200dvh]" aria-hidden="true"></div>
+  <!-- svh (no dvh): la altura no debe cambiar cuando la barra de Safari colapsa mid-scroll. -->
+  <div data-sheet-track class="h-[200svh]" aria-hidden="true"></div>
+
+  <!-- Sonda para medir 100lvh desde JS (window.innerHeight varía con la barra de Safari). -->
+  <div data-viewport-probe class="invisible fixed top-0 left-0 h-lvh w-px" aria-hidden="true"></div>
 
   <!-- La ventana fija recorta la hoja en su posicion de reposo. -->
   <div
@@ -197,11 +201,14 @@ const t = getDictionary(lang);
     top: var(--sheet-top);
   }
 
+  /* lvh: el panel reposa bajo el viewport más grande posible. Así nunca asoma
+     un filo blanco sobre la barra de Safari, y la distancia es constante
+     aunque la barra colapse o se expanda. */
   [data-sheet-panel] {
-    transform: translate3d(0, calc(100dvh - var(--sheet-top)), 0);
+    transform: translate3d(0, calc(100lvh - var(--sheet-top)), 0);
   }
 
-  @supports not (height: 100dvh) {
+  @supports not (height: 100lvh) {
     [data-sheet-panel] {
       transform: translate3d(0, calc(100vh - var(--sheet-top)), 0);
     }

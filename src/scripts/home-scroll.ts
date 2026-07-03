@@ -6,6 +6,7 @@ const sheetViewport = document.querySelector<HTMLElement>('[data-sheet-viewport]
 const panel = document.querySelector<HTMLElement>('[data-sheet-panel]');
 const bodyViewport = document.querySelector<HTMLElement>('[data-sheet-body-viewport]');
 const sheetBody = document.querySelector<HTMLElement>('[data-sheet-body]');
+const viewportProbe = document.querySelector<HTMLElement>('[data-viewport-probe]');
 
 if (overlay && track && sheetViewport && panel && bodyViewport && sheetBody) {
   const sections = Array.from(sheetBody.querySelectorAll<HTMLElement>('[data-section]'));
@@ -37,13 +38,11 @@ if (overlay && track && sheetViewport && panel && bodyViewport && sheetBody) {
 
     const fadeDistance = Math.max(1, window.innerHeight * 0.3);
     const fadeProgress = clamp(scroll / fadeDistance, 0, 1);
-    const heroVisibility = 1 - fadeProgress;
-    overlay.style.setProperty('--hero-visibility', String(heroVisibility));
-    overlay.style.setProperty('--hero-blur', `${12 * heroVisibility}px`);
-    overlay.style.setProperty('--hero-white-10-alpha', String(0.1 * heroVisibility));
-    overlay.style.setProperty('--hero-white-20-alpha', String(0.2 * heroVisibility));
-    overlay.style.setProperty('--hero-black-40-alpha', String(0.4 * heroVisibility));
-    overlay.style.setProperty('--hero-black-50-alpha', String(0.5 * heroVisibility));
+    // Solo se anima la opacidad (composición en GPU). Animar el radio del
+    // backdrop-filter obliga a WebKit a re-rasterizar el fondo en cada frame.
+    overlay.style.setProperty('--hero-visibility', String(1 - fadeProgress));
+    // visibility libera las capas de backdrop-filter cuando el hero ya no se ve.
+    overlay.style.visibility = fadeProgress >= 1 ? 'hidden' : '';
     overlay.style.pointerEvents = fadeProgress > 0.95 ? 'none' : 'auto';
 
     const probe = bodyOffset + bodyViewport.clientHeight * 0.2;
@@ -61,9 +60,12 @@ if (overlay && track && sheetViewport && panel && bodyViewport && sheetBody) {
     bodyViewport.scrollTop = 0;
 
     const panelTop = Number.parseFloat(getComputedStyle(sheetViewport).top) || 0;
-    approachDistance = Math.max(0, window.innerHeight - panelTop);
+    // 100lvh (sonda), no innerHeight: en iOS innerHeight varía con la barra de
+    // Safari; lvh es constante y garantiza que el panel repose fuera de pantalla.
+    const viewportMax = viewportProbe?.clientHeight || window.innerHeight;
+    approachDistance = Math.max(0, viewportMax - panelTop);
     contentTravel = Math.max(0, sheetBody.scrollHeight - bodyViewport.clientHeight);
-    track.style.height = `${window.innerHeight + approachDistance + contentTravel}px`;
+    track.style.height = `${viewportMax + approachDistance + contentTravel}px`;
 
     const bodyRect = sheetBody.getBoundingClientRect();
     sectionOffsets = sections.map((section) => ({
@@ -100,8 +102,23 @@ if (overlay && track && sheetViewport && panel && bodyViewport && sheetBody) {
     });
   });
 
+  // En iOS Safari, colapsar/expandir la barra de URL dispara resize con cambio
+  // de altura solamente. Re-medir ahí fuerza un reflow en pleno scroll, así que
+  // esos casos se difieren hasta que el viewport se estabiliza.
+  let resizeTimer = 0;
+  let lastWidth = window.innerWidth;
+  const onResize = () => {
+    window.clearTimeout(resizeTimer);
+    if (window.innerWidth !== lastWidth) {
+      lastWidth = window.innerWidth;
+      measure();
+      return;
+    }
+    resizeTimer = window.setTimeout(measure, 250);
+  };
+
   window.addEventListener('scroll', requestUpdate, { passive: true });
-  window.addEventListener('resize', measure, { passive: true });
+  window.addEventListener('resize', onResize, { passive: true });
   window.addEventListener('popstate', () => {
     const id = decodeURIComponent(window.location.hash.slice(1));
     if (id) {
