@@ -270,8 +270,7 @@ const en: Dictionary = {
     brand: 'emersoftware',
     name: 'Emerson Salazar Rubilar',
     role: 'Software Engineer',
-    about:
-      'I build software products focused on artificial intelligence. Available for consulting on development and AI agents.',
+    about: 'I build software. Attention to detail and a sense of urgency.',
     email: 'hola@emersoftware.cl',
   },
   githubCommit: {
