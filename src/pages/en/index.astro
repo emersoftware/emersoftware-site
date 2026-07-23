@@ -45,8 +45,6 @@ const t = getDictionary(lang);
     </div>
 
     <div data-hero-overlay class="relative h-svh">
-      <Navbar lang={lang} />
-
       <div class="relative z-10 flex h-full items-end">
         <div class="w-full min-w-0 px-6 pb-36 md:px-12 md:pb-48 lg:px-16 lg:pb-32">
           <div class="w-full max-w-2xl min-w-0">
@@ -135,6 +133,12 @@ const t = getDictionary(lang);
     </div>
   </section>
 
+  <!-- Outside the hero stacking context so it stays above the permanent mask.
+       It fades together with the rest of the hero interface. -->
+  <div data-hero-navbar class="fixed inset-x-0 top-0 z-40">
+    <Navbar lang={lang} />
+  </div>
+
   <!-- Spacer: the first viewport of scroll is the sheet's approach. lvh (constant):
        with the Safari toolbar expanded the sheet rests below the viewport and its
        edge never peeks above the bottom bar. -->
@@ -176,24 +180,22 @@ const t = getDictionary(lang);
     </div>
   </div>
 
-  <!-- "Peek" strip: replicates the hero across the top band to hide content
-       passing above the sticky nav. Only shown once the sheet is docked; at
-       rest it would cover the hero Navbar. -->
-  <!-- bg-black on the fixed element itself: it is the tint source Liquid Glass
-       samples for the top chrome while the sheet is docked. -->
+  <!-- Permanent mask: replicates the hero across the top band so the sheet
+       cannot reach the edge when Safari composites scrolling ahead of
+       JavaScript. The Navbar lives in an independent layer above it. -->
   <div
     data-hero-peek
     class="pointer-events-none fixed inset-x-0 top-0 z-30 overflow-hidden bg-black"
     aria-hidden="true"
   >
-    <div class="hero-peek-inner absolute top-0 left-0 h-lvh w-screen">
+    <div class="hero-peek-inner absolute inset-x-0 top-0 h-lvh w-full">
       <picture>
         <source media="(min-width: 768px)" srcset="/hero-bg.jpeg" />
         <img
           src="/hero-bg-mobile.jpeg"
           alt=""
           class="h-full w-full object-cover object-bottom md:object-center"
-          loading="lazy"
+          loading="eager"
           decoding="async"
         />
       </picture>
@@ -227,11 +229,6 @@ const t = getDictionary(lang);
      paints the document behind the notch and it must be masked. */
   [data-hero-peek] {
     height: calc(env(safe-area-inset-top, 0px) + var(--sheet-top));
-    display: none;
-  }
-
-  :global(html[data-docked]) [data-hero-peek] {
-    display: block;
   }
 
   @supports not (height: 100lvh) {

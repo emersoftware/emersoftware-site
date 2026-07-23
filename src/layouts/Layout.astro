@@ -114,6 +114,9 @@ const websiteLd = {
       html {
         font-family: 'Jacques Francois', system-ui, serif;
         scroll-behavior: smooth;
+        /* Safari desplaza el elemento raíz. Aplicarlo sólo al body deja activo
+           el rubber-band superior y WebKit puede enseñar su canvas blanco. */
+        overscroll-behavior: none;
       }
 
       body {

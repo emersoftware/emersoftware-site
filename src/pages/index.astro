@@ -46,8 +46,6 @@ const t = getDictionary(lang);
     </div>
 
     <div data-hero-overlay class="relative h-svh">
-      <Navbar lang={lang} />
-
       <div class="relative z-10 flex h-full items-end">
         <div class="w-full min-w-0 px-6 pb-36 md:px-12 md:pb-48 lg:px-16 lg:pb-32">
           <div class="w-full max-w-2xl min-w-0">
@@ -136,6 +134,12 @@ const t = getDictionary(lang);
     </div>
   </section>
 
+  <!-- Fuera del stacking context del hero para quedar sobre la máscara fija.
+       Se desvanece junto al resto de la interfaz del hero. -->
+  <div data-hero-navbar class="fixed inset-x-0 top-0 z-40">
+    <Navbar lang={lang} />
+  </div>
+
   <!-- Espaciador: la primera pantalla de scroll es la aproximación de la hoja.
        lvh (constante): con la barra de Safari expandida la hoja reposa bajo el
        viewport y su filo nunca asoma sobre la barra inferior. -->
@@ -169,24 +173,22 @@ const t = getDictionary(lang);
     </div>
   </div>
 
-  <!-- Franja "peek": replica el hero en la banda superior para ocultar el
-       contenido que pasa por encima del nav sticky. Solo se muestra dockeada
-       la hoja; en reposo taparía la Navbar del hero. -->
-  <!-- bg-black en el fixed mismo: es la fuente de tinte que Liquid Glass
-       muestrea para el chrome superior cuando la hoja está dockeada. -->
+  <!-- Máscara permanente: replica el hero en la banda superior y evita que la
+       hoja alcance el borde incluso cuando Safari compone el scroll antes que
+       JavaScript. La Navbar vive en una capa superior independiente. -->
   <div
     data-hero-peek
     class="pointer-events-none fixed inset-x-0 top-0 z-30 overflow-hidden bg-black"
     aria-hidden="true"
   >
-    <div class="hero-peek-inner absolute top-0 left-0 h-lvh w-screen">
+    <div class="hero-peek-inner absolute inset-x-0 top-0 h-lvh w-full">
       <picture>
         <source media="(min-width: 768px)" srcset="/hero-bg.jpeg" />
         <img
           src="/hero-bg-mobile.jpeg"
           alt=""
           class="h-full w-full object-cover object-bottom md:object-center"
-          loading="lazy"
+          loading="eager"
           decoding="async"
         />
       </picture>
@@ -220,11 +222,6 @@ const t = getDictionary(lang);
      minimizado el documento pinta detrás del notch y hay que taparlo. */
   [data-hero-peek] {
     height: calc(env(safe-area-inset-top, 0px) + var(--sheet-top));
-    display: none;
-  }
-
-  :global(html[data-docked]) [data-hero-peek] {
-    display: block;
   }
 
   @supports not (height: 100lvh) {
