@@ -1,5 +1,5 @@
 import type { MiddlewareHandler } from 'astro';
-import { defaultLocale, type SupportedLocale } from './i18n/config';
+import { defaultLocale, isSupportedLocale, type SupportedLocale } from './i18n/config';
 
 const ES_COUNTRIES = new Set([
   'AR', // Argentina
@@ -74,6 +74,26 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const { request } = context;
   const url = new URL(request.url);
   const pathname = url.pathname;
+  const explicitLocale = url.searchParams.get('lang');
+
+  if (explicitLocale && isSupportedLocale(explicitLocale)) {
+    context.cookies.set('preferred_locale', explicitLocale, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: 'lax',
+      secure: url.protocol === 'https:',
+    });
+
+    url.searchParams.delete('lang');
+    const cleanPath =
+      explicitLocale === 'en'
+        ? pathname === '/en' || pathname.startsWith('/en/')
+          ? pathname
+          : `/en${pathname === '/' ? '/' : pathname}`
+        : pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+
+    return context.redirect(`${cleanPath}${url.search}${url.hash}`);
+  }
 
   // If path starts with /en, continue (secondary locale). We serve default (es) at root.
   if (pathname === '/en' || pathname.startsWith('/en/')) {
@@ -87,13 +107,16 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   // Only auto-redirect to /en for users whose preferred language is EN
   if (pathname === '/' || pathname === '') {
+    const savedLocale = context.cookies.get('preferred_locale')?.value;
     const acceptLanguage = request.headers.get('accept-language');
     const cloudflareCountry = request.headers.get('cf-ipcountry');
 
     const langFromAL = detectFromAcceptLanguage(acceptLanguage);
     const langFromCC = detectFromCountry(cloudflareCountry);
 
-    const lang: SupportedLocale = langFromAL || langFromCC || defaultLocale;
+    const lang: SupportedLocale = isSupportedLocale(savedLocale)
+      ? savedLocale
+      : langFromAL || langFromCC || defaultLocale;
 
     if (lang === 'en') {
       return context.redirect('/en/');

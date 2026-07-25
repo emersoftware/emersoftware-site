@@ -5,9 +5,17 @@
   "compatibility_flags": ["nodejs_compat"],
   "keep_vars": true,
   "dev": {
-    "inspector_port": 0
+    "inspector_port": 0,
   },
   "observability": {
     "enabled": true,
   },
+  "d1_databases": [
+    {
+      "binding": "GUESTBOOK_DB",
+      "database_name": "emersoftware-guestbook",
+      "database_id": "c8e334d1-77ad-448a-a10f-59896515df55",
+      "migrations_dir": "migrations",
+    },
+  ],
 }

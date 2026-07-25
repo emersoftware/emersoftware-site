@@ -13,6 +13,7 @@ import BlogList from '../../components/BlogList.astro';
 import Navbar from '../../components/Navbar.astro';
 import SectionNav from '../../components/SectionNav.astro';
 import Footer from '../../components/Footer.astro';
+import GuestCards from '../../components/GuestCards.astro';
 import { getDictionary } from '../../i18n/dictionaries';
 
 const lang = 'en';
@@ -45,9 +46,12 @@ const t = getDictionary(lang);
     </div>
 
     <div data-hero-overlay class="relative h-svh">
+      <GuestCards lang={lang} />
       <div class="relative z-10 flex h-full items-end">
-        <div class="w-full min-w-0 px-6 pb-36 md:px-12 md:pb-48 lg:px-16 lg:pb-32">
-          <div class="w-full max-w-2xl min-w-0">
+        <div
+          class="w-full min-w-0 px-5 pb-36 md:px-12 md:pb-48 lg:px-16 lg:pb-32"
+        >
+          <div class="w-[calc(100%-4.75rem)] max-w-2xl min-w-0 md:w-full">
             <GitHubLatestCommit lang={lang} class="mb-4 flex w-full" />
 
             <div class="fade-in">
@@ -68,28 +72,28 @@ const t = getDictionary(lang);
               </p>
             </div>
 
-            <nav class="mt-4 flex min-w-0 justify-center gap-1 md:hidden">
+            <nav class="mt-4 flex min-w-0 flex-wrap justify-start gap-2 md:hidden">
               <a
                 href="https://github.com/emersoftware"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="hero-pill flex min-w-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-2 text-xs text-white backdrop-blur-md hover:bg-white/20"
+                class="hero-pill flex min-w-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs text-white backdrop-blur-md hover:bg-white/20"
               >
                 <GitHubIcon class="size-4" />
-                <span>github</span>
+                <span>GitHub</span>
               </a>
               <a
                 href="https://www.linkedin.com/in/emerson-salazar-rubilar"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="hero-pill flex min-w-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-2 text-xs text-white backdrop-blur-md hover:bg-white/20"
+                class="hero-pill flex min-w-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs text-white backdrop-blur-md hover:bg-white/20"
               >
                 <LinkedInIcon class="size-4" />
-                <span>linkedin</span>
+                <span>LinkedIn</span>
               </a>
               <button
                 id="emailButtonMobile"
-                class="hero-pill flex min-w-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-2 text-xs text-white backdrop-blur-md hover:bg-white/20"
+                class="hero-pill flex min-w-0 cursor-pointer items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs text-white backdrop-blur-md hover:bg-white/20"
               >
                 <Mail class="size-4" />
                 <span>email</span>
@@ -119,7 +123,7 @@ const t = getDictionary(lang);
               </a>
               <button
                 id="emailButtonDesktop"
-                class="hero-pill flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-base text-white backdrop-blur-md hover:bg-white/20"
+                class="hero-pill flex cursor-pointer items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-base text-white backdrop-blur-md hover:bg-white/20"
               >
                 <Mail class="size-5" />
                 <span>{t.hero.email}</span>

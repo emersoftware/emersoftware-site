@@ -16,18 +16,20 @@ const ensureEnPrefix = (path: string) => (/^\/en(?=\/|$)/.test(path) ? path : `/
 
 const esHref = stripEnPrefix(currentPath);
 const enHref = ensureEnPrefix(currentPath);
+const preferenceHref = (href: string, locale: 'es' | 'en') =>
+  `${href}${href.includes('?') ? '&' : '?'}lang=${locale}`;
 ---
 
 <div class={`flex items-center gap-2 text-sm ${className}`}>
   <a
-    href={esHref}
+    href={preferenceHref(esHref, 'es')}
     class={`transition-colors hover:text-orange-500 ${lang === 'es' ? 'text-orange-500' : 'text-graphite-500'}`}
   >
     ES
   </a>
   <span class="text-graphite-400" aria-hidden="true">/</span>
   <a
-    href={enHref}
+    href={preferenceHref(enHref, 'en')}
     class={`transition-colors hover:text-orange-500 ${lang === 'en' ? 'text-orange-500' : 'text-graphite-500'}`}
   >
     EN

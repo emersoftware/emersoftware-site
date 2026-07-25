@@ -1,0 +1,1616 @@
+---
+import { defaultLocale, isSupportedLocale } from '../i18n/config';
+import heroDoodle from '../data/hero-doodle.json';
+
+interface Props {
+  lang?: string;
+}
+
+const { lang: rawLang = 'es' } = Astro.props as Props;
+const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
+const isEnglish = lang === 'en';
+const isLocal =
+  Astro.url.hostname === 'localhost' ||
+  Astro.url.hostname === '127.0.0.1' ||
+  Astro.url.hostname === '0.0.0.0' ||
+  Astro.url.hostname.startsWith('192.168.') ||
+  Astro.url.hostname.startsWith('10.');
+const turnstileSiteKey =
+  import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (isLocal ? '1x00000000000000000000AA' : '');
+
+const copy = isEnglish
+  ? {
+      boardLabel: 'Notes and drawings left by visitors',
+      viewCard: 'View card by',
+      viewDialogLabel: 'Expanded visitor card',
+      starter: 'leave an idea, a hello, or a tiny doodle',
+      starterSignature: 'emerson',
+      add: 'Add',
+      dialogLabel: 'Leave a card',
+      textCard: 'Message',
+      doodleCard: 'Doodle',
+      messagePlaceholder: 'Write something short…',
+      signatureLabel: 'Signature',
+      signaturePlaceholder: 'your name',
+      drawingLabel: 'Draw around your message',
+      clearDrawing: 'clear drawing',
+      close: 'Close',
+      contactLabel: 'Public site or private email (optional)',
+      contactPlaceholder: 'https://yoursite.com or you@email.com',
+      contactHint: 'A site is public. An email stays private.',
+      publicHint: 'This site will be public on your signature.',
+      privateHint: 'This email will only be saved privately.',
+      invalidContact: 'Use a complete https:// link or a valid email.',
+      back: 'back',
+      publish: 'Leave card',
+      verifying: 'Checking…',
+      verified: '✓ Ready',
+      unavailable: 'Cards are taking a break. Try again soon.',
+      invalidMessage: 'Write a message first.',
+      invalidDrawing: 'Draw something first.',
+      signatureRequired: 'Add a signature.',
+      rateLimited: 'That is enough cards for now. Try again later.',
+      saved: 'Your card is now in the hero.',
+    }
+  : {
+      boardLabel: 'Notas y dibujos que dejaron visitantes',
+      viewCard: 'Ver tarjeta de',
+      viewDialogLabel: 'Tarjeta de visitante ampliada',
+      starter: 'dejame una idea, un saludo o un dibujito',
+      starterSignature: 'emerson',
+      add: 'Añadir',
+      dialogLabel: 'Deja una tarjeta',
+      textCard: 'Mensaje',
+      doodleCard: 'Doodle',
+      messagePlaceholder: 'Escribe algo breve…',
+      signatureLabel: 'Firma',
+      signaturePlaceholder: 'tu nombre',
+      drawingLabel: 'Dibuja alrededor de tu mensaje',
+      clearDrawing: 'borrar dibujo',
+      close: 'Cerrar',
+      contactLabel: 'Sitio o email [opcional]',
+      contactPlaceholder: 'https://tusitio.cl o tu@email.com',
+      contactHint: 'Si es email quedará en privado',
+      publicHint: 'Este sitio aparecerá públicamente en tu firma.',
+      privateHint: 'Este email solo quedará guardado en privado.',
+      invalidContact: 'Usa un enlace https:// completo o un email válido.',
+      back: 'volver',
+      publish: 'Dejar tarjeta',
+      verifying: 'Verificando…',
+      verified: '✓ Listo',
+      unavailable: 'Las tarjetas están descansando. Prueba de nuevo pronto.',
+      invalidMessage: 'Escribe un mensaje primero.',
+      invalidDrawing: 'Dibuja algo primero.',
+      signatureRequired: 'Agrega una firma.',
+      rateLimited: 'Ya dejaste suficientes tarjetas por ahora. Vuelve más tarde.',
+      saved: 'Tu tarjeta ya está en el hero.',
+    };
+---
+
+<div
+  data-guest-cards
+  data-sitekey={turnstileSiteKey}
+  data-copy={JSON.stringify(copy)}
+  data-hero-fade
+  class="guest-cards-layer"
+>
+  <div class="guest-cards-board" data-card-board aria-label={copy.boardLabel}>
+    <article
+      class="guest-card guest-card--starter"
+      data-slot="0"
+      data-view-card
+      role="button"
+      tabindex="0"
+      aria-label={`${copy.viewCard} ${copy.starterSignature}`}
+    >
+      <p>{copy.starter}</p>
+      <span class="guest-card-signature">— {copy.starterSignature}</span>
+    </article>
+
+    <article
+      class="guest-card guest-card--starter guest-card--starter-doodle"
+      data-slot="1"
+      data-view-card
+      role="button"
+      tabindex="0"
+      aria-label={`${copy.viewCard} ${copy.starterSignature}`}
+    >
+      <svg class="guest-card-ink" viewBox="0 0 256 256" aria-hidden="true">
+        {
+          heroDoodle.strokes.map((stroke) => (
+            <polyline points={stroke.map((point) => point.join(',')).join(' ')}></polyline>
+          ))
+        }
+      </svg>
+      <span class="guest-card-signature">— {copy.starterSignature}</span>
+    </article>
+
+    <button
+      type="button"
+      class="guest-card guest-card--add"
+      data-add-card
+      data-slot="7"
+      aria-haspopup="dialog"
+    >
+      <span class="guest-card-plus" aria-hidden="true">+</span>
+      <span>{copy.add}</span>
+    </button>
+  </div>
+
+  <p class="guest-card-toast" data-card-toast role="status" aria-live="polite"></p>
+
+  <dialog class="guest-card-dialog" data-card-dialog closedby="any" aria-label={copy.dialogLabel}>
+    <form method="dialog" class="guest-card-dialog-inner" data-card-form data-mode="choose">
+      <button type="button" class="guest-card-close" data-card-close aria-label={copy.close}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18"></path>
+        </svg>
+      </button>
+
+      <div class="guest-card-kind-picker" data-card-kind-picker>
+        <button type="button" class="guest-card-kind" data-card-kind="message">
+          <span class="guest-card-kind-icon" aria-hidden="true">Aa</span>
+          <span>{copy.textCard}</span>
+        </button>
+        <button type="button" class="guest-card-kind" data-card-kind="drawing">
+          <svg class="guest-card-kind-doodle" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M9 39c8-22 15 12 24-9 8-18 10 17 22-7"></path>
+          </svg>
+          <span>{copy.doodleCard}</span>
+        </button>
+      </div>
+
+      <div class="guest-card-compose-tools">
+        <button type="button" class="guest-card-clear" data-card-clear>
+          {copy.clearDrawing}
+        </button>
+      </div>
+
+      <div class="guest-card-compose">
+        <canvas width="640" height="640" data-card-canvas aria-label={copy.drawingLabel}></canvas>
+
+        <div class="guest-card-message-field">
+          <textarea
+            maxlength="64"
+            rows="4"
+            data-card-message
+            placeholder={copy.messagePlaceholder}
+            aria-label={copy.messagePlaceholder}></textarea>
+          <span class="guest-card-count" data-card-count>0 / 64</span>
+        </div>
+
+        <label class="guest-card-signature-field">
+          <span aria-hidden="true">—</span>
+          <span class="sr-only">{copy.signatureLabel}</span>
+          <input
+            type="text"
+            maxlength="20"
+            data-card-signature
+            placeholder={copy.signaturePlaceholder}
+            required
+          />
+        </label>
+      </div>
+
+      <label class="guest-card-contact-field">
+        <span>{copy.contactLabel}</span>
+        <input
+          type="text"
+          inputmode="text"
+          data-card-contact
+          placeholder={copy.contactPlaceholder}
+        />
+        <small data-card-contact-hint>{copy.contactHint}</small>
+      </label>
+
+      <div class="guest-card-verification">
+        <div data-card-turnstile></div>
+        <p data-card-status aria-live="polite">{copy.verifying}</p>
+      </div>
+
+      <footer class="guest-card-dialog-actions">
+        <button type="button" class="guest-card-back" data-card-back>
+          {copy.back}
+        </button>
+        <button type="submit" class="guest-card-submit" data-card-submit disabled>
+          {copy.publish}
+        </button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog
+    class="guest-card-view-dialog"
+    data-card-view-dialog
+    closedby="any"
+    aria-label={copy.viewDialogLabel}
+  >
+    <button
+      type="button"
+      class="guest-card-view-close"
+      data-card-view-close
+      aria-label={copy.close}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 6l12 12M18 6 6 18"></path>
+      </svg>
+    </button>
+    <div class="guest-card-view-host" data-card-view-host></div>
+  </dialog>
+</div>
+
+<style is:global>
+  .guest-cards-layer {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    opacity: var(--hero-visibility, 1);
+  }
+
+  .guest-cards-board {
+    position: absolute;
+    inset: 0;
+  }
+
+  .guest-card {
+    --card-rotation: 0deg;
+    pointer-events: auto;
+    position: absolute;
+    display: grid;
+    width: clamp(7.4rem, 9.5vw, 9.25rem);
+    aspect-ratio: 1;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid rgb(28 25 20 / 15%);
+    border-radius: 29%;
+    corner-shape: squircle;
+    background: #fff9e8;
+    box-shadow:
+      0 1.1rem 2rem rgb(0 0 0 / 22%),
+      inset 0 0 0 1px rgb(255 255 255 / 55%);
+    color: #11100e;
+    animation: guest-card-drop 780ms cubic-bezier(0.22, 0.9, 0.35, 1.15) both;
+    animation-delay: calc(180ms + var(--drop-order, 0) * 105ms);
+    transform: rotate(var(--card-rotation));
+    transform-origin: 50% 55%;
+    transition:
+      translate 190ms ease,
+      rotate 190ms ease,
+      scale 190ms ease,
+      box-shadow 190ms ease;
+  }
+
+  .guest-card:hover {
+    z-index: 3;
+    translate: 0 -0.38rem;
+    rotate: 1deg;
+    scale: 1.025;
+    box-shadow:
+      0 1.65rem 2.8rem rgb(0 0 0 / 32%),
+      inset 0 0 0 1px rgb(255 255 255 / 65%);
+  }
+
+  .guest-card[data-slot='0'] {
+    --card-rotation: -8deg;
+    --drop-order: 0;
+    top: 18%;
+    left: 53%;
+  }
+
+  .guest-card[data-slot='1'] {
+    --card-rotation: 6deg;
+    --drop-order: 3;
+    top: 11%;
+    left: 69%;
+  }
+
+  .guest-card[data-slot='2'] {
+    --card-rotation: 11deg;
+    --drop-order: 5;
+    top: 22%;
+    left: 83%;
+  }
+
+  .guest-card[data-slot='3'] {
+    --card-rotation: 4deg;
+    --drop-order: 1;
+    top: 42%;
+    left: 59%;
+  }
+
+  .guest-card[data-slot='4'] {
+    --card-rotation: -7deg;
+    --drop-order: 4;
+    top: 44%;
+    left: 75%;
+  }
+
+  .guest-card[data-slot='5'] {
+    --card-rotation: 8deg;
+    --drop-order: 7;
+    top: 49%;
+    left: 87%;
+  }
+
+  .guest-card[data-slot='6'] {
+    --card-rotation: -3deg;
+    --drop-order: 2;
+    top: 64%;
+    left: 68%;
+  }
+
+  .guest-card[data-slot='7'] {
+    --card-rotation: -10deg;
+    --drop-order: 6;
+    right: -0.65rem;
+    bottom: clamp(3.7rem, 4.75vw, 4.625rem);
+  }
+
+  .guest-card--starter,
+  .guest-card--visitor {
+    place-items: center;
+    padding: 1.1rem;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .guest-card--starter:focus-visible,
+  .guest-card--visitor:focus-visible {
+    outline: 3px solid #ed8936;
+    outline-offset: 4px;
+  }
+
+  .guest-card--starter-doodle {
+    padding: 0.75rem;
+  }
+
+  .guest-card--starter p,
+  .guest-card--visitor p {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-family: 'Jacques Francois', serif;
+    font-size: clamp(0.78rem, 1.05vw, 1rem);
+    line-height: 1.25;
+    white-space: pre-wrap;
+    border-radius: 0.5rem;
+    background: rgb(255 249 232 / 68%);
+    padding: 0.2rem 0.32rem;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+
+  .guest-card-signature {
+    position: absolute;
+    z-index: 2;
+    right: 15%;
+    bottom: 11%;
+    max-width: 70%;
+    overflow: hidden;
+    color: #302e2a;
+    font-family: 'Jacques Francois', serif !important;
+    font-size: clamp(0.62rem, 0.85vw, 0.78rem);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .guest-card-signature[href] {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+  }
+
+  .guest-card-ink {
+    position: absolute;
+    top: 11%;
+    left: 11%;
+    width: 78%;
+    height: 68%;
+    color: #090909;
+    opacity: 0.9;
+  }
+
+  .guest-card-ink path,
+  .guest-card-ink polyline {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 5.5;
+  }
+
+  .guest-card--add {
+    place-content: center;
+    gap: 0.1rem;
+    cursor: pointer;
+    border: 1px solid rgb(28 25 20 / 15%);
+    background: #fff9e8;
+    font-family: 'Inter', sans-serif;
+    transition:
+      background-color 180ms ease,
+      translate 190ms ease,
+      rotate 190ms ease,
+      scale 190ms ease,
+      box-shadow 190ms ease;
+  }
+
+  .guest-card--add:hover {
+    background: #fff9e8;
+  }
+
+  .guest-card--add:focus-visible {
+    outline: 3px solid #ed8936;
+    outline-offset: 4px;
+  }
+
+  .guest-card--add > span {
+    font-family: 'Inter', sans-serif !important;
+  }
+
+  .guest-card-plus {
+    font-size: 2.25rem;
+    font-weight: 300 !important;
+    line-height: 1;
+  }
+
+  .guest-card-toast {
+    pointer-events: none;
+    position: fixed;
+    left: 50%;
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    z-index: 80;
+    margin: 0;
+    padding: 0.65rem 1rem;
+    border-radius: 999px;
+    background: #fff9e8;
+    color: #11100e;
+    box-shadow: 0 0.7rem 2rem rgb(0 0 0 / 25%);
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.82rem;
+    opacity: 0;
+    transform: translate(-50%, 1rem);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  .guest-card-toast[data-visible='true'] {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .guest-card-dialog {
+    pointer-events: auto;
+    width: min(94vw, 28rem);
+    max-width: none;
+    max-height: 96svh;
+    margin: auto;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    color: #11100e;
+  }
+
+  .guest-card-dialog::backdrop {
+    background: rgb(7 11 8 / 72%);
+    -webkit-backdrop-filter: blur(11px);
+    backdrop-filter: blur(11px);
+  }
+
+  .guest-card-view-dialog {
+    pointer-events: auto;
+    width: min(94vw, 26rem);
+    max-width: none;
+    margin: auto;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+
+  .guest-card-view-dialog[open] {
+    display: grid;
+    justify-items: center;
+  }
+
+  .guest-card-view-dialog::backdrop {
+    background: rgb(7 11 8 / 72%);
+    -webkit-backdrop-filter: blur(11px);
+    backdrop-filter: blur(11px);
+  }
+
+  .guest-card-view-close {
+    display: grid;
+    width: 2.15rem;
+    aspect-ratio: 1;
+    margin: 0 auto 0.55rem;
+    cursor: pointer;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    color: #fff;
+  }
+
+  .guest-card-view-close svg {
+    display: block;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .guest-card-view-close path {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 1.8;
+  }
+
+  .guest-card-view-close:focus-visible {
+    outline: none;
+    filter: drop-shadow(0 0 0.2rem rgb(255 255 255 / 70%));
+  }
+
+  .guest-card-view-host {
+    display: grid;
+    place-items: center;
+  }
+
+  .guest-card.guest-card--expanded {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: min(82vw, 22rem);
+    cursor: default;
+    animation: none;
+    transform: none;
+    translate: none;
+    rotate: none;
+    scale: none;
+    box-shadow: 0 2rem 6rem rgb(0 0 0 / 42%);
+  }
+
+  .guest-card.guest-card--expanded:hover {
+    translate: none;
+    rotate: none;
+    scale: none;
+    box-shadow: 0 2rem 6rem rgb(0 0 0 / 42%);
+  }
+
+  .guest-card.guest-card--expanded p {
+    max-width: 72%;
+    font-size: clamp(1rem, 4vw, 1.35rem);
+  }
+
+  .guest-card.guest-card--expanded .guest-card-signature {
+    font-size: clamp(0.78rem, 2.6vw, 1rem);
+  }
+
+  .guest-card-dialog-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: 96svh;
+    overflow: auto;
+    padding: 0.75rem;
+  }
+
+  .guest-card-kind-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.75rem, 4vw, 1.25rem);
+    min-height: min(86vw, 24rem);
+  }
+
+  .guest-card-kind {
+    display: grid;
+    width: min(39vw, 10.5rem);
+    aspect-ratio: 1;
+    cursor: pointer;
+    place-content: center;
+    gap: 0.7rem;
+    border: 1px solid rgb(28 25 20 / 16%);
+    border-radius: 29%;
+    corner-shape: squircle;
+    background: #fff9e8;
+    color: #11100e;
+    box-shadow: 0 1.4rem 3.5rem rgb(0 0 0 / 34%);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    transform: rotate(var(--kind-rotation));
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .guest-card-kind:first-child {
+    --kind-rotation: -5deg;
+  }
+
+  .guest-card-kind:last-child {
+    --kind-rotation: 6deg;
+  }
+
+  .guest-card-kind:hover {
+    transform: translateY(-0.25rem) rotate(var(--kind-rotation));
+    box-shadow: 0 1.8rem 4rem rgb(0 0 0 / 42%);
+  }
+
+  .guest-card-kind-icon {
+    font-family: 'Jacques Francois', serif !important;
+    font-size: 2rem;
+  }
+
+  .guest-card-kind-doodle {
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: auto;
+  }
+
+  .guest-card-kind-doodle path {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 4;
+  }
+
+  .guest-card-dialog-inner:not([data-mode='choose']) .guest-card-kind-picker {
+    display: none;
+  }
+
+  .guest-card-dialog-inner[data-mode='choose']
+    > :not(.guest-card-kind-picker, .guest-card-close) {
+    display: none;
+  }
+
+  .guest-card-compose {
+    position: relative;
+    width: min(82vw, 22rem);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid rgb(28 25 20 / 16%);
+    border-radius: 28%;
+    corner-shape: squircle;
+    background: #fff9e8;
+    box-shadow: 0 2rem 6rem rgb(0 0 0 / 42%);
+  }
+
+  .guest-card-compose canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  .guest-card-dialog-inner[data-mode='message'] .guest-card-compose canvas {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .guest-card-dialog-inner[data-mode='message'] .guest-card-compose-tools {
+    display: none;
+  }
+
+  .guest-card-dialog-inner[data-mode='drawing'] .guest-card-message-field {
+    display: none;
+  }
+
+  .guest-card-compose-tools {
+    display: flex;
+    width: min(82vw, 22rem);
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 0.35rem;
+  }
+
+  .guest-card-clear {
+    cursor: pointer;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0.25rem 0.1rem;
+    color: rgb(255 255 255 / 78%);
+    font-family: 'Jacques Francois', serif;
+    font-size: 0.78rem;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .guest-card-dialog-inner > .guest-card-close {
+    position: relative;
+    z-index: 5;
+    display: grid;
+    flex: 0 0 auto;
+    width: 2.15rem;
+    aspect-ratio: 1;
+    margin: 0 auto 0.55rem;
+    cursor: pointer;
+    place-items: center;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #fff;
+  }
+
+  .guest-card-dialog-inner > .guest-card-close svg {
+    display: block;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .guest-card-dialog-inner > .guest-card-close path {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 1.8;
+  }
+
+  .guest-card-message-field {
+    position: absolute;
+    z-index: 3;
+    inset: 29% 14% auto;
+    height: 34%;
+  }
+
+  .guest-card-message-field textarea {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    border: 0;
+    outline: 0;
+    border-radius: 1rem;
+    background: rgb(255 249 232 / 72%);
+    padding: 0.65rem 0.7rem 1rem;
+    color: #11100e;
+    caret-color: #dd6b20;
+    font-family: 'Jacques Francois', serif !important;
+    font-size: clamp(1rem, 4.1vw, 1.3rem);
+    line-height: 1.18;
+    text-align: center;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+
+  .guest-card-message-field textarea::placeholder {
+    color: #8e887d;
+    font-family: 'Jacques Francois', serif !important;
+  }
+
+  .guest-card-count {
+    position: absolute;
+    right: 0.65rem;
+    bottom: 0.42rem;
+    color: #777168;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.6rem;
+  }
+
+  .guest-card-signature-field {
+    position: absolute;
+    z-index: 3;
+    right: 17%;
+    bottom: 12%;
+    left: 17%;
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    color: #11100e;
+    font-family: 'Jacques Francois', serif;
+    font-size: 0.9rem;
+  }
+
+  .guest-card-signature-field input {
+    min-width: 0;
+    flex: 1;
+    border: 0;
+    border-bottom: 1px solid rgb(17 16 14 / 28%);
+    outline: 0;
+    background: rgb(255 249 232 / 64%);
+    padding: 0.18rem 0.2rem;
+    color: #11100e;
+    font-family: 'Jacques Francois', serif !important;
+    font-size: 0.9rem;
+  }
+
+  .guest-card-signature-field input::placeholder {
+    color: #8e887d;
+    font-family: 'Jacques Francois', serif !important;
+  }
+
+  .guest-card-contact-field {
+    display: grid;
+    width: min(88vw, 22rem);
+    gap: 0.3rem;
+    margin-top: 0.85rem;
+    color: rgb(255 255 255 / 80%);
+  }
+
+  .guest-card-contact-field > span,
+  .guest-card-contact-field small {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.66rem;
+  }
+
+  .guest-card-contact-field input {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid rgb(255 255 255 / 48%);
+    border-radius: 0;
+    outline: 0;
+    background: transparent;
+    padding: 0.5rem 0.15rem;
+    color: #fff;
+    font-family: 'Jacques Francois', serif !important;
+    font-size: 0.85rem;
+  }
+
+  .guest-card-contact-field input::placeholder {
+    color: rgb(255 255 255 / 44%);
+  }
+
+  .guest-card-contact-field input[data-invalid='true'] {
+    border-bottom-color: #ff866f;
+  }
+
+  .guest-card-contact-field small {
+    min-height: 0.85rem;
+    color: rgb(255 255 255 / 56%);
+  }
+
+  .guest-card-contact-field small[data-kind='public'] {
+    color: #ffd59f;
+  }
+
+  .guest-card-contact-field small[data-kind='private'] {
+    color: #b9dcff;
+  }
+
+  .guest-card-contact-field small[data-kind='invalid'] {
+    color: #ffad9c;
+  }
+
+  .guest-card-verification {
+    display: grid;
+    min-height: 1.6rem;
+    justify-items: center;
+    margin-top: 0.55rem;
+  }
+
+  [data-card-turnstile] {
+    display: grid;
+    justify-items: center;
+  }
+
+  .guest-card-verification p {
+    margin: 0.3rem 0 0;
+    color: rgb(255 255 255 / 62%);
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.72rem;
+    text-align: center;
+  }
+
+  .guest-card-verification p[data-verified='true'] {
+    color: #bef0c6;
+  }
+
+  .guest-card-verification p[data-error='true'] {
+    color: #ffad9c;
+  }
+
+  .guest-card-dialog-actions {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 1.35rem;
+    margin-top: 0.4rem;
+  }
+
+  .guest-card-back {
+    cursor: pointer;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0.45rem 0.1rem;
+    color: rgb(255 255 255 / 78%);
+    font-family: 'Jacques Francois', serif;
+    font-size: 0.82rem;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .guest-card-submit {
+    cursor: pointer;
+    border: 1px solid #ed8936;
+    border-radius: 0;
+    background: #ed8936;
+    padding: 0.68rem 1.35rem;
+    color: #fff;
+    font-family: 'Jacques Francois', serif;
+    font-size: 0.9rem;
+  }
+
+  .guest-card-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.42;
+  }
+
+  .guest-card-dialog button:focus-visible {
+    outline: 3px solid #ed8936;
+    outline-offset: 3px;
+  }
+
+  .guest-card-message-field textarea:focus-visible,
+  .guest-card-signature-field input:focus-visible {
+    outline: none;
+    background: rgb(255 249 232 / 88%);
+  }
+
+  @keyframes guest-card-drop {
+    0% {
+      opacity: 0;
+      transform: translate3d(-9rem, -75vh, 0) rotate(calc(var(--card-rotation) - 24deg));
+    }
+    72% {
+      opacity: 1;
+      transform: translate3d(0, 0.8rem, 0) rotate(calc(var(--card-rotation) + 2deg));
+    }
+    88% {
+      transform: translate3d(0, -0.25rem, 0) rotate(calc(var(--card-rotation) - 1deg));
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) rotate(var(--card-rotation));
+    }
+  }
+
+  @media (max-width: 47.99rem) {
+    .guest-cards-board {
+      --mobile-card-size: clamp(4.6rem, 22vw, 5.5rem);
+      --mobile-card-gap: 1.25rem;
+    }
+
+    .guest-card {
+      width: var(--mobile-card-size);
+      box-shadow:
+        0 0.65rem 1.3rem rgb(0 0 0 / 25%),
+        inset 0 0 0 1px rgb(255 255 255 / 55%);
+    }
+
+    .guest-card[data-slot='0'] {
+      top: 11%;
+      right: calc(3% + var(--mobile-card-size) + var(--mobile-card-gap));
+      left: auto;
+    }
+
+    .guest-card[data-slot='1'] {
+      --drop-order: 1;
+      top: 8%;
+      right: 3%;
+      left: auto;
+    }
+
+    .guest-card[data-slot='2'] {
+      --drop-order: 3;
+      top: 23%;
+      right: calc(-0.35rem + var(--mobile-card-size) + var(--mobile-card-gap));
+      left: auto;
+    }
+
+    .guest-card[data-slot='3'] {
+      --drop-order: 4;
+      top: 26%;
+      right: -0.35rem;
+      left: auto;
+    }
+
+    .guest-card[data-slot='4'],
+    .guest-card[data-slot='5'],
+    .guest-card[data-slot='6'] {
+      display: none;
+    }
+
+    .guest-card[data-slot='7'] {
+      --drop-order: 2;
+      top: auto;
+      right: -0.4rem;
+      bottom: clamp(2.3rem, 11vw, 2.75rem);
+      left: auto;
+    }
+
+    .guest-card--starter,
+    .guest-card--visitor {
+      padding: 0.62rem;
+    }
+
+    .guest-card--starter p,
+    .guest-card--visitor p {
+      font-size: 0.65rem;
+      line-height: 1.18;
+    }
+
+    .guest-card-signature {
+      right: 14%;
+      bottom: 9%;
+      font-size: 0.52rem;
+    }
+
+    .guest-card-plus {
+      font-size: 1.65rem;
+    }
+
+    .guest-card--add > span:last-child {
+      font-size: 0.68rem;
+    }
+
+    .guest-card-dialog {
+      width: 96vw;
+    }
+
+    .guest-card-dialog-inner {
+      padding: 0.45rem;
+    }
+
+    .guest-card-compose {
+      width: min(84vw, 19rem);
+    }
+
+    .guest-card-compose-tools {
+      width: min(84vw, 19rem);
+    }
+
+    .guest-card-contact-field {
+      width: min(90vw, 19rem);
+    }
+  }
+
+  @supports not (corner-shape: squircle) {
+    .guest-card,
+    .guest-card-compose,
+    .guest-card-kind {
+      border-radius: 0;
+      clip-path: polygon(
+        50% 0%,
+        74% 0.8%,
+        88% 5%,
+        96% 14%,
+        99.2% 28%,
+        100% 50%,
+        99.2% 72%,
+        96% 86%,
+        88% 95%,
+        74% 99.2%,
+        50% 100%,
+        26% 99.2%,
+        12% 95%,
+        4% 86%,
+        0.8% 72%,
+        0% 50%,
+        0.8% 28%,
+        4% 14%,
+        12% 5%,
+        26% 0.8%
+      );
+      box-shadow: none;
+      filter: drop-shadow(0 1rem 1.5rem rgb(0 0 0 / 24%));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .guest-card {
+      animation: none;
+      transition: none;
+    }
+
+    .guest-card-toast {
+      transition: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const roots = document.querySelectorAll('[data-guest-cards]:not([data-ready])');
+
+    for (const root of roots) {
+      root.dataset.ready = 'true';
+      const copy = JSON.parse(root.dataset.copy || '{}');
+      const sitekey = root.dataset.sitekey || '';
+      const board = root.querySelector('[data-card-board]');
+      const addButton = root.querySelector('[data-add-card]');
+      const dialog = root.querySelector('[data-card-dialog]');
+      const form = root.querySelector('[data-card-form]');
+      const messageInput = root.querySelector('[data-card-message]');
+      const signatureInput = root.querySelector('[data-card-signature]');
+      const contactInput = root.querySelector('[data-card-contact]');
+      const contactHint = root.querySelector('[data-card-contact-hint]');
+      const count = root.querySelector('[data-card-count]');
+      const canvas = root.querySelector('[data-card-canvas]');
+      const clearButton = root.querySelector('[data-card-clear]');
+      const submitButton = root.querySelector('[data-card-submit]');
+      const backButton = root.querySelector('[data-card-back]');
+      const kindButtons = Array.from(root.querySelectorAll('[data-card-kind]'));
+      const status = root.querySelector('[data-card-status]');
+      const turnstileSlot = root.querySelector('[data-card-turnstile]');
+      const toast = root.querySelector('[data-card-toast]');
+      const closeButtons = Array.from(root.querySelectorAll('[data-card-close]'));
+      const viewDialog = root.querySelector('[data-card-view-dialog]');
+      const viewHost = root.querySelector('[data-card-view-host]');
+      const viewClose = root.querySelector('[data-card-view-close]');
+
+      if (
+        !board ||
+        !addButton ||
+        !dialog ||
+        !form ||
+        !messageInput ||
+        !signatureInput ||
+        !contactInput ||
+        !canvas
+      ) {
+        continue;
+      }
+
+      let strokes = [];
+      let activeStroke = null;
+      let cardKind = '';
+      let turnstileToken = '';
+      let turnstileWidgetId = null;
+      let visitorCards = [];
+      let toastTimer = 0;
+
+      const maxVisitorCards = 5;
+      const svgNamespace = 'http://www.w3.org/2000/svg';
+
+      const showToast = (message) => {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.dataset.visible = 'true';
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => {
+          toast.dataset.visible = 'false';
+        }, 3500);
+      };
+
+      const createCard = (card, slot) => {
+        const article = document.createElement('article');
+        article.className = 'guest-card guest-card--visitor';
+        article.dataset.slot = String(slot);
+        article.dataset.cardId = card.id;
+        article.dataset.viewCard = '';
+        article.tabIndex = 0;
+        article.setAttribute('role', 'button');
+        article.setAttribute('aria-label', `${copy.viewCard} ${card.signature}`);
+
+        if (card.drawing?.strokes?.length) {
+          const svg = document.createElementNS(svgNamespace, 'svg');
+          svg.classList.add('guest-card-ink');
+          svg.setAttribute('viewBox', '0 0 256 256');
+          svg.setAttribute('aria-hidden', 'true');
+          for (const stroke of card.drawing.strokes) {
+            const polyline = document.createElementNS(svgNamespace, 'polyline');
+            polyline.setAttribute('points', stroke.map((point) => point.join(',')).join(' '));
+            polyline.setAttribute('fill', 'none');
+            polyline.setAttribute('stroke', 'currentColor');
+            polyline.setAttribute('stroke-width', '6');
+            polyline.setAttribute('stroke-linecap', 'round');
+            polyline.setAttribute('stroke-linejoin', 'round');
+            svg.appendChild(polyline);
+          }
+          article.appendChild(svg);
+        }
+
+        if (card.message) {
+          const paragraph = document.createElement('p');
+          paragraph.textContent = card.message;
+          article.appendChild(paragraph);
+        }
+
+        const signature = card.publicUrl
+          ? document.createElement('a')
+          : document.createElement('span');
+        signature.className = 'guest-card-signature';
+        signature.textContent = `— ${card.signature}`;
+        if (card.publicUrl) {
+          signature.href = card.publicUrl;
+          signature.target = '_blank';
+          signature.rel = 'noopener noreferrer';
+        }
+        article.appendChild(signature);
+
+        return article;
+      };
+
+      const renderVisitorCards = () => {
+        board.querySelectorAll('.guest-card--visitor').forEach((card) => card.remove());
+        visitorCards.slice(0, maxVisitorCards).forEach((card, index) => {
+          board.insertBefore(createCard(card, index + 2), addButton);
+        });
+      };
+
+      const loadCards = async () => {
+        try {
+          const response = await fetch('/api/cards', {
+            headers: { Accept: 'application/json' },
+          });
+          if (!response.ok) return;
+          const data = await response.json();
+          visitorCards = Array.isArray(data.cards) ? data.cards : [];
+          renderVisitorCards();
+        } catch (_) {
+          // The starter cards keep the hero useful if the network is unavailable.
+        }
+      };
+
+      const setStatus = (message, error = false, verified = false) => {
+        if (!status) return;
+        status.textContent = message;
+        status.dataset.error = error ? 'true' : 'false';
+        status.dataset.verified = verified ? 'true' : 'false';
+      };
+
+      const drawingIsValid = () => strokes.some((stroke) => stroke.length >= 2);
+      const messageIsValid = () => Array.from(messageInput.value.trim()).length > 0;
+      const signatureIsValid = () => {
+        const value = signatureInput.value.trim().replace(/^[—–-]+\s*/u, '');
+        return value.length > 0 && value.length <= 20;
+      };
+      const contactKind = () => {
+        const value = contactInput.value.trim();
+        if (!value) return 'empty';
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(value)) return 'private';
+        try {
+          const url = new URL(value);
+          return (url.protocol === 'https:' || url.protocol === 'http:') && url.hostname
+            ? 'public'
+            : 'invalid';
+        } catch (_) {
+          return 'invalid';
+        }
+      };
+      const drawingPointCount = () => strokes.reduce((total, stroke) => total + stroke.length, 0);
+      const contentIsValid = () =>
+        cardKind === 'message'
+          ? messageIsValid()
+          : cardKind === 'drawing'
+            ? drawingIsValid()
+            : false;
+
+      const updateSubmit = () => {
+        if (!submitButton) return;
+        const contactIsValid = contactKind() !== 'invalid';
+        submitButton.disabled = !(
+          contentIsValid() &&
+          signatureIsValid() &&
+          contactIsValid &&
+          turnstileToken
+        );
+      };
+
+      const updateContactHint = () => {
+        if (!contactHint) return;
+        const kind = contactKind();
+        contactHint.dataset.kind = kind;
+        contactInput.dataset.invalid = kind === 'invalid' ? 'true' : 'false';
+        contactHint.textContent =
+          kind === 'public'
+            ? copy.publicHint
+            : kind === 'private'
+              ? copy.privateHint
+              : kind === 'invalid'
+                ? copy.invalidContact
+                : copy.contactHint;
+      };
+
+      const redraw = () => {
+        const rect = canvas.getBoundingClientRect();
+        const scale = window.devicePixelRatio || 1;
+        const width = Math.max(1, Math.round(rect.width * scale));
+        const height = Math.max(1, Math.round(rect.height * scale));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+        }
+
+        const context = canvas.getContext('2d');
+        if (!context) return;
+        context.setTransform((rect.width * scale) / 256, 0, 0, (rect.height * scale) / 256, 0, 0);
+        context.clearRect(0, 0, 256, 256);
+        context.strokeStyle = '#090909';
+        context.lineWidth = 5.5;
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+
+        for (const stroke of strokes) {
+          if (stroke.length < 2) continue;
+          context.beginPath();
+          context.moveTo(stroke[0][0], stroke[0][1]);
+          for (let index = 1; index < stroke.length; index += 1) {
+            context.lineTo(stroke[index][0], stroke[index][1]);
+          }
+          context.stroke();
+        }
+      };
+
+      const pointFromEvent = (event) => {
+        const rect = canvas.getBoundingClientRect();
+        return [
+          Math.max(0, Math.min(256, ((event.clientX - rect.left) / rect.width) * 256)),
+          Math.max(0, Math.min(256, ((event.clientY - rect.top) / rect.height) * 256)),
+        ];
+      };
+
+      const renderTurnstile = () => {
+        if (!sitekey || !turnstileSlot || turnstileWidgetId !== null || !window.turnstile) {
+          if (!sitekey) setStatus(copy.unavailable, true);
+          return;
+        }
+
+        try {
+          turnstileWidgetId = window.turnstile.render(turnstileSlot, {
+            sitekey,
+            appearance: 'interaction-only',
+            size: 'compact',
+            callback: (token) => {
+              turnstileToken = token;
+              setStatus(copy.verified, false, true);
+              updateSubmit();
+            },
+            'expired-callback': () => {
+              turnstileToken = '';
+              setStatus(copy.verifying);
+              updateSubmit();
+            },
+            'error-callback': () => {
+              turnstileToken = '';
+              setStatus(copy.unavailable, true);
+              updateSubmit();
+            },
+          });
+        } catch (_) {
+          setStatus(copy.unavailable, true);
+        }
+      };
+
+      const loadTurnstile = () => {
+        if (window.turnstile) {
+          if (turnstileWidgetId !== null) {
+            window.turnstile.reset(turnstileWidgetId);
+            return;
+          }
+          renderTurnstile();
+          return;
+        }
+
+        const existing = document.querySelector(
+          'script[src*="challenges.cloudflare.com/turnstile/v0/api.js"]'
+        );
+        if (existing) {
+          existing.addEventListener('load', renderTurnstile, { once: true });
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.addEventListener('load', renderTurnstile, { once: true });
+        script.addEventListener('error', () => setStatus(copy.unavailable, true), { once: true });
+        document.head.appendChild(script);
+      };
+
+      const resetEditor = () => {
+        cardKind = '';
+        form.dataset.mode = 'choose';
+        messageInput.value = '';
+        signatureInput.value = '';
+        contactInput.value = '';
+        strokes = [];
+        activeStroke = null;
+        turnstileToken = '';
+        if (count) count.textContent = '0 / 64';
+        updateContactHint();
+        setStatus(copy.verifying);
+        updateSubmit();
+        redraw();
+      };
+
+      const closeDialog = () => {
+        if (dialog.open) dialog.close();
+      };
+
+      const openCardView = (card) => {
+        if (!viewDialog || !viewHost) return;
+        const expandedCard = card.cloneNode(true);
+        expandedCard.classList.add('guest-card--expanded');
+        expandedCard.removeAttribute('data-slot');
+        expandedCard.removeAttribute('data-view-card');
+        expandedCard.removeAttribute('role');
+        expandedCard.removeAttribute('tabindex');
+        expandedCard.removeAttribute('aria-label');
+        viewHost.replaceChildren(expandedCard);
+        viewDialog.showModal();
+      };
+
+      addButton.addEventListener('click', () => {
+        resetEditor();
+        dialog.showModal();
+        window.requestAnimationFrame(() => kindButtons[0]?.focus());
+      });
+
+      kindButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          cardKind = button.dataset.cardKind;
+          form.dataset.mode = cardKind;
+          if (cardKind === 'message') {
+            strokes = [];
+            activeStroke = null;
+          } else {
+            messageInput.value = '';
+            if (count) count.textContent = '0 / 64';
+          }
+          setStatus(copy.verifying);
+          loadTurnstile();
+          window.requestAnimationFrame(() => {
+            redraw();
+            (cardKind === 'message' ? messageInput : canvas).focus();
+          });
+        });
+      });
+
+      backButton?.addEventListener('click', () => {
+        resetEditor();
+        if (turnstileWidgetId !== null && window.turnstile) {
+          window.turnstile.reset(turnstileWidgetId);
+        }
+        window.requestAnimationFrame(() => kindButtons[0]?.focus());
+      });
+
+      closeButtons.forEach((button) => button.addEventListener('click', closeDialog));
+
+      board.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element) || event.target.closest('a')) return;
+        const card = event.target.closest('[data-view-card]');
+        if (card) openCardView(card);
+      });
+
+      board.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        if (!(event.target instanceof Element) || event.target.closest('a')) return;
+        const card = event.target.closest('[data-view-card]');
+        if (!card) return;
+        event.preventDefault();
+        openCardView(card);
+      });
+
+      viewClose?.addEventListener('click', () => viewDialog?.close());
+
+      viewDialog?.addEventListener('click', (event) => {
+        if (event.target === viewDialog) viewDialog.close();
+      });
+
+      viewDialog?.addEventListener('close', () => {
+        viewHost?.replaceChildren();
+      });
+
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) closeDialog();
+      });
+
+      dialog.addEventListener('close', () => {
+        turnstileToken = '';
+        updateSubmit();
+      });
+
+      messageInput.addEventListener('input', () => {
+        if (count) count.textContent = `${Array.from(messageInput.value).length} / 64`;
+        updateSubmit();
+      });
+
+      signatureInput.addEventListener('input', updateSubmit);
+
+      contactInput.addEventListener('input', () => {
+        updateContactHint();
+        updateSubmit();
+      });
+
+      canvas.addEventListener('pointerdown', (event) => {
+        if (strokes.length >= 16 || drawingPointCount() >= 900) return;
+        canvas.setPointerCapture(event.pointerId);
+        activeStroke = [pointFromEvent(event)];
+        strokes.push(activeStroke);
+      });
+
+      canvas.addEventListener('pointermove', (event) => {
+        if (!activeStroke || drawingPointCount() >= 900) return;
+        const point = pointFromEvent(event);
+        const previous = activeStroke[activeStroke.length - 1];
+        if (Math.hypot(point[0] - previous[0], point[1] - previous[1]) < 1.8) return;
+        activeStroke.push(point);
+        redraw();
+        updateSubmit();
+      });
+
+      const endStroke = () => {
+        activeStroke = null;
+        updateSubmit();
+      };
+      canvas.addEventListener('pointerup', endStroke);
+      canvas.addEventListener('pointercancel', endStroke);
+
+      clearButton?.addEventListener('click', () => {
+        strokes = [];
+        activeStroke = null;
+        redraw();
+        updateSubmit();
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!submitButton || submitButton.disabled) return;
+
+        if (!contentIsValid()) {
+          setStatus(cardKind === 'drawing' ? copy.invalidDrawing : copy.invalidMessage, true);
+          return;
+        }
+        if (!signatureIsValid()) {
+          setStatus(copy.signatureRequired, true);
+          return;
+        }
+        if (contactKind() === 'invalid') {
+          setStatus(copy.invalidContact, true);
+          return;
+        }
+
+        submitButton.disabled = true;
+        const originalLabel = submitButton.textContent;
+        submitButton.textContent = '…';
+
+        try {
+          const response = await fetch('/api/cards', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              message: cardKind === 'message' ? messageInput.value.trim() : '',
+              drawing: { strokes: cardKind === 'drawing' ? strokes : [] },
+              signature: signatureInput.value.trim(),
+              contact: contactInput.value.trim(),
+              turnstileToken,
+            }),
+          });
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            setStatus(response.status === 429 ? copy.rateLimited : copy.unavailable, true);
+            return;
+          }
+
+          visitorCards = [data.card, ...visitorCards.filter((card) => card.id !== data.card.id)];
+          renderVisitorCards();
+          closeDialog();
+          showToast(copy.saved);
+        } catch (_) {
+          setStatus(copy.unavailable, true);
+        } finally {
+          submitButton.textContent = originalLabel;
+          turnstileToken = '';
+          if (dialog.open && turnstileWidgetId !== null && window.turnstile) {
+            window.turnstile.reset(turnstileWidgetId);
+          }
+          updateSubmit();
+        }
+      });
+
+      window.addEventListener('resize', redraw, { passive: true });
+      loadCards();
+    }
+  })();
+</script>
