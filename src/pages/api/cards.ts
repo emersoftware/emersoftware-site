@@ -18,6 +18,9 @@ const LOCAL_TURNSTILE_SECRET = '1x0000000000000000000000000000000AA';
 
 type Point = [number, number];
 type Drawing = { strokes: Point[][] };
+type TurnstileVerification =
+  | { success: true }
+  | { success: false; retryable: boolean; errorCodes: string[] };
 
 interface CardRow {
   id: string;
@@ -153,32 +156,66 @@ const normalizeContact = (value: unknown) => {
   }
 };
 
-const verifyTurnstile = async (request: Request, token: unknown) => {
-  if (typeof token !== 'string' || !token || token.length > 2048) return false;
+const verifyTurnstile = async (
+  request: Request,
+  token: unknown
+): Promise<TurnstileVerification> => {
+  if (typeof token !== 'string' || !token || token.length > 2048) {
+    return { success: false, retryable: true, errorCodes: ['invalid-client-token'] };
+  }
 
   const secret = TURNSTILE_SECRET_KEY || (isLocalRequest(request) ? LOCAL_TURNSTILE_SECRET : '');
-  if (!secret) return false;
+  if (!secret) {
+    return { success: false, retryable: false, errorCodes: ['missing-server-secret'] };
+  }
 
   const verificationData = new FormData();
   verificationData.append('secret', secret);
   verificationData.append('response', token);
+  verificationData.append('idempotency_key', crypto.randomUUID());
 
   const clientIp =
     request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for');
   if (clientIp) verificationData.append('remoteip', clientIp.split(',')[0].trim());
 
-  try {
-    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      body: verificationData,
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!response.ok) return false;
-    const result = (await response.json()) as { success?: boolean };
-    return result.success === true;
-  } catch {
-    return false;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        body: verificationData,
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!response.ok) {
+        if (attempt === 0) continue;
+        return {
+          success: false,
+          retryable: true,
+          errorCodes: [`siteverify-http-${response.status}`],
+        };
+      }
+
+      const result = (await response.json()) as {
+        success?: boolean;
+        'error-codes'?: string[];
+      };
+      if (result.success === true) return { success: true };
+
+      const errorCodes = Array.isArray(result['error-codes'])
+        ? result['error-codes']
+        : ['siteverify-rejected'];
+      if (attempt === 0 && errorCodes.includes('internal-error')) continue;
+
+      const configurationError = errorCodes.some((code) =>
+        ['missing-input-secret', 'invalid-input-secret', 'bad-request'].includes(code)
+      );
+      return { success: false, retryable: !configurationError, errorCodes };
+    } catch {
+      if (attempt === 0) continue;
+      return { success: false, retryable: true, errorCodes: ['siteverify-unavailable'] };
+    }
   }
+
+  return { success: false, retryable: true, errorCodes: ['siteverify-unavailable'] };
 };
 
 const makeRateKey = async (request: Request) => {
@@ -245,18 +282,24 @@ export const POST: APIRoute = async ({ request }) => {
     const hasMessage = Boolean(message);
     const hasDrawing = Boolean(drawing?.strokes.length);
 
-    if (
-      message === null ||
-      !drawing ||
-      !signature ||
-      !contact ||
-      hasMessage === hasDrawing
-    ) {
+    if (message === null || !drawing || !signature || !contact || hasMessage === hasDrawing) {
       return json({ message: 'Invalid card content' }, 400);
     }
 
-    if (!(await verifyTurnstile(request, body.turnstileToken))) {
-      return json({ message: 'Verification failed' }, 400);
+    const verification = await verifyTurnstile(request, body.turnstileToken);
+    if (verification.success === false) {
+      console.warn('Guest card verification failed', {
+        retryable: verification.retryable,
+        errorCodes: verification.errorCodes,
+      });
+      return json(
+        {
+          message: 'Verification failed',
+          code: 'verification_failed',
+          retryable: verification.retryable,
+        },
+        verification.retryable ? 400 : 503
+      );
     }
 
     const database = await getDatabase();

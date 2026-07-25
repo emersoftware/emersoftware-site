@@ -45,6 +45,7 @@ const copy = isEnglish
       publish: 'Leave card',
       verifying: 'Checking…',
       verified: '✓ Ready',
+      verificationFailed: 'Verification expired. Try again.',
       unavailable: 'Cards are taking a break. Try again soon.',
       invalidMessage: 'Write a message first.',
       invalidDrawing: 'Draw something first.',
@@ -78,6 +79,7 @@ const copy = isEnglish
       publish: 'Dejar tarjeta',
       verifying: 'Verificando…',
       verified: '✓ Listo',
+      verificationFailed: 'La verificación expiró. Intenta de nuevo.',
       unavailable: 'Las tarjetas están descansando. Prueba de nuevo pronto.',
       invalidMessage: 'Escribe un mensaje primero.',
       invalidDrawing: 'Dibuja algo primero.',
@@ -118,7 +120,7 @@ const copy = isEnglish
       <svg class="guest-card-ink" viewBox="0 0 256 256" aria-hidden="true">
         {
           heroDoodle.strokes.map((stroke) => (
-            <polyline points={stroke.map((point) => point.join(',')).join(' ')}></polyline>
+            <polyline points={stroke.map((point) => point.join(',')).join(' ')} />
           ))
         }
       </svg>
@@ -663,8 +665,7 @@ const copy = isEnglish
     display: none;
   }
 
-  .guest-card-dialog-inner[data-mode='choose']
-    > :not(.guest-card-kind-picker, .guest-card-close) {
+  .guest-card-dialog-inner[data-mode='choose'] > :not(.guest-card-kind-picker, .guest-card-close) {
     display: none;
   }
 
@@ -1134,6 +1135,8 @@ const copy = isEnglish
       let cardKind = '';
       let turnstileToken = '';
       let turnstileWidgetId = null;
+      let pendingVerificationRetry = null;
+      let isSubmitting = false;
       let visitorCards = [];
       let toastTimer = 0;
 
@@ -1331,8 +1334,15 @@ const copy = isEnglish
             size: 'compact',
             callback: (token) => {
               turnstileToken = token;
-              setStatus(copy.verified, false, true);
+              if (status?.dataset.error !== 'true') {
+                setStatus(copy.verified, false, true);
+              }
               updateSubmit();
+              if (pendingVerificationRetry) {
+                const retry = pendingVerificationRetry;
+                pendingVerificationRetry = null;
+                window.queueMicrotask(retry);
+              }
             },
             'expired-callback': () => {
               turnstileToken = '';
@@ -1385,6 +1395,8 @@ const copy = isEnglish
         strokes = [];
         activeStroke = null;
         turnstileToken = '';
+        pendingVerificationRetry = null;
+        isSubmitting = false;
         if (count) count.textContent = '0 / 64';
         updateContactHint();
         setStatus(copy.verifying);
@@ -1476,6 +1488,8 @@ const copy = isEnglish
 
       dialog.addEventListener('close', () => {
         turnstileToken = '';
+        pendingVerificationRetry = null;
+        isSubmitting = false;
         updateSubmit();
       });
 
@@ -1522,6 +1536,69 @@ const copy = isEnglish
         updateSubmit();
       });
 
+      const submitCard = async (payload, canRetryVerification) => {
+        if (!submitButton || isSubmitting || !turnstileToken) return;
+        isSubmitting = true;
+        submitButton.disabled = true;
+        const originalLabel = submitButton.textContent;
+        submitButton.textContent = '…';
+        let waitingForVerificationRetry = false;
+
+        try {
+          const response = await fetch('/api/cards', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              ...payload,
+              turnstileToken,
+            }),
+          });
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            if (
+              data.code === 'verification_failed' &&
+              data.retryable !== false &&
+              canRetryVerification &&
+              dialog.open &&
+              turnstileWidgetId !== null &&
+              window.turnstile
+            ) {
+              waitingForVerificationRetry = true;
+              turnstileToken = '';
+              setStatus(copy.verifying);
+              pendingVerificationRetry = () => submitCard(payload, false);
+              window.turnstile.reset(turnstileWidgetId);
+              return;
+            }
+
+            if (data.code === 'verification_failed') {
+              setStatus(copy.verificationFailed, true);
+              return;
+            }
+            setStatus(response.status === 429 ? copy.rateLimited : copy.unavailable, true);
+            return;
+          }
+
+          visitorCards = [data.card, ...visitorCards.filter((card) => card.id !== data.card.id)];
+          renderVisitorCards();
+          closeDialog();
+          showToast(copy.saved);
+        } catch (_) {
+          setStatus(copy.unavailable, true);
+        } finally {
+          submitButton.textContent = originalLabel;
+          isSubmitting = false;
+          if (!waitingForVerificationRetry) {
+            turnstileToken = '';
+            if (dialog.open && turnstileWidgetId !== null && window.turnstile) {
+              window.turnstile.reset(turnstileWidgetId);
+            }
+          }
+          updateSubmit();
+        }
+      };
+
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
         if (!submitButton || submitButton.disabled) return;
@@ -1539,43 +1616,19 @@ const copy = isEnglish
           return;
         }
 
-        submitButton.disabled = true;
-        const originalLabel = submitButton.textContent;
-        submitButton.textContent = '…';
+        const payload = {
+          message: cardKind === 'message' ? messageInput.value.trim() : '',
+          drawing: {
+            strokes:
+              cardKind === 'drawing'
+                ? strokes.map((stroke) => stroke.map((point) => [...point]))
+                : [],
+          },
+          signature: signatureInput.value.trim(),
+          contact: contactInput.value.trim(),
+        };
 
-        try {
-          const response = await fetch('/api/cards', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({
-              message: cardKind === 'message' ? messageInput.value.trim() : '',
-              drawing: { strokes: cardKind === 'drawing' ? strokes : [] },
-              signature: signatureInput.value.trim(),
-              contact: contactInput.value.trim(),
-              turnstileToken,
-            }),
-          });
-
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok) {
-            setStatus(response.status === 429 ? copy.rateLimited : copy.unavailable, true);
-            return;
-          }
-
-          visitorCards = [data.card, ...visitorCards.filter((card) => card.id !== data.card.id)];
-          renderVisitorCards();
-          closeDialog();
-          showToast(copy.saved);
-        } catch (_) {
-          setStatus(copy.unavailable, true);
-        } finally {
-          submitButton.textContent = originalLabel;
-          turnstileToken = '';
-          if (dialog.open && turnstileWidgetId !== null && window.turnstile) {
-            window.turnstile.reset(turnstileWidgetId);
-          }
-          updateSubmit();
-        }
+        await submitCard(payload, true);
       });
 
       window.addEventListener('resize', redraw, { passive: true });
