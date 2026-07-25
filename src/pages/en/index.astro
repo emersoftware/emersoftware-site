@@ -210,6 +210,7 @@ const t = getDictionary(lang);
 <style>
   :global(:root) {
     --sheet-top: 0.75rem;
+    --section-anchor-gap: 1.75rem;
   }
 
   @media (min-width: 48rem) {
@@ -221,12 +222,15 @@ const t = getDictionary(lang);
   @media (min-width: 64rem) {
     :global(:root) {
       --sheet-top: 4.5rem;
+      --section-anchor-gap: 2rem;
     }
   }
 
   /* Native anchors must land below the top band + sticky nav. */
   [data-section] {
-    scroll-margin-top: calc(env(safe-area-inset-top, 0px) + var(--sheet-top) + 3.5rem);
+    scroll-margin-top: calc(
+      env(safe-area-inset-top, 0px) + var(--sheet-top) + 3.5rem + var(--section-anchor-gap)
+    );
   }
 
   /* The strip also covers the status-bar zone (safe-area): minimized Safari
