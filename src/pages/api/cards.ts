@@ -19,8 +19,8 @@ const LOCAL_TURNSTILE_SECRET = '1x0000000000000000000000000000000AA';
 type Point = [number, number];
 type Drawing = { strokes: Point[][] };
 type TurnstileVerification =
-  | { success: true }
-  | { success: false; retryable: boolean; errorCodes: string[] };
+  | { success: true; attempts: number }
+  | { success: false; retryable: boolean; errorCodes: string[]; attempts: number };
 
 interface CardRow {
   id: string;
@@ -31,11 +31,52 @@ interface CardRow {
   created_at: string;
 }
 
-const json = (body: unknown, status = 200, cacheControl = 'no-store') =>
+type LogLevel = 'info' | 'warn' | 'error';
+
+const json = (body: unknown, status = 200, cacheControl = 'no-store', requestId?: string) =>
   new Response(JSON.stringify(body), {
     status,
-    headers: { ...JSON_HEADERS, 'Cache-Control': cacheControl },
+    headers: {
+      ...JSON_HEADERS,
+      'Cache-Control': cacheControl,
+      ...(requestId ? { 'X-Request-Id': requestId } : {}),
+    },
   });
+
+const logEvent = (level: LogLevel, event: string, details: Record<string, unknown>) => {
+  const entry = { service: 'guest_cards', event, ...details };
+  if (level === 'error') {
+    console.error(entry);
+  } else if (level === 'warn') {
+    console.warn(entry);
+  } else {
+    console.info(entry);
+  }
+};
+
+const errorDetails = (error: unknown) => {
+  if (!(error instanceof Error)) return { errorName: 'UnknownError' };
+  return {
+    errorName: error.name,
+    errorMessage: error.message.slice(0, 300),
+  };
+};
+
+const requestContext = (request: Request) => ({
+  requestId: crypto.randomUUID(),
+  rayId: request.headers.get('cf-ray') || undefined,
+  startedAt: Date.now(),
+});
+
+const logContext = (context: ReturnType<typeof requestContext>) => ({
+  requestId: context.requestId,
+  ...(context.rayId ? { rayId: context.rayId } : {}),
+});
+
+const durationMs = (context: ReturnType<typeof requestContext>) => Date.now() - context.startedAt;
+
+const errorResponse = (body: Record<string, unknown>, status: number, requestId: string) =>
+  json({ ...body, requestId }, status, 'no-store', requestId);
 
 const isLocalRequest = (request: Request) => {
   const { hostname } = new URL(request.url);
@@ -88,7 +129,8 @@ const normalizeDrawing = (value: unknown): Drawing | null => {
   const strokes: Point[][] = [];
 
   for (const stroke of source) {
-    if (!Array.isArray(stroke) || stroke.length < 2) return null;
+    if (!Array.isArray(stroke)) return null;
+    if (stroke.length < 2) continue;
     const cleanStroke: Point[] = [];
 
     for (const point of stroke) {
@@ -161,12 +203,22 @@ const verifyTurnstile = async (
   token: unknown
 ): Promise<TurnstileVerification> => {
   if (typeof token !== 'string' || !token || token.length > 2048) {
-    return { success: false, retryable: true, errorCodes: ['invalid-client-token'] };
+    return {
+      success: false,
+      retryable: true,
+      errorCodes: ['invalid-client-token'],
+      attempts: 0,
+    };
   }
 
   const secret = TURNSTILE_SECRET_KEY || (isLocalRequest(request) ? LOCAL_TURNSTILE_SECRET : '');
   if (!secret) {
-    return { success: false, retryable: false, errorCodes: ['missing-server-secret'] };
+    return {
+      success: false,
+      retryable: false,
+      errorCodes: ['missing-server-secret'],
+      attempts: 0,
+    };
   }
 
   const verificationData = new FormData();
@@ -191,6 +243,7 @@ const verifyTurnstile = async (
           success: false,
           retryable: true,
           errorCodes: [`siteverify-http-${response.status}`],
+          attempts: attempt + 1,
         };
       }
 
@@ -198,7 +251,7 @@ const verifyTurnstile = async (
         success?: boolean;
         'error-codes'?: string[];
       };
-      if (result.success === true) return { success: true };
+      if (result.success === true) return { success: true, attempts: attempt + 1 };
 
       const errorCodes = Array.isArray(result['error-codes'])
         ? result['error-codes']
@@ -208,14 +261,29 @@ const verifyTurnstile = async (
       const configurationError = errorCodes.some((code) =>
         ['missing-input-secret', 'invalid-input-secret', 'bad-request'].includes(code)
       );
-      return { success: false, retryable: !configurationError, errorCodes };
+      return {
+        success: false,
+        retryable: !configurationError,
+        errorCodes,
+        attempts: attempt + 1,
+      };
     } catch {
       if (attempt === 0) continue;
-      return { success: false, retryable: true, errorCodes: ['siteverify-unavailable'] };
+      return {
+        success: false,
+        retryable: true,
+        errorCodes: ['siteverify-unavailable'],
+        attempts: attempt + 1,
+      };
     }
   }
 
-  return { success: false, retryable: true, errorCodes: ['siteverify-unavailable'] };
+  return {
+    success: false,
+    retryable: true,
+    errorCodes: ['siteverify-unavailable'],
+    attempts: 2,
+  };
 };
 
 const makeRateKey = async (request: Request) => {
@@ -229,10 +297,25 @@ const makeRateKey = async (request: Request) => {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 };
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ request }) => {
+  const context = requestContext(request);
+  let stage = 'database_read';
+
   try {
     const database = await getDatabase();
-    if (!database) return json({ message: 'Cards unavailable in local CMS mode' }, 503);
+    if (!database) {
+      logEvent('warn', 'guest_cards_read_failed', {
+        ...logContext(context),
+        stage: 'database_binding',
+        status: 503,
+        durationMs: durationMs(context),
+      });
+      return errorResponse(
+        { message: 'Cards unavailable in local CMS mode', code: 'database_unavailable' },
+        503,
+        context.requestId
+      );
+    }
 
     const { results } = await database
       .prepare(
@@ -245,29 +328,76 @@ export const GET: APIRoute = async () => {
       .bind(MAX_VISIBLE_CARDS)
       .all<CardRow>();
 
-    return json({ cards: results.map(publicCard) });
+    stage = 'serialize_response';
+    return json({ cards: results.map(publicCard) }, 200, 'no-store', context.requestId);
   } catch (error) {
-    console.error('Guest cards read failed', error);
-    return json({ message: 'Cards unavailable' }, 503);
+    logEvent('error', 'guest_cards_read_failed', {
+      ...logContext(context),
+      stage,
+      status: 503,
+      durationMs: durationMs(context),
+      ...errorDetails(error),
+    });
+    return errorResponse(
+      { message: 'Cards unavailable', code: 'cards_read_failed' },
+      503,
+      context.requestId
+    );
   }
 };
 
 export const POST: APIRoute = async ({ request }) => {
+  const context = requestContext(request);
+  let stage = 'request_headers';
+  const reject = (
+    body: Record<string, unknown>,
+    status: number,
+    event = 'guest_card_rejected',
+    details: Record<string, unknown> = {}
+  ) => {
+    logEvent(status >= 500 ? 'error' : 'warn', event, {
+      ...logContext(context),
+      stage,
+      status,
+      durationMs: durationMs(context),
+      ...details,
+    });
+    return errorResponse(body, status, context.requestId);
+  };
+
   if (!request.headers.get('content-type')?.startsWith('application/json')) {
-    return json({ message: 'Invalid content type' }, 415);
+    return reject(
+      { message: 'Invalid content type', code: 'invalid_content_type' },
+      415,
+      'guest_card_rejected',
+      { reason: 'invalid_content_type' }
+    );
   }
 
   const requestUrl = new URL(request.url);
   const origin = request.headers.get('origin');
   if (origin && origin !== requestUrl.origin) {
-    return json({ message: 'Invalid origin' }, 403);
+    return reject(
+      { message: 'Invalid origin', code: 'invalid_origin' },
+      403,
+      'guest_card_rejected',
+      { reason: 'invalid_origin' }
+    );
   }
 
   const declaredLength = Number(request.headers.get('content-length') || 0);
-  if (declaredLength > 40_000) return json({ message: 'Card is too large' }, 413);
+  if (declaredLength > 40_000) {
+    return reject(
+      { message: 'Card is too large', code: 'invalid_card_content', field: 'drawing' },
+      413,
+      'guest_card_validation_failed',
+      { reason: 'drawing_too_large', declaredLength }
+    );
+  }
 
   try {
-    const body = (await request.json()) as {
+    stage = 'parse_json';
+    let body: {
       message?: unknown;
       drawing?: unknown;
       signature?: unknown;
@@ -275,36 +405,107 @@ export const POST: APIRoute = async ({ request }) => {
       turnstileToken?: unknown;
     };
 
+    try {
+      body = (await request.json()) as typeof body;
+    } catch (error) {
+      return reject({ message: 'Invalid JSON', code: 'invalid_json' }, 400, 'guest_card_rejected', {
+        reason: 'invalid_json',
+        ...errorDetails(error),
+      });
+    }
+
+    stage = 'validate_card';
     const message = normalizeMessage(body.message);
     const drawing = normalizeDrawing(body.drawing);
     const signature = normalizeSignature(body.signature);
     const contact = normalizeContact(body.contact);
     const hasMessage = Boolean(message);
     const hasDrawing = Boolean(drawing?.strokes.length);
+    const validationField =
+      message === null
+        ? 'message'
+        : !drawing
+          ? 'drawing'
+          : !signature
+            ? 'signature'
+            : !contact
+              ? 'contact'
+              : hasMessage === hasDrawing
+                ? hasDrawing
+                  ? 'message'
+                  : 'drawing'
+                : null;
 
-    if (message === null || !drawing || !signature || !contact || hasMessage === hasDrawing) {
-      return json({ message: 'Invalid card content' }, 400);
+    if (validationField) {
+      const submittedStrokes =
+        body.drawing &&
+        typeof body.drawing === 'object' &&
+        Array.isArray((body.drawing as Drawing).strokes)
+          ? (body.drawing as Drawing).strokes
+          : [];
+      return reject(
+        {
+          message: 'Invalid card content',
+          code: 'invalid_card_content',
+          field: validationField,
+        },
+        400,
+        'guest_card_validation_failed',
+        {
+          reason: validationField,
+          declaredLength,
+          strokeCount: submittedStrokes.length,
+          pointCount: submittedStrokes.reduce(
+            (total, stroke) => total + (Array.isArray(stroke) ? stroke.length : 0),
+            0
+          ),
+        }
+      );
     }
 
+    stage = 'turnstile_verification';
+    const verificationStartedAt = Date.now();
     const verification = await verifyTurnstile(request, body.turnstileToken);
+    const verificationDurationMs = Date.now() - verificationStartedAt;
     if (verification.success === false) {
-      console.warn('Guest card verification failed', {
-        retryable: verification.retryable,
-        errorCodes: verification.errorCodes,
-      });
-      return json(
+      return reject(
         {
           message: 'Verification failed',
           code: 'verification_failed',
           retryable: verification.retryable,
         },
-        verification.retryable ? 400 : 503
+        verification.retryable ? 400 : 503,
+        'guest_card_turnstile_failed',
+        {
+          retryable: verification.retryable,
+          errorCodes: verification.errorCodes,
+          attempts: verification.attempts,
+          verificationDurationMs,
+        }
       );
     }
 
-    const database = await getDatabase();
-    if (!database) return json({ message: 'Cards unavailable in local CMS mode' }, 503);
+    if (verification.attempts > 1) {
+      logEvent('warn', 'guest_card_turnstile_recovered', {
+        ...logContext(context),
+        stage,
+        attempts: verification.attempts,
+        verificationDurationMs,
+        durationMs: durationMs(context),
+      });
+    }
 
+    stage = 'database_binding';
+    const database = await getDatabase();
+    if (!database) {
+      return reject(
+        { message: 'Cards unavailable in local CMS mode', code: 'database_unavailable' },
+        503,
+        'guest_card_database_failed'
+      );
+    }
+
+    stage = 'rate_limit_query';
     const rateKey = await makeRateKey(request);
     const recentCount =
       (await database
@@ -317,7 +518,12 @@ export const POST: APIRoute = async ({ request }) => {
         .first<number>('count')) || 0;
 
     if (recentCount >= MAX_CARDS_PER_HOUR) {
-      return json({ message: 'Rate limit exceeded' }, 429);
+      return reject(
+        { message: 'Rate limit exceeded', code: 'rate_limited' },
+        429,
+        'guest_card_rate_limited',
+        { recentCount, limit: MAX_CARDS_PER_HOUR }
+      );
     }
 
     const drawingJson = JSON.stringify(drawing);
@@ -333,6 +539,7 @@ export const POST: APIRoute = async ({ request }) => {
       created_at: new Date().toISOString(),
     };
 
+    stage = 'database_insert';
     await database
       .prepare(
         `INSERT INTO guest_cards (
@@ -355,9 +562,26 @@ export const POST: APIRoute = async ({ request }) => {
       )
       .run();
 
-    return json({ card: publicCard(row) }, 201);
+    logEvent('info', 'guest_card_saved', {
+      ...logContext(context),
+      status: 201,
+      cardKind: legacyKind === 'drawing' ? 'drawing' : 'message',
+      strokeCount: drawing.strokes.length,
+      pointCount: drawing.strokes.reduce((total, stroke) => total + stroke.length, 0),
+      hasPublicUrl: Boolean(contact.publicUrl),
+      hasPrivateEmail: Boolean(contact.privateEmail),
+      turnstileAttempts: verification.attempts,
+      verificationDurationMs,
+      durationMs: durationMs(context),
+    });
+
+    return json({ card: publicCard(row) }, 201, 'no-store', context.requestId);
   } catch (error) {
-    console.error('Guest card creation failed', error);
-    return json({ message: 'Could not save card' }, 500);
+    return reject(
+      { message: 'Could not save card', code: 'card_creation_failed' },
+      500,
+      'guest_card_creation_failed',
+      errorDetails(error)
+    );
   }
 };
