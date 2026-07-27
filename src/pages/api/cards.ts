@@ -9,9 +9,10 @@ const JSON_HEADERS = {
 
 const MAX_MESSAGE_LENGTH = 64;
 const MAX_SIGNATURE_LENGTH = 20;
-const MAX_STROKES = 16;
-const MAX_POINTS = 900;
-const MAX_DRAWING_BYTES = 30_000;
+const MAX_STROKES = 32;
+const MAX_POINTS = 2_500;
+const MAX_DRAWING_BYTES = 64_000;
+const MAX_REQUEST_BYTES = 80_000;
 const MAX_CARDS_PER_HOUR = 3;
 const MAX_VISIBLE_CARDS = 5;
 const LOCAL_TURNSTILE_SECRET = '1x0000000000000000000000000000000AA';
@@ -386,7 +387,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const declaredLength = Number(request.headers.get('content-length') || 0);
-  if (declaredLength > 40_000) {
+  if (declaredLength > MAX_REQUEST_BYTES) {
     return reject(
       { message: 'Card is too large', code: 'invalid_card_content', field: 'drawing' },
       413,

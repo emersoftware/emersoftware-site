@@ -1141,6 +1141,8 @@ const copy = isEnglish
       let toastTimer = 0;
 
       const maxVisitorCards = 5;
+      const maxDrawingStrokes = 32;
+      const maxDrawingPoints = 2500;
       const svgNamespace = 'http://www.w3.org/2000/svg';
 
       const showToast = (message) => {
@@ -1522,14 +1524,14 @@ const copy = isEnglish
       });
 
       canvas.addEventListener('pointerdown', (event) => {
-        if (strokes.length >= 16 || drawingPointCount() >= 900) return;
+        if (strokes.length >= maxDrawingStrokes || drawingPointCount() >= maxDrawingPoints) return;
         canvas.setPointerCapture(event.pointerId);
         activeStroke = [pointFromEvent(event)];
         strokes.push(activeStroke);
       });
 
       canvas.addEventListener('pointermove', (event) => {
-        if (!activeStroke || drawingPointCount() >= 900) return;
+        if (!activeStroke || drawingPointCount() >= maxDrawingPoints) return;
         const point = pointFromEvent(event);
         const previous = activeStroke[activeStroke.length - 1];
         if (Math.hypot(point[0] - previous[0], point[1] - previous[1]) < 1.8) return;
