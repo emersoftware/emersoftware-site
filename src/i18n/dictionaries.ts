@@ -178,13 +178,12 @@ const es: Dictionary = {
       techs: ['React', 'Python', 'TypeScript', 'AI'],
     },
     {
-      company: 'Xerply',
-      role: 'Software Engineer',
+      company: 'Stealth AI',
+      role: 'AI Consultant',
       date: 'nov. 2024 - dic. 2025',
-      link: 'https://www.linkedin.com/company/xerply',
       product: 'ERP con inteligencia artificial',
       description:
-        'Integración con el SAT (México) mediante terceros para facturación y firma de nóminas, actualización de la API de agentes de IA y diseño de mecanismos de seguridad y aislamiento para entornos multi-tenant. Participación en la evolución de la arquitectura del sistema, con foco en escalabilidad, confiabilidad y orquestación de agentes inteligentes.',
+        'Consultoría para la integración con el SAT mediante terceros para facturación y firma de nóminas, actualización de la API de agentes de IA y diseño de mecanismos de seguridad y aislamiento para entornos multi-tenant. Participación en la evolución de la arquitectura del sistema, con foco en escalabilidad, confiabilidad y orquestación de agentes inteligentes.',
       techs: ['LangGraph', 'LangChain', 'React', 'Flask', 'Python', 'TypeScript'],
     },
     {
@@ -220,6 +219,23 @@ const es: Dictionary = {
   ],
   projectItems: [
     {
+      title: 'Normatica',
+      summary: 'La normativa chilena, conectada a agentes de IA.',
+      description:
+        'Una capa de conocimiento que normaliza la normativa chilena, mantiene su vigencia y la expone a agentes mediante MCP, API y CLI. Cada respuesta conserva la cita a la fuente oficial para que pueda verificarse.',
+      link: 'https://normatica.cl',
+      techs: [],
+    },
+    {
+      title: 'Startups, Chile',
+      summary: 'Un mapa de cómo evolucionan las startups chilenas.',
+      description:
+        'Un dataset y una visualización que reconstruyen las trayectorias de startups chilenas: pivots, rebrandings, rondas de inversión, adquisiciones y cierres, con fechas y fuentes verificables.',
+      link: 'https://startups.emersoftware.cl',
+      repo: 'https://github.com/emersoftware/startups',
+      techs: [],
+    },
+    {
       title: 'The Stack',
       summary: 'Un rincón para descubrir la tecnología que se crea en Latinoamérica.',
       description:
@@ -238,17 +254,6 @@ const es: Dictionary = {
       imageSize: 'md',
       link: 'https://themis.lat',
       repo: 'https://github.com/v4rgas/themis.lat',
-      techs: [],
-    },
-    {
-      title: 'Kapin',
-      summary: 'Un agente que convierte repositorios en métricas de producto accionables.',
-      description:
-        'Un agente que examina repositorios de software, identifica métricas de producto relevantes y genera las consultas y la estructura técnica necesarias para medirlas y persistirlas. Su objetivo es reducir la distancia entre construir un producto y entender cómo se usa.',
-      image: '/kapin-mini.jpeg',
-      imageSize: 'md',
-      repo: 'https://github.com/emersoftware/kapin',
-      demo: 'https://www.linkedin.com/posts/emerson-salazar-rubilar_aprovechando-que-hoy-comienza-la-platanus-activity-7397683971565821952-emdq',
       techs: [],
     },
   ],
@@ -337,13 +342,12 @@ const en: Dictionary = {
       techs: ['React', 'Python', 'TypeScript', 'AI'],
     },
     {
-      company: 'Xerply',
-      role: 'Software Engineer',
+      company: 'Stealth AI',
+      role: 'AI Consultant',
       date: 'Nov. 2024 - Dec. 2025',
-      link: 'https://www.linkedin.com/company/xerply',
       product: 'AI-powered ERP',
       description:
-        'Integration with SAT (Mexico) through third parties for invoicing and payroll signing, updating the AI agents API and designing security and isolation mechanisms for multi-tenant environments. Participation in the evolution of system architecture, focusing on scalability, reliability, and intelligent agent orchestration.',
+        'Consulting on third-party SAT integration for invoicing and payroll signing, updating the AI agents API, and designing security and isolation mechanisms for multi-tenant environments. Participation in the evolution of the system architecture, focusing on scalability, reliability, and intelligent agent orchestration.',
       techs: ['LangGraph', 'LangChain', 'React', 'Flask', 'Python', 'TypeScript'],
     },
     {
@@ -379,6 +383,23 @@ const en: Dictionary = {
   ],
   projectItems: [
     {
+      title: 'Normatica',
+      summary: 'Chilean regulations, connected to AI agents.',
+      description:
+        'A knowledge layer that normalizes Chilean regulations, tracks their validity, and exposes them to agents through MCP, API, and CLI. Every response preserves a citation to the official source so it can be verified.',
+      link: 'https://normatica.cl',
+      techs: [],
+    },
+    {
+      title: 'Startups, Chile',
+      summary: 'A map of how Chilean startups evolve.',
+      description:
+        'A dataset and visualization that reconstruct the trajectories of Chilean startups: pivots, rebrands, funding rounds, acquisitions, and shutdowns, with dates and verifiable sources.',
+      link: 'https://startups.emersoftware.cl',
+      repo: 'https://github.com/emersoftware/startups',
+      techs: [],
+    },
+    {
       title: 'The Stack',
       summary: 'A place to discover the technology being built in Latin America.',
       description:
@@ -397,17 +418,6 @@ const en: Dictionary = {
       imageSize: 'md',
       link: 'https://themis.lat',
       repo: 'https://github.com/v4rgas/themis.lat',
-      techs: [],
-    },
-    {
-      title: 'Kapin',
-      summary: 'An agent that turns repositories into actionable product metrics.',
-      description:
-        'An agent that examines software repositories, identifies relevant product metrics, and generates the queries and technical structure needed to measure and persist them. Its goal is to close the gap between building a product and understanding how it is used.',
-      image: '/kapin-mini.jpeg',
-      imageSize: 'md',
-      repo: 'https://github.com/emersoftware/kapin',
-      demo: 'https://www.linkedin.com/posts/emerson-salazar-rubilar_aprovechando-que-hoy-comienza-la-platanus-activity-7397683971565821952-emdq',
       techs: [],
     },
   ],
