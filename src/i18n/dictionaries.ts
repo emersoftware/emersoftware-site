@@ -219,6 +219,15 @@ const es: Dictionary = {
   ],
   projectItems: [
     {
+      title: 'Castellan',
+      summary: 'Un juego de estrategia en tiempo real para agentes de IA.',
+      description:
+        'Un RTS medieval donde los jugadores son agentes de IA. La partida corre en tiempo real y no espera a que el modelo termine de pensar: cada agente junta recursos, entrena su ejército y programa a sus unidades en JavaScript para que peleen solas. Caben hasta seis agentes por mapa y gana quien derriba a los Reyes rivales. Cada batalla queda grabada para verla en pixel art isométrico.',
+      link: 'https://rts.emersoftware.cl',
+      repo: 'https://github.com/emersoftware/castellan',
+      techs: [],
+    },
+    {
       title: 'Normatica',
       summary: 'La normativa chilena, conectada a agentes de IA.',
       description:
@@ -236,16 +245,6 @@ const es: Dictionary = {
       techs: [],
     },
     {
-      title: 'The Stack',
-      summary: 'Un rincón para descubrir la tecnología que se crea en Latinoamérica.',
-      description:
-        'Un índice de contenido tecnológico hecho en Latinoamérica. Reúne proyectos independientes, blogs, noticias del ecosistema, reflexiones técnicas y meetups en un espacio dedicado al contenido humano, original y de calidad. Save the internet.',
-      image: '/thestack-mini.jpeg',
-      link: 'https://thestack.cl',
-      repo: 'https://github.com/emersoftware/thestack',
-      techs: [],
-    },
-    {
       title: 'Themis',
       summary: 'IA que encuentra señales de riesgo en licitaciones públicas.',
       description:
@@ -254,6 +253,16 @@ const es: Dictionary = {
       imageSize: 'md',
       link: 'https://themis.lat',
       repo: 'https://github.com/v4rgas/themis.lat',
+      techs: [],
+    },
+    {
+      title: 'The Stack',
+      summary: 'Un rincón para descubrir la tecnología que se crea en Latinoamérica (pronto a cerrarse).',
+      description:
+        'Un índice de contenido tecnológico hecho en Latinoamérica. Reúne proyectos independientes, blogs, noticias del ecosistema, reflexiones técnicas y meetups en un espacio dedicado al contenido humano, original y de calidad. Save the internet.',
+      image: '/thestack-mini.jpeg',
+      link: 'https://thestack.cl',
+      repo: 'https://github.com/emersoftware/thestack',
       techs: [],
     },
   ],
@@ -383,6 +392,15 @@ const en: Dictionary = {
   ],
   projectItems: [
     {
+      title: 'Castellan',
+      summary: 'A real-time strategy game for AI agents.',
+      description:
+        'A medieval RTS where the players are AI agents. The game runs in real time and never waits for a model to finish thinking: each agent gathers resources, trains an army, and programs its units in JavaScript so they fight on their own. Up to six agents fit on a map, and the winner is whoever takes down the rival Kings. Every battle is recorded to watch back in isometric pixel art.',
+      link: 'https://rts.emersoftware.cl',
+      repo: 'https://github.com/emersoftware/castellan',
+      techs: [],
+    },
+    {
       title: 'Normatica',
       summary: 'Chilean regulations, connected to AI agents.',
       description:
@@ -400,16 +418,6 @@ const en: Dictionary = {
       techs: [],
     },
     {
-      title: 'The Stack',
-      summary: 'A place to discover the technology being built in Latin America.',
-      description:
-        'A technology content index made in Latin America. It brings independent projects, blogs, ecosystem news, technical reflections, and meetups into one place dedicated to original, human-made, high-quality content. Save the internet.',
-      image: '/thestack-mini.jpeg',
-      link: 'https://thestack.cl',
-      repo: 'https://github.com/emersoftware/thestack',
-      techs: [],
-    },
-    {
       title: 'Themis',
       summary: 'AI that uncovers risk signals in public tenders.',
       description:
@@ -418,6 +426,16 @@ const en: Dictionary = {
       imageSize: 'md',
       link: 'https://themis.lat',
       repo: 'https://github.com/v4rgas/themis.lat',
+      techs: [],
+    },
+    {
+      title: 'The Stack',
+      summary: 'A place to discover the technology being built in Latin America (closing soon).',
+      description:
+        'A technology content index made in Latin America. It brings independent projects, blogs, ecosystem news, technical reflections, and meetups into one place dedicated to original, human-made, high-quality content. Save the internet.',
+      image: '/thestack-mini.jpeg',
+      link: 'https://thestack.cl',
+      repo: 'https://github.com/emersoftware/thestack',
       techs: [],
     },
   ],
