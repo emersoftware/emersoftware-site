@@ -12,24 +12,59 @@ const { lang: rawLang = defaultLocale } = Astro.props as Props;
 const lang = isSupportedLocale(rawLang) ? rawLang : defaultLocale;
 const t = getDictionary(lang);
 
-const blogPosts = (await getCollection('blog'))
+interface ListItem {
+  title: string;
+  date: Date;
+  href: string;
+  /** Set for posts that live on another site; the link opens there. */
+  external?: { source: string; lang: string };
+}
+
+const blogPosts: ListItem[] = (await getCollection('blog'))
   .filter((post) => post.filePath?.endsWith('.mdoc'))
-  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+  .map((post) => ({
+    title: post.data.title,
+    date: post.data.publishedAt,
+    href: `/blog/${post.id}`,
+  }));
+
+const externalPosts: ListItem[] = (await getCollection('externalPosts')).map((post) => ({
+  title: post.data.title,
+  date: post.data.publishedAt,
+  href: post.data.url,
+  external: { source: post.data.source, lang: post.data.lang },
+}));
+
+const items = [...blogPosts, ...externalPosts].sort(
+  (a, b) => b.date.valueOf() - a.date.valueOf(),
+);
 ---
 
 <h2 class="text-left text-lg text-black lg:text-2xl">{t.sectionHeadings.blog}</h2>
 <ul class="mt-8 text-sm text-black">
   {
-    blogPosts.length > 0 ? (
-      blogPosts.map((post) => (
+    items.length > 0 ? (
+      items.map((item) => (
         <li>
-          <a href={`/blog/${post.id}`} class="group flex flex-wrap items-baseline gap-2 px-1 py-3">
+          <a
+            href={item.href}
+            class="group flex flex-wrap items-baseline gap-2 px-1 py-3"
+            {...(item.external && { target: '_blank', rel: 'noopener noreferrer' })}
+          >
             <span class="text-graphite-400 w-3 shrink-0">-</span>
-            <span class="transition-colors group-hover:text-orange-500">{post.data.title}</span>
+            <span class="transition-colors group-hover:text-orange-500">{item.title}</span>
             <span class="text-graphite-400">-</span>
-            <span class="text-graphite-500 flex-1">{displayDate(post.data.publishedAt, lang)}</span>
+            <span class="text-graphite-500 flex-1">{displayDate(item.date, lang)}</span>
             <span class="shrink-0 text-black underline-offset-2 transition-colors group-hover:text-orange-500 group-hover:underline">
-              [ {t.list.read} ]
+              {item.external ? (
+                <>
+                  [ {item.external.source}
+                  {item.external.lang !== lang && ` · ${item.external.lang.toUpperCase()}`}{' '}
+                  <span aria-hidden="true">↗</span> ]
+                </>
+              ) : (
+                <>[ {t.list.read} ]</>
+              )}
             </span>
           </a>
         </li>
