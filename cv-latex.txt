@@ -31,7 +31,7 @@ Ingeniero de Software especializado en inteligencia artificial. Experiencia en d
 %==================== Experiencia ====================
 \section*{Experiencia}
 
-\subsection*{Xerply | Software Engineer \hfill Nov 2024 – Dic 2025}
+\subsection*{Xerply | Software Engineer \hfill Nov 2025 – Dic 2025}
 \textbf{Producto:} ERP con inteligencia artificial
 \begin{itemize}
 \item Participó en la evolución de la arquitectura del sistema, con foco en escalabilidad, confiabilidad y orquestación de agentes inteligentes.

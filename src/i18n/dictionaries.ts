@@ -180,7 +180,7 @@ const es: Dictionary = {
     {
       company: 'Stealth AI',
       role: 'AI Consultant',
-      date: 'nov. 2024 - dic. 2025',
+      date: 'nov. 2025 - dic. 2025',
       product: 'ERP con inteligencia artificial',
       description:
         'Consultoría para la integración con el SAT mediante terceros para facturación y firma de nóminas, actualización de la API de agentes de IA y diseño de mecanismos de seguridad y aislamiento para entornos multi-tenant. Participación en la evolución de la arquitectura del sistema, con foco en escalabilidad, confiabilidad y orquestación de agentes inteligentes.',
@@ -353,7 +353,7 @@ const en: Dictionary = {
     {
       company: 'Stealth AI',
       role: 'AI Consultant',
-      date: 'Nov. 2024 - Dec. 2025',
+      date: 'Nov. 2025 - Dec. 2025',
       product: 'AI-powered ERP',
       description:
         'Consulting on third-party SAT integration for invoicing and payroll signing, updating the AI agents API, and designing security and isolation mechanisms for multi-tenant environments. Participation in the evolution of the system architecture, focusing on scalability, reliability, and intelligent agent orchestration.',
