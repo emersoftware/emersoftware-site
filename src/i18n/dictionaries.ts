@@ -219,6 +219,15 @@ const es: Dictionary = {
   ],
   projectItems: [
     {
+      title: 'santiaguito.cl',
+      summary: 'Un motor de simulación de Santiago vía MCP.',
+      description:
+        'Un simulador urbano de Santiago hecho en Rust sobre más de 30 conjuntos de datos públicos: Censo 2024, Encuesta Origen-Destino, CASEN, MINEDUC, subidas y GTFS del DTPM, permisos de edificación y OpenStreetMap, entre otros. Planteas un cambio en un chat, por ejemplo más residentes en una comuna o una estación de Metro cerrada, y un agente llama al simulador mediante MCP. El motor estima cómo cambian los viajes al trabajo y una maqueta 3D de la ciudad muestra el resultado. Ganó el track Simulations en Platanus Hack 26.',
+      link: 'https://santiaguito.cl',
+      repo: 'https://github.com/platanus-hack/platanus-hack-26-cl-team-14',
+      techs: [],
+    },
+    {
       title: 'Castellan',
       summary: 'Un juego de estrategia en tiempo real para agentes de IA.',
       description:
@@ -391,6 +400,15 @@ const en: Dictionary = {
     },
   ],
   projectItems: [
+    {
+      title: 'santiaguito.cl',
+      summary: 'A simulation engine for Santiago via MCP.',
+      description:
+        'An urban simulator of Santiago built in Rust on more than 30 public datasets: the 2024 Census, the Origin-Destination Survey, CASEN, MINEDUC, DTPM boardings and GTFS, building permits, and OpenStreetMap, among others. You describe a change in a chat, such as more residents in a district or a closed Metro station, and an agent calls the simulator through MCP. The engine estimates how commutes to work change, and a 3D model of the city shows the result. It won the Simulations track at Platanus Hack 26.',
+      link: 'https://santiaguito.cl',
+      repo: 'https://github.com/platanus-hack/platanus-hack-26-cl-team-14',
+      techs: [],
+    },
     {
       title: 'Castellan',
       summary: 'A real-time strategy game for AI agents.',
